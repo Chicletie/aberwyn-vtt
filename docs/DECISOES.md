@@ -33,3 +33,45 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 
 ### `font-display: block`
 - O navegador espera a fonte pixel carregar em vez de mostrar uma fonte comum por um instante (evita o "pisca" de letra trocando).
+
+## Marco 1 — Palco local
+
+### Arquivos e papéis
+- `src/estado.js`: o estado (a verdade da mesa), as funções que o alteram (`aplicarDano`, `encerrarTurno`…) e o filtro `estadoPublico`. Nenhuma regra de jogo: o mestre decide, o app guarda.
+- `src/canal.js`: única peça que sabe como o estado viaja. Agora é local (BroadcastChannel, entre abas do mesmo navegador); no Marco 3 ganha o modo online com as mesmas funções.
+- `src/paleta.js`: a paleta (Apollo + extras, ordem fixa, `versao: 1`) e os **nomes de uso** (`janela`, `pv`, `inimigo`…). O CSS só usa variáveis geradas daqui (`--cor-janela`…).
+- `src/palco/layout.js`: só matemática da formação (onde ficam os pés de cada um).
+- `src/palco/renderizar.js`: desenha o palco a partir do estado público.
+- `src/palco/pixel.js`: cria pixel art por código (setas, elipses, rótulos 3×5) e recolore imagens.
+- `src/mesa/main.js`: mesa **mínima**, só para testar. A mesa de verdade é o Marco 2.
+
+### `estadoPublico`: o que nunca sai da mesa
+- Inimigo não revelado vira `{ id: "oculto-1", nome: "???", lado: "inimigo" }`: sem nome, sem PV, sem ficha. O **id também é trocado**, porque `guardiao-marco` já contaria quem é. E o lado vira "inimigo" mesmo se for vilão (a moldura vinho também contaria).
+- PV e PM **máximos** só com Estudo 7+; PV **atual** só com "mostrar PV" ligado (regra da casa) e Estudo 7+. O cartão de Estudo só leva os campos do nível alcançado.
+- Anotações do mestre nunca vão.
+- **Risco anotado (decidir no Marco 4):** para desenhar a silhueta, o palco precisa do sprite do inimigo escondido, e o **nome do arquivo** do sprite aparece no F12 (ex.: `assets/sprites/guardiao-marco/parado.png`). Opções: dar nomes neutros às pastas de sprite de inimigos secretos, ou gerar a silhueta como imagem própria. Por enquanto nenhum inimigo tem arte, então não vaza nada.
+
+### Palco: atualizar em vez de recriar (a versão "esperta")
+- O jeito mais simples seria apagar o palco e recriar tudo a cada estado. Mas aí nenhuma animação funciona: o passo de quem age, o rastro branco do dano e a fita abrindo precisam que **o mesmo elemento** continue na tela entre um estado e o outro.
+- Por isso o palco guarda cada lutador e cada linha de status por id e só atualiza o que mudou. Peças que não animam (os rostos da faixa de turnos, o menu) são recriadas a cada vez, que é mais simples.
+
+### Medidas das fontes (medidas no navegador)
+- `line-height` igual à soma de "subida + descida" da fonte, senão a letra cai em meio pixel e borra: **título 30 px**, **rótulo 9 px**. O corpo usa 19 px (dá 1 px inteiro de diferença, sem meio pixel).
+- Com essas alturas, a tinta começa em: corpo, maiúsculas da linha 4 à 15 da caixa (acentos sobem até a 0, cedilha desce até a 19); título, da 6 à 24; rótulo, da 1 à 7.
+
+### Molduras com `border-image` (9-slice)
+- As janelas e plaquinhas usam `assets/ui/janela.png` e `assets/ui/plaquinha.png` (os modelos que o Cadu já desenhou), cortados em 9 pedaços pelo CSS. Redesenhar o PNG muda todas as janelas sem mexer no código.
+- As caudas da fita são recortadas de `assets/ui/fita.png` e repintadas na cor de quem age. A seta de quem age é `assets/ui/seta.png` (em cinzas) repintada na cor-assinatura. Os rótulos PV/PM/PI vêm de `assets/ui/rotulos.png`.
+
+### Animações em passos de pixel inteiro
+- Transições usam `steps(n)` (pulam de pixel em pixel, sem borrar), mas o número de passos é aproximado: em deslocamentos que não são múltiplos exatos, um ou outro quadro do meio da animação pode cair entre pixels. Só dura um instante; ajustar no Marco 4 se incomodar.
+- A animação das letras da fita usa trechos fixos (0, 1) em vez de interpolar: interpolar deixava letras presas em meia transparência.
+
+### Desenhos provisórios (sem arte)
+- Herói sem sprite: retângulo 32×48 na cor-assinatura com a inicial. Inimigo: 32×32 (ou 64×64 se `porte: "grande"`) em vermelho, ou vinho para vilão. **`porte` é um campo novo**: sem arte não há como saber o tamanho do inimigo; quando houver PNG, o tamanho real da imagem decide.
+- Rosto na faixa de turnos: quadrado 24×24 na cor com a inicial.
+
+### Coisas que ajustei da SPEC (registrar para o Cadu decidir)
+- **Fita com 2 linhas** passa da faixa de HUD (32–58): uma linha já ocupa 19 px, duas ocupam 34. Fica por cima do campo nesses casos.
+- **Status na coluna larga** mostra `atual/máx` só do PV; o PM aparece pela barra (o número do PM vem com o balão de clique, no Marco 2).
+- **Números flutuantes** nascem ao lado do peito do alvo, para não cobrir a fita.
