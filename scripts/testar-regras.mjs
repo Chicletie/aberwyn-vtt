@@ -33,6 +33,7 @@ const testes = [
 ];
 
 let falhas = 0;
+let bloqueadoDemais = 0; // negou o que deveria permitir (ex.: ainda no "modo bloqueado")
 for (const [nome, metodo, caminho, deveriaPermitir, corpo] of testes) {
   const resposta = await fetch(base + caminho, {
     method: metodo,
@@ -42,7 +43,10 @@ for (const [nome, metodo, caminho, deveriaPermitir, corpo] of testes) {
   const permitiu = resposta.ok;
   const certo = permitiu === deveriaPermitir;
   if (!certo) falhas++;
+  if (!certo && deveriaPermitir) bloqueadoDemais++;
   console.log(`${certo ? 'OK   ' : 'FALHA'}  sem login, ${nome}: ${permitiu ? 'PERMITIDO' : 'NEGADO'} (HTTP ${resposta.status})`);
 }
-console.log(falhas ? `\n${falhas} teste(s) com problema: as regras NÃO estão protegendo!` : '\nTudo certo: sem login, ninguém escreve nada.');
+if (!falhas) console.log('\nTudo certo: sem login, os jogadores leem a sala e ninguém escreve nada.');
+else if (falhas === bloqueadoDemais) console.log('\nSeguro, mas bloqueado demais: os jogadores não conseguiriam ler a sala. As regras do projeto ainda não foram publicadas (o banco está no "modo bloqueado").');
+else console.log(`\n${falhas - bloqueadoDemais} teste(s) com problema: as regras NÃO estão protegendo!`);
 process.exit(falhas ? 1 : 0);

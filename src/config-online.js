@@ -8,7 +8,16 @@
 // Enquanto estiver null, o app funciona só no modo local (abas do mesmo navegador).
 
 /** @type {null | {apiKey:string, authDomain:string, databaseURL:string, projectId:string, appId:string}} */
-export const firebaseConfig = null;
+export const firebaseConfig = {
+  apiKey: 'AIzaSyC4QFp-ASiq2AypGQbXXEsNphgxuHkn0ns',
+  authDomain: 'aberyn-vtt.firebaseapp.com',
+  // Endereço do Realtime Database (aparece no console, em Realtime Database → Dados).
+  databaseURL: 'https://aberyn-vtt-default-rtdb.firebaseio.com',
+  projectId: 'aberyn-vtt',
+  storageBucket: 'aberyn-vtt.firebasestorage.app',
+  messagingSenderId: '548057019391',
+  appId: '1:548057019391:web:cbef1bf08499c66388edca',
+};
 
 /**
  * Endereço do palco publicado no GitHub Pages (o link que os jogadores abrem).
