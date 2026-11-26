@@ -205,3 +205,10 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - O nome da **campanha** na cortina ("Errantes") é outra coisa: é um texto editável na mesa (painel CORTINA) e não depende do nome do projeto.
 - Os salvamentos do navegador mudaram de nome (`aberwyn-vtt:estado`, `aberwyn-vtt:sala`); na primeira vez, a mesa lê os antigos (`errante-vtt:…`) e muda para os novos, então nada se perde.
 - A pasta no computador continua `errante-vtt` por enquanto (renomear agora quebraria o servidor que está rodando); dá para renomear depois sem mudar nada no código.
+
+### Backup da mesa na nuvem (pedido do Cadu, 26/11)
+- **Onde mora a verdade:** o estado da mesa fica no navegador do mestre (localStorage). O Firebase só tinha a cópia **pública** da sala. O risco real de perda era o navegador (limpar dados, janela anônima, outro computador).
+- Agora, com o mestre logado, a mesa guarda o estado **completo** em `mesas/{uid}/backup` (texto JSON), no máximo a cada 3 s. As regras só deixam a **própria conta do mestre** ler e escrever ali.
+- Ao entrar, a mesa compara o backup com o deste navegador. Se a nuvem for mais nova, pergunta: **RECUPERAR DA NUVEM** (dá para desfazer) ou **MANTER A DESTE NAVEGADOR** (que vira o novo backup). Fechar a janela sem escolher = manter (o mais seguro).
+- O arquivo `.json` (? → SALVAR ARQUIVO) continua como segunda cópia.
+- O plano grátis do Firebase não pausa por falta de uso; passando dos limites, desliga até o mês seguinte, mas não apaga. Ele não tem backup automático do banco: por isso a segunda cópia em arquivo.

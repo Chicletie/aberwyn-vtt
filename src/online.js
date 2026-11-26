@@ -2,7 +2,7 @@
 // Só este arquivo e o canal.js conhecem o Firebase; o resto do app não sabe que ele existe.
 
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, set, onValue, serverTimestamp } from 'firebase/database';
+import { getDatabase, ref, set, get, onValue, serverTimestamp } from 'firebase/database';
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import { firebaseConfig } from './config-online.js';
 
@@ -60,6 +60,31 @@ export function escutarSala(sala, funcao) {
     const valor = foto.val();
     if (valor?.json) funcao(JSON.parse(valor.json));
   });
+}
+
+// ───────────── Backup da mesa na nuvem ─────────────
+// O estado COMPLETO da mesa (com segredos e anotações) fica em mesas/{uid}, que as regras do
+// servidor só deixam a própria conta do mestre ler e escrever. Os jogadores nunca alcançam.
+
+/** Id da conta logada (ou null). */
+function uidAtual() {
+  return getAuth(iniciar()).currentUser?.uid ?? null;
+}
+
+/** Guarda o estado completo na nuvem (texto JSON, pelo mesmo motivo da sala). */
+export function gravarBackup(estado) {
+  const uid = uidAtual();
+  if (!uid) return Promise.resolve();
+  return set(ref(banco(), `mesas/${uid}/backup`), { json: JSON.stringify(estado), em: Date.now() });
+}
+
+/** Lê o backup da nuvem: { estado, em } ou null se não houver. */
+export async function lerBackup() {
+  const uid = uidAtual();
+  if (!uid) return null;
+  const foto = await get(ref(banco(), `mesas/${uid}/backup`));
+  const valor = foto.val();
+  return valor?.json ? { estado: JSON.parse(valor.json), em: valor.em } : null;
 }
 
 /** Avisa quando a conexão com o servidor cai ou volta (true = conectado). */

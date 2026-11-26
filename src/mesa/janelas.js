@@ -468,6 +468,8 @@ export function abrirOnline(ctx) {
     h('div', { class: 'm-linha' }, h('span', { class: 'm-rotulo-fixo' }, rotulo('SALA')), h('span', { class: 't-titulo titulo-dourado' }, o.sala)),
     h('div', { class: 'm-linha' }, h('span', { class: 'm-rotulo-fixo' }, rotulo('CONEXÃO')),
       rotulo(o.erro ? `ERRO: ${o.erro}` : o.conectado ? 'TRANSMITINDO' : 'RECONECTANDO…', o.erro ? 'perigo' : o.conectado ? 'dourado' : '')),
+    h('div', { class: 'm-linha' }, h('span', { class: 'm-rotulo-fixo' }, rotulo('BACKUP')),
+      rotulo(o.backupEm ? `NA NUVEM · ${quando(o.backupEm)}` : 'AINDA NÃO FEITO', o.backupEm ? 'dourado' : 'apagado')),
     tituloSecao('LINK DOS JOGADORES'),
     h('input', { class: 'm-campo t-corpo', readonly: true, value: link, style: { width: '330px' }, onfocus: (e) => e.target.select() }),
     h('div', { class: 't-rotulo m-dica' }, 'NOVA SALA = UM CÓDIGO NOVO; O LINK ANTIGO PARA DE RECEBER (BOM SE O LINK VAZAR).'),
@@ -485,6 +487,47 @@ export function abrirOnline(ctx) {
         abrirOnline(ctx);
       }),
       botao('COPIAR LINK', copiar, { tom: 'ouro' }),
+    ],
+  });
+}
+
+// ───────────── Backup na nuvem: recuperar ─────────────
+
+/** Data e hora legíveis ("26/11 às 21:40"). */
+function quando(ms) {
+  const d = new Date(ms);
+  const dois = (n) => String(n).padStart(2, '0');
+  return `${dois(d.getDate())}/${dois(d.getMonth() + 1)} às ${dois(d.getHours())}:${dois(d.getMinutes())}`;
+}
+
+/**
+ * A nuvem tem uma mesa mais nova que este navegador (navegador limpo, outro computador…).
+ * O mestre escolhe: recuperar a da nuvem ou manter a deste navegador (que vira o novo backup).
+ */
+export function oferecerRecuperarBackup(nuvem, aoEscolher) {
+  const e = nuvem.estado;
+  const herois = (e.combatentes ?? []).filter((c) => c.lado === 'heroi').length;
+  const inimigos = (e.combatentes ?? []).length - herois;
+  let escolhido = false;
+  const escolher = (valor) => {
+    escolhido = true;
+    fecharJanela();
+    aoEscolher(valor);
+  };
+  abrirJanela('BACKUP NA NUVEM', [
+    h('div', { class: 't-corpo' }, 'A nuvem tem uma mesa mais nova que a deste navegador.'),
+    h('div', { class: 'm-linha' }, h('span', { class: 'm-rotulo-fixo largo' }, rotulo('SALVA NA NUVEM')), h('span', { class: 't-corpo' }, quando(nuvem.em))),
+    h('div', { class: 'm-linha' }, h('span', { class: 'm-rotulo-fixo largo' }, rotulo('NELA')), h('span', { class: 't-corpo' }, `Sessão ${e.sessao ?? '?'} · ${herois} heróis · ${inimigos} inimigos`)),
+    h('div', { class: 't-rotulo m-dica' }, 'RECUPERAR TROCA A MESA DESTE NAVEGADOR PELA DA NUVEM (DÁ PARA DESFAZER). MANTER FAZ A MESA DESTE NAVEGADOR VIRAR O BACKUP.'),
+  ], {
+    largura: 360,
+    // Fechar sem escolher = manter a deste navegador (o mais seguro: não apaga nada da tela).
+    aoFechar: () => {
+      if (!escolhido) aoEscolher(false);
+    },
+    botoes: [
+      botao('MANTER A DESTE NAVEGADOR', () => escolher(false)),
+      botao('RECUPERAR DA NUVEM', () => escolher(true), { tom: 'ouro' }),
     ],
   });
 }

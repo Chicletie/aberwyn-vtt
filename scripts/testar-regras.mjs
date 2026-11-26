@@ -8,6 +8,7 @@
 //   escrever na sala ...... NEGADO
 //   ler/escrever ficha .... NEGADO
 //   ler donos/mestres ..... NEGADO
+//   ler/escrever backup ... NEGADO
 //   escrever na raiz ...... NEGADO
 // O teste com contas (mestre e jogador) é feito no "Rules Playground" do console (docs/ONLINE.md).
 
@@ -26,6 +27,8 @@ const testes = [
   ['escrever numa ficha', 'PUT', '/fichas/joshua/pv.json', false, { atual: 1, max: 1 }],
   ['ler a lista de donos', 'GET', '/donos.json', false],
   ['ler a lista de mestres', 'GET', '/mestres.json', false],
+  ['ler o backup de uma mesa', 'GET', '/mesas/qualquer-uid/backup.json', false],
+  ['escrever num backup', 'PUT', '/mesas/qualquer-uid/backup.json', false, { json: '{}', em: 1 }],
   ['escrever na raiz do banco', 'PATCH', '/.json', false, { invasao: true }],
 ];
 

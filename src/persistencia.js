@@ -10,12 +10,19 @@ import { migrar } from './estado.js';
 const CHAVE = 'aberwyn-vtt:estado';
 // Nome antigo do projeto (errante-vtt): lido uma vez e mudado para o novo, para não perder nada.
 const CHAVE_ANTIGA = 'errante-vtt:estado';
+const CHAVE_QUANDO = 'aberwyn-vtt:salvoEm'; // quando foi o último salvamento neste navegador
 const MAX_DESFAZER = 50;
+
+/** Quando a mesa salvou pela última vez neste navegador (0 = nunca). Compara com o backup da nuvem. */
+export function quandoSalvouLocal() {
+  return Number(localStorage.getItem(CHAVE_QUANDO)) || 0;
+}
 
 /** Salva o estado no navegador. */
 export function salvarLocal(estado) {
   try {
     localStorage.setItem(CHAVE, JSON.stringify(estado));
+    localStorage.setItem(CHAVE_QUANDO, String(Date.now()));
   } catch (erro) {
     // Pode falhar se o navegador estiver sem espaço ou em modo privado; a mesa continua funcionando.
     console.warn('[mesa] não consegui salvar no navegador:', erro);

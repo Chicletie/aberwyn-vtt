@@ -7,13 +7,14 @@
 import { aplicarPaletaNoCss } from '../paleta.js';
 import * as E from '../estado.js';
 import { abrirCanal } from '../canal.js';
-import { onlineConfigurado, entrar, sair, aoMudarLogin } from '../online.js';
+import { onlineConfigurado, entrar, sair, aoMudarLogin, gravarBackup, lerBackup } from '../online.js';
 import { urlPalcoPublicado } from '../config-online.js';
 import { carregarDados } from '../dados.js';
-import { salvarLocal, carregarLocal, criarPilhaDesfazer } from '../persistencia.js';
+import { salvarLocal, carregarLocal, criarPilhaDesfazer, quandoSalvouLocal } from '../persistencia.js';
 import { criarPalco } from '../palco/palco.js';
 import { prepararMolduras } from '../molduras.js';
 import { avisoRapido, haJanelaAberta, fecharJanela } from './ui.js';
+import { oferecerRecuperarBackup } from './janelas.js';
 import { desenharTopo, desenharEsquerda, desenharCentro, desenharDireita } from './secoes.js';
 
 aplicarPaletaNoCss();
@@ -92,6 +93,8 @@ const ctx = {
     sala: salaAtual,
     conectado: false,
     erro: null,
+    backupPronto: false, // só começa a fazer backup depois de conferir o da nuvem
+    backupEm: null, // quando foi o último backup na nuvem
   },
   entrar: (email, senha) => entrar(email, senha),
   sair: () => sair(),
@@ -142,8 +145,63 @@ function desfazer() {
 /** Depois de toda alteração: salva, avisa os palcos e redesenha a mesa. */
 function depois() {
   salvarLocal(ctx.estado);
+  agendarBackup();
   enviarAoPalco();
   desenhar();
+}
+
+// ───────────── Backup na nuvem ─────────────
+// Com o mestre logado, o estado COMPLETO vai para mesas/{uid}/backup (só a conta dele lê).
+// Freio: no máximo um backup a cada 3 s, sempre com o estado mais recente.
+
+const INTERVALO_BACKUP_MS = 3000;
+let backupAgendado = null;
+let ultimoBackup = 0;
+
+function agendarBackup() {
+  if (!ctx.online.logado || !ctx.online.backupPronto || backupAgendado) return;
+  const espera = Math.max(0, INTERVALO_BACKUP_MS - (Date.now() - ultimoBackup));
+  backupAgendado = setTimeout(fazerBackup, espera);
+}
+
+async function fazerBackup() {
+  backupAgendado = null;
+  ultimoBackup = Date.now();
+  try {
+    await gravarBackup(ctx.estado);
+    ctx.online.backupEm = Date.now();
+  } catch (erro) {
+    console.warn('[mesa] backup na nuvem falhou:', erro);
+    ctx.online.backupEm = null;
+  }
+}
+
+/**
+ * Ao entrar: compara o backup da nuvem com o deste navegador.
+ * Nuvem mais nova (ex.: navegador limpo, outro computador) → oferece recuperar.
+ * Senão → este navegador vira o backup.
+ */
+async function conferirBackupAoEntrar() {
+  let nuvem = null;
+  try {
+    nuvem = await lerBackup();
+  } catch (erro) {
+    console.warn('[mesa] não consegui ler o backup da nuvem:', erro);
+  }
+  ctx.online.backupPronto = true;
+  if (nuvem && nuvem.em > quandoSalvouLocal() + 1000) {
+    oferecerRecuperarBackup(nuvem, (escolheuNuvem) => {
+      if (escolheuNuvem) {
+        pilha.guardar(ctx.estado); // dá para DESFAZER a recuperação
+        ctx.estado = E.migrar(nuvem.estado);
+        avisoRapido('Mesa recuperada da nuvem.');
+      }
+      depois();
+      fazerBackup();
+    });
+    return;
+  }
+  fazerBackup();
 }
 
 /** Manda o estado público: sempre para as abas locais; para a sala online só com o mestre logado. */
@@ -293,7 +351,11 @@ async function iniciar() {
       ctx.online.logado = !!usuario;
       ctx.online.email = usuario?.email ?? '';
       ctx.online.erro = null;
-      if (usuario) enviarAoPalco(); // ao entrar, a sala recebe o estado atual na hora
+      ctx.online.backupPronto = false;
+      if (usuario) {
+        enviarAoPalco(); // ao entrar, a sala recebe o estado atual na hora
+        conferirBackupAoEntrar();
+      }
       desenhar();
     });
     canal.aoMudarConexao((conectado) => {

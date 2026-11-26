@@ -21,6 +21,16 @@
       }
     },
 
+    "mesas": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid && root.child('mestres').child(auth.uid).val() === true",
+        ".write": "auth != null && auth.uid === $uid && root.child('mestres').child(auth.uid).val() === true",
+        "backup": {
+          ".validate": "newData.hasChildren(['json', 'em']) && newData.child('json').isString() && newData.child('json').val().length < 2000000"
+        }
+      }
+    },
+
     "donos": {
       "$uid": {
         ".read": "auth != null && (auth.uid === $uid || root.child('mestres').child(auth.uid).val() === true)",
