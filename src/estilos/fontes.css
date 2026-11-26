@@ -1,0 +1,44 @@
+/*
+  Fontes pixel do projeto (todas com licença SIL Open Font License; ver assets/fontes/OFL.txt).
+  Os arquivos ficam em public/assets/fontes/, por isso o caminho começa com "/assets".
+
+  IMPORTANTE: cada fonte só fica nítida no seu tamanho "nativo" (1 pixel do desenho = 1 pixel
+  da grade de 480×270). Os tamanhos estão nas variáveis abaixo e NÃO podem ser arredondados.
+*/
+
+@font-face {
+  font-family: 'Jersey 15 PF';
+  src: url('/assets/fontes/jersey-15-pf.woff2') format('woff2');
+  font-display: block; /* espera a fonte carregar em vez de mostrar outra fonte por um instante */
+}
+
+@font-face {
+  font-family: 'Jersey 10 PF';
+  src: url('/assets/fontes/jersey-10-pf.woff2') format('woff2');
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Silkscreen';
+  src: url('/assets/fontes/silkscreen.woff2') format('woff2');
+  font-display: block;
+}
+
+:root {
+  --fonte-titulo: 'Jersey 15 PF', monospace;
+  --fonte-corpo: 'Jersey 10 PF', monospace;
+  --fonte-rotulo: 'Silkscreen', monospace;
+
+  /* Tamanhos nativos, em pixels da grade de 480×270 */
+  --tam-titulo: 27px;
+  --tam-corpo: 18.6667px; /* = 1400/75; não arredondar */
+  --tam-rotulo: 8px;
+}
+
+/* Desliga a suavização das letras (onde o navegador permite), para os pixels ficarem duros. */
+.pixel {
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  font-smooth: never;
+  image-rendering: pixelated;
+}
