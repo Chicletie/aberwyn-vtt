@@ -5,52 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mesa do mestre · errante-vtt</title>
     <link rel="stylesheet" href="/src/estilos/fontes.css" />
+    <link rel="stylesheet" href="/src/estilos/palco.css" />
     <link rel="stylesheet" href="/src/estilos/mesa.css" />
   </head>
-  <body>
-    <!-- Mesa MÍNIMA do Marco 1: só para testar o palco. A mesa completa é o Marco 2. -->
-    <header>
-      <h1>Mesa <small>(mínima · Marco 1)</small></h1>
-      <a class="botao" href="./palco.html" target="_blank">Abrir palco ↗</a>
-      <span id="modo"></span>
-    </header>
-
-    <section class="linha">
-      <span>RODADA <b id="rodada"></b></span>
-      <button data-acao="nova-rodada">Nova rodada</button>
-      <span>VEZ:</span>
-      <button data-acao="vez" data-lado="herois">Heróis</button>
-      <button data-acao="vez" data-lado="inimigos">Inimigos</button>
-      <button data-acao="encerrar-turno">Encerrar turno</button>
-    </section>
-
-    <section class="linha">
-      <label>Fita: <input id="texto-banner" size="40" placeholder="Jonaz usa Chama!" /></label>
-      <button data-acao="banner">Mostrar</button>
-      <button data-acao="limpar-banner">Limpar</button>
-    </section>
-
-    <section class="linha">
-      <label>Menu de quem age:
-        <select id="acao-menu"></select>
-      </label>
-      <label>Submenu: <select id="item-submenu"></select></label>
-    </section>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Agindo</th><th>Nome</th><th>Lado</th><th>PV</th><th>Número</th><th></th>
-          <th>PM</th><th>Condições</th><th>Turnos</th><th>Revelado</th>
-        </tr>
-      </thead>
-      <tbody id="elenco"></tbody>
-    </table>
-
-    <p class="dica">
-      Teste: abra o palco, aperte F12 no palco e veja no Console que o inimigo escondido chega como
-      "???". Enter no campo "Número" aplica dano.
-    </p>
+  <body class="pixel">
+    <!-- A mesa é uma grade de 960×540 (como as prévias), ampliada por número inteiro pelo JS.
+         Cada área é desenhada por src/mesa/secoes.js. -->
+    <div id="mesa-suporte">
+      <div id="mesa">
+        <header id="m-topo"></header>
+        <section id="m-esquerda" class="m-coluna"></section>
+        <section id="m-centro"></section>
+        <section id="m-direita" class="m-coluna"></section>
+      </div>
+    </div>
+    <a id="m-abrir-palco" class="t-rotulo" href="./palco.html" target="_blank">ABRIR PALCO ↗</a>
     <script type="module" src="/src/mesa/main.js"></script>
   </body>
 </html>

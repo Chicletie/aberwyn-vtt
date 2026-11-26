@@ -1,100 +1,725 @@
-/* Estilo provisório da mesa mínima (Marco 1). A identidade "Pena e Fio" na mesa vem no Marco 2. */
+/*
+  Mesa do mestre: grade de 960×540 (as prévias são essa grade em 2×), mesma identidade do palco,
+  com plaquinhas no lugar das janelas ornamentadas. Medidas em pixels da grade; o zoom amplia.
+  Cores: variáveis geradas por src/paleta.js.
+*/
 
+html,
 body {
   margin: 0;
-  padding: 16px 24px;
-  background: var(--cor-fundo-escuro);
+  background: var(--cor-contorno);
   color: var(--cor-texto);
-  font-family: system-ui, sans-serif;
-  font-size: 14px;
 }
 
-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+body {
+  overflow-x: hidden;
 }
 
-h1 {
-  font-size: 20px;
-  margin: 0 0 8px;
+#mesa {
+  position: relative;
+  width: 960px;
+  height: 540px;
+  background: var(--cor-contorno);
+  overflow: hidden;
 }
 
-h1 small {
-  color: var(--cor-texto-secundario);
-  font-weight: normal;
-  font-size: 13px;
+#mesa * {
+  box-sizing: border-box;
 }
 
-.linha {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin: 8px 0;
+#mesa [hidden] {
+  display: none !important;
 }
 
-button,
-.botao,
-input,
-select {
-  font: inherit;
-  color: var(--cor-texto);
-  background: var(--cor-janela);
-  border: 1px solid var(--cor-costura);
-  border-radius: 3px;
-  padding: 3px 8px;
-  text-decoration: none;
-}
-
-button:hover,
-.botao:hover {
-  border-color: var(--cor-dourado);
-}
-
-button.ligado {
-  background: var(--cor-janela-claro);
-  border-color: var(--cor-dourado);
-}
-
-input[type='number'] {
-  width: 56px;
-}
-
-table {
-  border-collapse: collapse;
-  margin-top: 12px;
-}
-
-th,
-td {
-  padding: 4px 6px;
-  border-bottom: 1px solid var(--cor-linha-escura);
-  text-align: left;
-  white-space: nowrap;
-}
-
-th {
-  color: var(--cor-texto-secundario);
-  font-weight: normal;
+/* Link fora da grade (canto da página), para abrir o palco numa aba. */
+#m-abrir-palco {
+  position: fixed;
+  right: 8px;
+  bottom: 6px;
+  color: var(--cor-dourado);
   font-size: 12px;
 }
 
-.faixa-cor {
-  display: inline-block;
-  width: 4px;
-  height: 12px;
-  margin-right: 6px;
-  vertical-align: middle;
+/* ───────────── Áreas ───────────── */
+
+#m-topo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 960px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px;
+  background: var(--cor-fundo-escuro);
+  border-bottom: 1px solid var(--cor-linha-escura);
 }
 
-.cond {
-  padding: 1px 4px;
-  font-size: 11px;
+.m-coluna {
+  position: absolute;
+  top: 31px;
+  height: 504px;
+  padding: 4px 6px 6px;
+  background: var(--cor-janela);
+  border: 1px solid var(--cor-borda);
+  box-shadow: 0 0 0 1px var(--cor-contorno);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--cor-costura) var(--cor-fundo-escuro);
+}
+
+#m-esquerda {
+  left: 4px;
+  width: 232px;
+}
+
+#m-direita {
+  left: 724px;
+  width: 232px;
+}
+
+#m-centro {
+  position: absolute;
+  left: 240px;
+  top: 31px;
+  width: 480px;
+  height: 504px;
+}
+
+.m-cabecalho-palco {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 15px;
+  margin-bottom: 1px;
+}
+
+.m-palco-previa {
+  position: relative;
+  width: 480px;
+  height: 270px;
+  box-shadow: 0 0 0 1px var(--cor-borda), 0 0 0 2px var(--cor-contorno);
+}
+
+.m-painel-acao {
+  position: absolute;
+  left: 0;
+  top: 292px;
+  width: 480px;
+  height: 212px;
+  padding: 2px 8px 6px;
+  background: var(--cor-janela);
+  border: 1px solid var(--cor-borda);
+  box-shadow: 0 0 0 1px var(--cor-contorno);
+  overflow-y: auto;
+}
+
+/* ───────────── Peças ───────────── */
+
+.m-logo {
+  color: var(--cor-dourado);
+  margin: -4px 4px 0 0;
+}
+
+.m-sessao {
+  cursor: pointer;
   margin-right: 2px;
 }
 
-.dica {
+.m-conexao {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-right: 6px;
+}
+
+.m-ponto {
+  width: 4px;
+  height: 4px;
+  background: var(--cor-pv-brilho);
+}
+
+.m-rodada {
+  margin: 0 2px 0 6px;
+}
+
+.m-espaco {
+  flex: 1;
+}
+
+.m-titulo-secao {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 6px 0 3px;
+}
+
+.m-titulo-secao::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--cor-linha-escura);
+}
+
+.m-linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-height: 19px;
+  margin-bottom: 3px;
+}
+
+.m-linha-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: 4px;
+}
+
+.m-dica {
+  display: block;
+  white-space: normal;
+  line-height: 11px;
+  color: var(--cor-costura);
+  margin: 2px 0 4px;
+}
+
+.t-rotulo.apagado {
+  color: var(--cor-costura);
+}
+
+.t-rotulo.dourado,
+.titulo-dourado {
+  color: var(--cor-dourado);
+}
+
+.t-rotulo.perigo {
+  color: var(--cor-pv-crise);
+}
+
+.sigla-pv {
+  color: var(--cor-rotulo-pv);
+}
+
+.sigla-pm {
+  color: var(--cor-rotulo-pm);
+}
+
+.m-rotulo-fixo {
+  display: inline-block;
+  width: 62px;
+}
+
+.m-rotulo-fixo.largo {
+  width: 110px;
+}
+
+/* Botão plaquinha */
+.m-botao {
+  font-family: var(--fonte-rotulo);
+  font-size: var(--tam-rotulo);
+  line-height: 9px;
+  text-transform: uppercase;
+  color: var(--cor-texto);
+  background: var(--cor-fundo-escuro);
+  border: 1px solid var(--cor-borda);
+  padding: 2px 4px;
+  margin: 0;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.m-botao:hover:not(:disabled) {
+  border-color: var(--cor-dourado);
+}
+
+.m-botao.ligado {
+  color: var(--cor-dourado);
+  border-color: var(--cor-dourado);
+  background: var(--cor-janela);
+}
+
+.m-botao.ouro {
+  color: var(--cor-contorno);
+  background: var(--cor-dourado);
+  border-color: var(--cor-dourado);
+}
+
+.m-botao.perigo {
+  color: var(--cor-pv-crise);
+  border-color: var(--cor-inimigo);
+}
+
+.m-botao.apagado {
   color: var(--cor-texto-secundario);
-  margin-top: 16px;
+  border-color: var(--cor-costura);
+}
+
+.m-botao.mini {
+  padding: 1px 2px;
+  min-width: 11px;
+}
+
+.m-botao:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.m-botao.primario {
+  font-family: var(--fonte-titulo);
+  font-size: var(--tam-corpo);
+  line-height: 19px;
+  height: 23px;
+  padding: 0 24px;
+  color: var(--cor-contorno);
+  background: var(--cor-dourado);
+  border: 1px solid var(--cor-contorno);
+  box-shadow: 0 0 0 1px var(--cor-dourado);
+  text-transform: none;
+}
+
+.m-seletor {
+  display: inline-flex;
+  gap: 2px;
+}
+
+/* Campos */
+.m-campo {
+  height: 17px;
+  line-height: 15px;
+  padding: 0 2px;
+  margin: 0;
+  color: var(--cor-texto);
+  background: var(--cor-fundo-escuro);
+  border: 1px solid var(--cor-linha-escura);
+  outline: none;
+}
+
+.m-campo:focus {
+  border-color: var(--cor-dourado);
+}
+
+.m-campo.numero {
+  text-align: right;
+}
+
+.m-campo.multilinha {
+  height: 36px;
+  line-height: 15px;
+  white-space: normal;
+  resize: none;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.m-campo::placeholder {
+  color: var(--cor-costura);
+}
+
+select.m-campo {
+  padding: 0;
+}
+
+.m-campo-texto {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.m-aviso-limite {
+  color: var(--cor-pv-crise);
+}
+
+.m-marcador {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+}
+
+.m-marcador input {
+  margin: 0;
+  accent-color: var(--cor-dourado);
+}
+
+/* Condições como quadradinhos 9×9 (ícone 7×7 dentro) */
+.m-condicoes {
+  display: inline-flex;
+  gap: 1px;
+}
+
+.m-cond {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: 1px solid var(--cor-linha-escura);
+  background-color: var(--cor-fundo-escuro);
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  cursor: pointer;
+  /* Apagada: o ícone aparece bem fraco, só para lembrar qual é. */
+  filter: grayscale(1) opacity(0.25);
+}
+
+.m-cond.ativa {
+  filter: none;
+  border-color: var(--cor-dourado);
+}
+
+.m-faixa-cor {
+  display: inline-block;
+  width: 2px;
+  height: 11px;
+  flex: none;
+}
+
+.m-rosto {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  color: var(--cor-contorno);
+  line-height: 19px;
+}
+
+.m-rosto-sublinhado {
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 24px;
+  height: 1px;
+}
+
+/* ───────────── Heróis e inimigos ───────────── */
+
+.m-heroi {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 40px;
+  padding: 3px;
+  margin-bottom: 2px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.m-heroi:hover,
+.m-inimigo:hover {
+  border-color: var(--cor-linha-escura);
+}
+
+.m-heroi.agindo,
+.m-inimigo.agindo {
+  background: var(--cor-fundo-escuro);
+  border-color: var(--cor);
+}
+
+.m-heroi.caido .m-nome,
+.m-inimigo.caido .m-nome {
+  color: var(--cor-costura);
+}
+
+.m-heroi-meio {
+  display: flex;
+  flex-direction: column;
+  width: 64px;
+  overflow: hidden;
+}
+
+.m-heroi .m-nome {
+  line-height: 15px;
+  overflow: hidden;
+}
+
+.m-jogador {
+  line-height: 10px;
+  margin-bottom: 1px;
+}
+
+.m-recursos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.m-recurso {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.m-recurso .sigla-pv,
+.m-recurso .sigla-pm {
+  width: 12px;
+}
+
+.m-max {
+  width: 22px;
+  line-height: 15px;
+  color: var(--cor-texto-secundario);
+}
+
+.m-editar {
+  align-self: flex-start;
+}
+
+.m-inimigo {
+  padding: 2px 3px;
+  margin-bottom: 2px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.m-inimigo-linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px;
+  min-height: 18px;
+}
+
+.m-inimigo .m-nome {
+  line-height: 15px;
+  white-space: nowrap;
+  max-width: 84px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.m-turnos {
+  color: var(--cor-dourado);
+}
+
+.m-chegando {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.7;
+  margin-bottom: 2px;
+}
+
+.m-historico .t-rotulo {
+  display: block;
+  white-space: normal;
+  line-height: 11px;
+  color: var(--cor-texto-secundario);
+}
+
+/* ───────────── AÇÃO ───────────── */
+
+.m-seta {
+  color: var(--cor-dourado);
+  line-height: 15px;
+}
+
+.m-alvo {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-right: 4px;
+}
+
+.m-linha-executar {
+  margin: 6px 0 2px;
+}
+
+/* ───────────── Direita ───────────── */
+
+.m-frase {
+  display: block;
+  line-height: 15px;
+  color: var(--cor-texto-secundario);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+
+.m-avisos-prontos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-bottom: 4px;
+}
+
+.m-avisos-prontos .m-botao:not(.apagado) {
+  font-family: var(--fonte-corpo);
+  font-size: var(--tam-corpo);
+  line-height: 15px;
+  text-transform: none;
+  padding: 0 4px;
+  background: var(--cor-janela);
+}
+
+.m-botao.tom-dourado {
+  border-color: var(--cor-dourado);
+}
+
+.m-botao.tom-vermelho {
+  border-color: var(--cor-inimigo);
+}
+
+.m-botao.tom-vinho {
+  border-color: var(--cor-vilao);
+  background: var(--cor-vilao) !important;
+}
+
+/* ───────────── Janelas (modais) ───────────── */
+
+.m-fundo-janela {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(9 10 20 / 0.6);
+}
+
+.m-janela {
+  max-height: 520px;
+  overflow-y: auto;
+  padding: 4px 8px 8px;
+  border: 6px solid transparent;
+  border-image: url('/assets/ui/janela.png') 6 fill / 6px repeat;
+}
+
+.m-janela-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.m-janela-botoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.m-opcao-fim {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding: 3px 6px 4px;
+  margin-bottom: 3px;
+  background: var(--cor-fundo-escuro);
+  border: 1px solid var(--cor-linha-escura);
+  cursor: pointer;
+  text-align: left;
+}
+
+.m-opcao-fim:hover {
+  border-color: var(--cor-dourado);
+}
+
+.m-opcao-fim .t-corpo {
+  line-height: 15px;
+}
+
+.m-opcao-fim.perigo .t-corpo {
+  color: var(--cor-pv-crise);
+}
+
+.m-opcao-fim .t-rotulo {
+  color: var(--cor-costura);
+}
+
+.m-grade-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-bottom: 6px;
+}
+
+.m-paleta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  width: 260px;
+}
+
+.m-cor {
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  border: 1px solid var(--cor-contorno);
+  cursor: pointer;
+}
+
+.m-cor.escolhida {
+  outline: 1px solid var(--cor-dourado);
+  border-color: var(--cor-texto);
+}
+
+.m-duas-colunas {
+  display: flex;
+  gap: 12px;
+}
+
+.m-coluna-formacao {
+  flex: 1;
+}
+
+.m-nome-formacao {
+  width: 70px;
+  line-height: 15px;
+}
+
+/* Editor de cenário */
+.m-editor-chao {
+  position: relative;
+  width: 480px;
+  height: 270px;
+  margin-bottom: 4px;
+}
+
+.m-sobreposicao-chao {
+  position: absolute;
+  inset: 0;
+  z-index: 20; /* por cima das camadas do palco */
+}
+
+.m-linha-chao {
+  position: absolute;
+  left: 0;
+  width: 480px;
+  height: 1px;
+  background: var(--cor-dourado);
+  cursor: ns-resize;
+  touch-action: none;
+}
+
+.m-linha-chao.base {
+  background: var(--cor-pv-crise);
+}
+
+/* Área maior para pegar a linha com o mouse. */
+.m-linha-chao::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -4px;
+  height: 9px;
+}
+
+/* Aviso rápido no canto */
+.m-aviso-rapido {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 200;
+  padding: 2px 8px;
+  line-height: 15px;
+  background: var(--cor-fundo-escuro);
+  border: 1px solid var(--cor-dourado);
+  box-shadow: 0 0 0 1px var(--cor-contorno);
 }

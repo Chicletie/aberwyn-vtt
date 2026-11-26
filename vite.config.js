@@ -17,7 +17,7 @@ export default defineConfig({
     },
   },
   server: {
-    // Abre o navegador sozinho quando você roda "npm run dev".
-    open: '/palco.html',
+    // Abre a mesa sozinha quando você roda "npm run dev".
+    open: '/',
   },
 });
