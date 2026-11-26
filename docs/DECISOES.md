@@ -72,6 +72,8 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - Rosto na faixa de turnos: quadrado 24×24 na cor com a inicial.
 
 ### Coisas que ajustei da SPEC (registrar para o Cadu decidir)
-- **Fita com 2 linhas** passa da faixa de HUD (32–58): uma linha já ocupa 19 px, duas ocupam 34. Fica por cima do campo nesses casos.
+- **Fita mais larga (pedido do Cadu):** a SPEC limita a 300 px para sobrar o canto dos ícones de relógio. Como os relógios só chegam em janeiro, a fita agora vai até **440 px** (x 20–460) antes de quebrar a linha. Quando houver relógio visível, volta a 300 (constante `LARGURA_MAX_FITA` em `renderizar.js`).
+- **Fita com 2 linhas** passa da faixa de HUD (32–58): uma linha já ocupa 19 px, duas ocupam 34. Fica por cima do campo nesses casos. Com 440 px, isso quase não acontece.
+- **Fita some animada:** as caudas recolhem e a faixa fecha para o centro (~0,2 s). Se vier outra mensagem, a nova só abre depois que a antiga fechou.
 - **Status na coluna larga** mostra `atual/máx` só do PV; o PM aparece pela barra (o número do PM vem com o balão de clique, no Marco 2).
 - **Números flutuantes** nascem ao lado do peito do alvo, para não cobrir a fita.

@@ -307,14 +307,32 @@ function atualizarLutador(el, c, pe, agindo) {
 
 // ───────────── Fita (caixa de mensagem, 32–58) ─────────────
 
+/**
+ * Largura máxima da fita. A SPEC pede 300 px para sobrar o canto direito para os ícones de
+ * relógio (x≈404–476). Os relógios só chegam em janeiro, então por enquanto a fita pode usar
+ * quase a tela toda: 440 px (x 20–460; com as caudas, 6–474). Quando houver relógio visível,
+ * voltar a 300. Ver DECISOES.
+ */
+const LARGURA_MAX_FITA = 440;
+const DURACAO_FECHAR_FITA = 200;
+
 function desenharBanner(banner) {
   const chave = banner ? banner.texto + '|' + banner.cor : null;
   if (chave === bannerAtual) return; // mesma mensagem: não reabre a animação
   bannerAtual = chave;
-  camadas.hud.replaceChildren();
+
+  // A fita antiga não some seca: as caudas recolhem e a faixa fecha para o centro (~0,2 s).
+  const antigas = [...camadas.hud.querySelectorAll('.fita:not(.saindo)')];
+  for (const antiga of antigas) {
+    antiga.classList.add('saindo');
+    setTimeout(() => antiga.remove(), DURACAO_FECHAR_FITA + 20);
+  }
   if (!banner) return;
+  // Se havia fita na tela, a nova só começa a abrir depois que a antiga fechou.
+  const atraso = antigas.length ? DURACAO_FECHAR_FITA : 0;
 
   const fita = criar('div', 'fita', camadas.hud);
+  fita.style.setProperty('--atraso', `${atraso}ms`);
   const caudaEsq = criar('div', 'fita-cauda esquerda', fita);
   const caudaDir = criar('div', 'fita-cauda direita', fita);
   const faixa = criar('div', 'fita-faixa', fita);
@@ -330,19 +348,20 @@ function desenharBanner(banner) {
     for (const letra of palavra) {
       const span = criar('span', 'letra', spanPalavra);
       span.textContent = letra;
-      span.style.animationDelay = `${300 + i++ * 20}ms`;
+      span.style.animationDelay = `${atraso + 300 + i++ * 20}ms`;
     }
   });
 
-  // Largura automática: texto + 8 px de cada lado, no máximo 300; passou disso, quebra a linha.
+  // Largura automática: texto + 8 px de cada lado, até o máximo; passou disso, quebra a linha.
   // (mede o texto numa linha só, antes de dar largura à faixa)
   texto.style.width = 'max-content';
   const larguraTexto = larguraNaGrade(texto);
-  const largura = Math.min(300, larguraTexto + 16 + 2);
-  const linhas = larguraTexto + 18 > 300 ? 2 : 1;
+  const largura = Math.min(LARGURA_MAX_FITA, larguraTexto + 16 + 2);
+  const linhas = larguraTexto + 18 > LARGURA_MAX_FITA ? 2 : 1;
   const altura = 19 + (linhas - 1) * 15;
   texto.classList.toggle('quebra', linhas > 1);
-  texto.style.width = `${largura - 18}px`;
+  // +1 px de folga: a medida é arredondada e, sem folga, a última palavra podia cair na linha de baixo.
+  texto.style.width = `${largura - 18 + 1}px`;
   const x = 240 - Math.floor(largura / 2);
   posicionar(fita, x, 35, largura, altura);
   posicionar(faixa, 0, 0, largura, altura);

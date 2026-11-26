@@ -302,12 +302,12 @@ body {
     inset 0 -1px 0 var(--cor-fita),
     inset 0 2px 0 var(--cor-janela-claro);
   /* Estica a partir do centro (~0,3 s), em passos. */
-  animation: fita-estica 300ms steps(10) both;
+  animation: fita-estica 300ms steps(10) var(--atraso, 0ms) both;
 }
 
 .fita-cauda {
   background-repeat: no-repeat;
-  animation: aparece 1ms 300ms both;
+  animation: aparece 1ms calc(var(--atraso, 0ms) + 300ms) both;
 }
 
 .fita-texto {
@@ -330,6 +330,20 @@ body {
 .fita-texto .letra {
   display: inline-block;
   animation: letra-entra 80ms linear both;
+}
+
+/* Saída: as caudas recolhem na hora e a faixa fecha para o centro, levando o texto junto. */
+.fita.saindo .fita-cauda {
+  visibility: hidden;
+}
+
+.fita.saindo .fita-faixa {
+  animation: fita-fecha 200ms steps(8) forwards;
+}
+
+@keyframes fita-fecha {
+  from { clip-path: inset(0 0 0 0); }
+  to { clip-path: inset(0 50% 0 50%); }
 }
 
 @keyframes fita-estica {
