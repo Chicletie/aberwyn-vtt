@@ -1,0 +1,100 @@
+/* Estilo provisório da mesa mínima (Marco 1). A identidade "Pena e Fio" na mesa vem no Marco 2. */
+
+body {
+  margin: 0;
+  padding: 16px 24px;
+  background: var(--cor-fundo-escuro);
+  color: var(--cor-texto);
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+h1 {
+  font-size: 20px;
+  margin: 0 0 8px;
+}
+
+h1 small {
+  color: var(--cor-texto-secundario);
+  font-weight: normal;
+  font-size: 13px;
+}
+
+.linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+button,
+.botao,
+input,
+select {
+  font: inherit;
+  color: var(--cor-texto);
+  background: var(--cor-janela);
+  border: 1px solid var(--cor-costura);
+  border-radius: 3px;
+  padding: 3px 8px;
+  text-decoration: none;
+}
+
+button:hover,
+.botao:hover {
+  border-color: var(--cor-dourado);
+}
+
+button.ligado {
+  background: var(--cor-janela-claro);
+  border-color: var(--cor-dourado);
+}
+
+input[type='number'] {
+  width: 56px;
+}
+
+table {
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+th,
+td {
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--cor-linha-escura);
+  text-align: left;
+  white-space: nowrap;
+}
+
+th {
+  color: var(--cor-texto-secundario);
+  font-weight: normal;
+  font-size: 12px;
+}
+
+.faixa-cor {
+  display: inline-block;
+  width: 4px;
+  height: 12px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.cond {
+  padding: 1px 4px;
+  font-size: 11px;
+  margin-right: 2px;
+}
+
+.dica {
+  color: var(--cor-texto-secundario);
+  margin-top: 16px;
+}
