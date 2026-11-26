@@ -1,0 +1,19 @@
+# Pacotes baixados pelo npm (são recriados com "npm install"; não vão para o Git)
+node_modules/
+
+# Versão publicável gerada por "npm run build"
+dist/
+
+# Arquivos de sistema e de editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/*
+!.vscode/extensions.json
+
+# Logs
+*.log
+
+# Chaves e configurações secretas (Marco 3)
+.env
+.env.*
