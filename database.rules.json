@@ -1,0 +1,38 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "mestres": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": false
+      }
+    },
+
+    "salas": {
+      "$sala": {
+        ".read": true,
+        ".write": "auth != null && root.child('mestres').child(auth.uid).val() === true",
+        ".validate": "$sala.matches(/^[A-Z0-9]{4,8}$/)",
+        "publico": {
+          ".validate": "newData.hasChildren(['json', 'em']) && newData.child('json').isString() && newData.child('json').val().length < 200000"
+        }
+      }
+    },
+
+    "donos": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('mestres').child(auth.uid).val() === true)",
+        ".write": "auth != null && root.child('mestres').child(auth.uid).val() === true"
+      }
+    },
+
+    "fichas": {
+      "$heroiId": {
+        ".read": "auth != null && (root.child('mestres').child(auth.uid).val() === true || root.child('donos').child(auth.uid).val() === $heroiId)",
+        ".write": "auth != null && (root.child('mestres').child(auth.uid).val() === true || root.child('donos').child(auth.uid).val() === $heroiId)"
+      }
+    }
+  }
+}
