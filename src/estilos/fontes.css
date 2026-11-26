@@ -42,3 +42,47 @@
   font-smooth: never;
   image-rendering: pixelated;
 }
+
+/* Classes de texto (palco e mesa). line-height = "subida + descida" de cada fonte, para a
+   linha de base cair num pixel inteiro (ver DECISOES, "Medidas das fontes"). */
+.t-titulo {
+  font-family: var(--fonte-titulo);
+  font-size: var(--tam-titulo);
+  line-height: 30px;
+  white-space: nowrap;
+}
+
+.t-corpo {
+  font-family: var(--fonte-corpo);
+  font-size: var(--tam-corpo);
+  line-height: 19px;
+  white-space: nowrap;
+  color: var(--cor-texto);
+}
+
+.t-rotulo {
+  font-family: var(--fonte-rotulo);
+  font-size: var(--tam-rotulo);
+  line-height: 9px;
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: var(--cor-texto-secundario);
+}
+
+/* Letra por letra (fita, aviso, diálogo): cada letra nasce 1 px abaixo, sobe e assenta.
+   Sem valores intermediários (nada de meio transparente), como quadros de animação. */
+.palavra {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.letra {
+  display: inline-block;
+  animation: letra-entra 80ms linear both;
+}
+
+@keyframes letra-entra {
+  0%, 49.9% { opacity: 0; transform: translateY(1px); }
+  50%, 99.9% { opacity: 1; transform: translateY(1px); }
+  100% { opacity: 1; transform: translateY(0); }
+}

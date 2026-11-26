@@ -6,7 +6,8 @@
 
 import { aplicarPaletaNoCss } from '../paleta.js';
 import { abrirCanal } from '../canal.js';
-import { renderizar } from './renderizar.js';
+import { criarPalco } from './palco.js';
+import { carregarDados } from '../dados.js';
 
 aplicarPaletaNoCss();
 
@@ -57,12 +58,14 @@ window.addEventListener('keydown', (evento) => {
 
 // ───────────── Canal: recebe o estado da mesa ─────────────
 
-// Espera as fontes pixel carregarem antes de desenhar (a largura das fitas depende delas).
-const fontesProntas = Promise.all([
+// Espera as fontes pixel e os dados dos cenários antes de desenhar
+// (a largura das fitas depende das fontes; a faixa de chão depende dos cenários).
+const pronto = Promise.all([
   document.fonts.load('27px "Jersey 15 PF"'),
   document.fonts.load('18.6667px "Jersey 10 PF"'),
   document.fonts.load('8px "Silkscreen"'),
-]);
+  carregarDados(),
+]).then(([, , , dados]) => criarPalco(palco, { cenarios: dados.cenarios, interativo: true }));
 
 const canal = abrirCanal('local');
 
@@ -70,11 +73,10 @@ canal.aoReceberEstado(async (estado) => {
   // Fica no console para conferir com F12 o que REALMENTE chegou (e o que não chegou).
   console.log('[palco] estado recebido:', estado);
   window.ultimoEstado = estado;
-  await fontesProntas;
-  renderizar(estado);
+  (await pronto).renderizar(estado);
 });
 
-fontesProntas.then(() => {
-  renderizar(null); // "Aguardando a mesa…" até chegar o primeiro estado
+pronto.then((p) => {
+  p.renderizar(null); // "Aguardando a mesa…" até chegar o primeiro estado
   canal.pedirEstado();
 });

@@ -1,0 +1,30 @@
+/*
+  Estilos da PÁGINA do palco (palco.html): fundo escuro em volta e o modo debug.
+  O palco em si (que também aparece dentro da mesa) está em palco.css.
+*/
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--cor-contorno, #090a14); /* faixa escura em volta do palco (letterbox) */
+}
+
+#suporte {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+/* Modo debug (tecla D): mostra a escala real e o dpr num canto. */
+#debug {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  margin: 0;
+  z-index: 9999;
+  color: var(--cor-pv-brilho);
+  background: var(--cor-contorno);
+  padding: 2px;
+}

@@ -1,24 +1,10 @@
 /*
   Estilos do palco (a tela que os jogadores veem).
-  Todas as medidas estão em pixels da grade de 480×270; o zoom do #palco amplia tudo junto.
+  Todas as medidas estão em pixels da grade de 480×270; o zoom amplia tudo junto.
   As cores vêm de variáveis geradas por src/paleta.js (--cor-…).
 */
 
-html,
-body {
-  margin: 0;
-  height: 100%;
-  overflow: hidden;
-  background: var(--cor-contorno, #090a14); /* faixa escura em volta do palco (letterbox) */
-}
-
-#suporte {
-  position: absolute;
-  left: 0;
-  top: 0;
-}
-
-#palco {
+.palco {
   position: relative;
   width: 480px;
   height: 270px;
@@ -28,40 +14,14 @@ body {
 }
 
 /* Tudo dentro do palco é posicionado na grade, em pixels inteiros. */
-#palco div {
+.palco div {
   position: absolute;
   box-sizing: border-box;
   image-rendering: pixelated;
 }
 
-#palco [hidden] {
+.palco [hidden] {
   display: none;
-}
-
-/* ───────────── Texto (tamanhos nativos; ver fontes.css) ───────────── */
-
-.t-titulo {
-  font-family: var(--fonte-titulo);
-  font-size: var(--tam-titulo);
-  line-height: 30px; /* = subida + descida da fonte: a linha de base cai num pixel inteiro */
-  white-space: nowrap;
-}
-
-.t-corpo {
-  font-family: var(--fonte-corpo);
-  font-size: var(--tam-corpo);
-  line-height: 19px;
-  white-space: nowrap;
-  color: var(--cor-texto);
-}
-
-.t-rotulo {
-  font-family: var(--fonte-rotulo);
-  font-size: var(--tam-rotulo);
-  line-height: 9px; /* idem: 8px deixava a letra em meio pixel */
-  white-space: nowrap;
-  text-transform: uppercase;
-  color: var(--cor-texto-secundario);
 }
 
 /* ───────────── Janelas (molduras 9-slice desenháveis à mão) ───────────── */
@@ -80,12 +40,7 @@ body {
 
 /* ───────────── Cenário e campo ───────────── */
 
-.cenario,
-.campo,
-.hud,
-.painel,
-.flutuantes,
-.cortina {
+.palco .camada {
   left: 0;
   top: 0;
   width: 480px;
@@ -193,16 +148,13 @@ body {
   left: 0;
   top: 0;
   height: 2px;
-  width: calc(round(down, var(--fracao) * 24px, 1px));
+  width: var(--cheio);
   background: var(--cor-pv);
 }
 
 /* ───────────── Faixa de turnos (0–32) ───────────── */
 
-.faixa-turnos {
-  left: 0;
-  top: 0;
-  width: 480px;
+.palco .camada.faixa {
   height: 32px;
   background: var(--cor-fundo-escuro);
   border-bottom: 1px solid var(--cor-contorno);
@@ -222,7 +174,7 @@ body {
 
 /* O bloco só ganha moldura quando é a vez daquele lado. */
 .bloco-turnos {
-  border-image: none;
+  border: 3px solid transparent;
 }
 
 .bloco-turnos.da-vez {
@@ -322,16 +274,6 @@ body {
   top: 1px;
 }
 
-.fita-texto .palavra {
-  display: inline-block;
-  white-space: nowrap;
-}
-
-.fita-texto .letra {
-  display: inline-block;
-  animation: letra-entra 80ms linear both;
-}
-
 /* Saída: as caudas recolhem na hora e a faixa fecha para o centro, levando o texto junto. */
 .fita.saindo .fita-cauda {
   visibility: hidden;
@@ -356,13 +298,6 @@ body {
   to { opacity: 1; }
 }
 
-/* Cada letra nasce 1 px abaixo, sobe e assenta. Sem valores intermediários (nada de meio
-   transparente): cada trecho segura um valor fixo, como quadros de animação. */
-@keyframes letra-entra {
-  0%, 49.9% { opacity: 0; transform: translateY(1px); }
-  50%, 99.9% { opacity: 1; transform: translateY(1px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
 
 /* ───────────── Painel (200–270) ───────────── */
 
@@ -550,24 +485,309 @@ body {
 
 /* ───────────── Cortina ───────────── */
 
-.cortina {
-  background: var(--cor-contorno);
+
+
+/* ───────────── Cenário ───────────── */
+
+.imagem-cenario {
+  background-repeat: no-repeat;
+  background-position: 0 0;
 }
 
-.janela-cortina .t-corpo {
-  left: 10px;
-  top: 6px;
+/* ───────────── Fita de frase de efeito (estilo apagado) ───────────── */
+
+.fita.efeito .fita-faixa {
+  background: var(--cor-fundo-escuro);
+  box-shadow: inset 0 1px 0 var(--cor-linha-escura), inset 0 -1px 0 var(--cor-linha-escura);
 }
 
-/* ───────────── Debug (tecla D) ───────────── */
+.fita.efeito .fita-texto {
+  color: var(--cor-texto-secundario);
+}
 
-#debug {
+/* ───────────── Alvos e consulta ───────────── */
+
+/* Pena apontando para cada alvo marcado na mesa (a ponta encosta na borda do alvo). */
+.lutador .cursor-alvo {
+  display: none;
+  background: url('/assets/ui/pena.png') no-repeat;
+}
+
+.lutador.alvo .cursor-alvo {
+  display: block;
+  animation: pena-bica 480ms steps(1) infinite;
+}
+
+@keyframes pena-bica {
+  0% { translate: 0 0; }
+  50% { translate: 1px 0; }
+}
+
+.nome-inimigo {
+  color: var(--cor-texto);
+}
+
+.palco.interativo .lutador.inimigo {
+  cursor: pointer;
+}
+
+.cartao-inimigo .t-corpo,
+.cartao-inimigo .t-rotulo {
   position: absolute;
-  right: 2px;
-  bottom: 2px;
-  margin: 0;
-  z-index: 9999;
-  color: var(--cor-pv-brilho);
+}
+
+.cartao-inimigo .titulo-cartao {
+  color: var(--cor-dourado);
+}
+
+.cartao-inimigo .valor-cartao.desconhecido {
+  color: var(--cor-costura);
+}
+
+/* Balão com o número da barra ("PM 16 / 40"). */
+.balao {
+  background: var(--cor-janela);
+  border: 1px solid var(--cor-borda);
+  outline: 1px solid var(--cor-contorno);
+  padding-left: 4px;
+  line-height: 15px;
+}
+
+/* ───────────── Aviso central ───────────── */
+
+/* O campo escurece por trás do aviso. */
+.palco .camada.escurecer {
   background: var(--cor-contorno);
-  padding: 2px;
+  opacity: 0;
+  transition: opacity 200ms steps(4);
+  pointer-events: none;
+}
+
+.palco .camada.escurecer.ativo {
+  opacity: 0.45;
+}
+
+.palco .camada.janelas {
+  pointer-events: none;
+}
+
+.palco .camada.janelas > * {
+  pointer-events: auto;
+}
+
+.aviso-central {
+  /* Abre na vertical a partir da linha dourada do meio. */
+  animation: aviso-abre 200ms steps(8) 150ms both;
+}
+
+.aviso-central.sombrio {
+  background: var(--cor-contorno);
+}
+
+.aviso-central.saindo {
+  animation: aviso-fecha 200ms steps(8) forwards;
+}
+
+.aviso-titulo,
+.aviso-linha {
+  text-align: center;
+}
+
+.aviso-divisor {
+  background: var(--cor-costura);
+  animation: divisor-cresce 200ms steps(8) both;
+}
+
+.aviso-divisor .losango,
+.janela-cortina .losango {
+  background-repeat: no-repeat;
+}
+
+.aviso-fio {
+  background: var(--cor-dourado);
+  animation: fio-estica 150ms steps(6) forwards;
+}
+
+@keyframes aviso-abre {
+  from { clip-path: inset(50% 0 50% 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes aviso-fecha {
+  from { clip-path: inset(0 0 0 0); }
+  to { clip-path: inset(50% 0 50% 0); }
+}
+
+@keyframes divisor-cresce {
+  from { clip-path: inset(0 50% 0 50%); }
+  to { clip-path: inset(-3px 0 -3px 0); }
+}
+
+@keyframes fio-estica {
+  0% { clip-path: inset(0 50% 0 50%); opacity: 1; }
+  99% { clip-path: inset(0 0 0 0); opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ───────────── Caixa de diálogo ───────────── */
+
+.caixa-dialogo .retrato-dialogo {
+  text-align: center;
+  padding-top: 10px;
+  color: var(--cor-contorno);
+}
+
+.caixa-dialogo .texto-dialogo {
+  white-space: normal;
+  line-height: 15px;
+}
+
+.caixa-dialogo .seta-fala {
+  background-repeat: no-repeat;
+  animation: pisca 600ms steps(1) infinite both;
+}
+
+@keyframes pisca {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+/* ───────────── Entradas em batalha ───────────── */
+
+/* Herói: desliza pela borda esquerda. Inimigo: aparece com fade. Surge: silhueta que ganha cor. */
+.lutador.entrando-desliza {
+  animation: entra-desliza 400ms steps(16) both;
+}
+
+.lutador.entrando-fade {
+  animation: entra-fade 400ms steps(8) both;
+}
+
+.lutador.entrando-surge .corpo {
+  animation: entra-surge 600ms steps(8) both;
+}
+
+@keyframes entra-desliza {
+  from { translate: -180px 0; }
+  to { translate: 0 0; }
+}
+
+@keyframes entra-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes entra-surge {
+  from { filter: brightness(0); }
+  to { filter: brightness(1); }
+}
+
+/* ───────────── Fim do combate ───────────── */
+
+/* Vitória: quem resta vira luz e some; os heróis de pé dão um pulinho de 2 px. */
+.palco.fim-vitoria .lutador.inimigo {
+  animation: vira-luz 700ms steps(10) forwards;
+}
+
+.palco.fim-vitoria .lutador:not(.inimigo):not(.caido) {
+  animation: pulinho 500ms steps(1) 3;
+}
+
+@keyframes vira-luz {
+  0% { filter: brightness(1); opacity: 1; }
+  40% { filter: brightness(3); opacity: 1; }
+  100% { filter: brightness(3); opacity: 0; translate: 0 -6px; }
+}
+
+@keyframes pulinho {
+  0% { translate: 0 0; }
+  25% { translate: 0 -1px; }
+  50% { translate: 0 -2px; }
+  75% { translate: 0 -1px; }
+}
+
+.faisca {
+  animation: faisca-sobe 700ms steps(14) both;
+}
+
+@keyframes faisca-sobe {
+  from { translate: 0 0; opacity: 1; }
+  to { translate: 0 -14px; opacity: 0; }
+}
+
+/* Inimigos fogem: saem deslizando pela direita. */
+.palco.fim-fuga .lutador.inimigo {
+  animation: foge 600ms steps(20) forwards;
+}
+
+@keyframes foge {
+  to { translate: 240px 0; }
+}
+
+/* Rendição: o mundo perde a cor e escurece. */
+.palco.fim-rendicao .camada.cenario,
+.palco.fim-rendicao .camada.campo {
+  filter: grayscale(1) brightness(0.55);
+  transition: filter 800ms steps(8);
+}
+
+/* ───────────── Transições entre telas ───────────── */
+
+/* Entrar em combate: clarão branco rápido que se desfaz. */
+.transicao-entrar {
+  background: var(--cor-texto);
+  animation: clarao 500ms steps(10) forwards;
+}
+
+@keyframes clarao {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Sair do combate: fade para preto e a próxima tela abre. */
+.transicao-sair {
+  background: var(--cor-contorno);
+  animation: escurece-e-abre 500ms steps(10) forwards;
+}
+
+@keyframes escurece-e-abre {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ───────────── Cortina ───────────── */
+
+.palco .camada.cortina {
+  background: var(--cor-contorno);
+}
+
+/* Pontinhos que cintilam devagar no fundo. */
+.pontinho {
+  background: var(--cor-texto-secundario);
+  animation: cintila 3000ms steps(1) infinite both;
+}
+
+@keyframes cintila {
+  0% { opacity: 0.2; }
+  40% { opacity: 0.7; }
+  60% { opacity: 1; }
+  80% { opacity: 0.4; }
+}
+
+.janela-cortina .nome-campanha {
+  color: var(--cor-dourado);
+}
+
+.janela-cortina .divisor {
+  background: var(--cor-costura);
+}
+
+.janela-cortina .autor,
+.janela-cortina .proxima {
+  color: var(--cor-texto-secundario);
+}
+
+.janela-cortina .proxima {
+  color: var(--cor-dourado);
 }
