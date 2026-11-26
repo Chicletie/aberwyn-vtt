@@ -9,6 +9,7 @@ import { abrirCanal } from '../canal.js';
 import { criarPalco } from './palco.js';
 import { carregarDados } from '../dados.js';
 import { criarTelaGire } from './gire.js';
+import { prepararMolduras } from '../molduras.js';
 
 aplicarPaletaNoCss();
 
@@ -68,6 +69,7 @@ const pronto = Promise.all([
   document.fonts.load('18.6667px "Jersey 10 PF"'),
   document.fonts.load('8px "Silkscreen"'),
   carregarDados(),
+  prepararMolduras(),
 ]).then(([, , , dados]) => criarPalco(palco, { cenarios: dados.cenarios, interativo: true }));
 
 const canal = abrirCanal('local');

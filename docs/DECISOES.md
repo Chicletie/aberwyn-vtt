@@ -153,3 +153,10 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 ### Ainda diferente da SPEC (pequeno, anotado para o Marco 4)
 - As **cintilas** nas pontas da fita e da linha dourada do aviso ainda não existem.
 - Na coluna de inimigos da mesa em escala 1× (janela estreita), a barra de rolagem pode empurrar o ✎ para uma terceira linha; em 2× (o normal no 1080p) cabe.
+
+### Molduras sem `border-image` (o problema real do Firefox, print do Cadu de 26/11)
+- No Firefox, com a página ampliada por `zoom`, o `border-image` recortava a `janela.png` errado: em vez de **uma** moldura pontilhada em volta da caixa, apareciam **várias caixinhas pontilhadas lado a lado**. O Chrome (e o painel em que eu testo) desenhava certo, por isso não aparecia para mim.
+- Agora `src/molduras.js` recorta a própria `janela.png` (e a `plaquinha.png`) em pedaços: 4 cantos e um pedacinho de cada borda (4 px, um ciclo da costura). Cada pedaço vira uma variável CSS, e o CSS monta a moldura com fundos comuns (cantos por cima, bordas repetidas, cor de fundo). Fundos comuns o Firefox desenha certo com zoom.
+- **O PNG continua sendo a fonte:** redesenhar `assets/ui/janela.png` à mão muda todas as janelas, como antes.
+- Os tons do aviso (dourado, vermelho, vinho) recortam a mesma imagem trocando a cor da borda clara.
+- Cuidado ao estilizar uma janela: usar `background-color`, nunca o atalho `background`, que apagaria a moldura.

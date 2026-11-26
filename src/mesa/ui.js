@@ -224,7 +224,7 @@ export function abrirJanela(titulo, conteudo, opcoes = {}) {
   const fundo = h('div', { class: 'm-fundo-janela', onclick: () => fecharJanela() });
   const janela = h(
     'div',
-    { class: 'm-janela', style: { width: `${opcoes.largura ?? 360}px` }, onclick: (e) => e.stopPropagation() },
+    { class: 'm-janela janela', style: { width: `${opcoes.largura ?? 360}px` }, onclick: (e) => e.stopPropagation() },
     h('div', { class: 'm-janela-topo' }, h('span', { class: 't-rotulo titulo-dourado' }, titulo), botao('FECHAR', () => fecharJanela())),
     h('div', { class: 'm-janela-corpo' }, conteudo),
     opcoes.botoes?.length ? h('div', { class: 'm-janela-botoes' }, opcoes.botoes) : null,

@@ -26,16 +26,49 @@
 
 /* ───────────── Janelas (molduras 9-slice desenháveis à mão) ───────────── */
 
-/* Janela grande: borda, chanfro, costura e nós dourados vêm de assets/ui/janela.png. */
+/*
+  Janela grande: borda, chanfro, costura e nós dourados vêm de assets/ui/janela.png.
+  Os pedaços (cantos e bordas) são recortados por src/molduras.js e chegam aqui como variáveis.
+  Ordem das camadas: cantos por cima, depois as 4 bordas (que se repetem), depois o fundo.
+  Não usa border-image: o Firefox a desenha errado com o zoom (ver DECISOES).
+*/
 .janela {
   border: 6px solid transparent;
-  border-image: url('/assets/ui/janela.png') 6 fill / 6px repeat;
+  background-color: var(--cor-janela);
+  background-origin: border-box;
+  background-clip: border-box;
+  background-image:
+    var(--janela-ce), var(--janela-cd), var(--janela-be), var(--janela-bd),
+    var(--janela-topo), var(--janela-base), var(--janela-esq), var(--janela-dir);
+  background-position:
+    0 0, 100% 0, 0 100%, 100% 100%,
+    6px 0, 6px 100%, 0 6px, 100% 6px;
+  background-size:
+    6px 6px, 6px 6px, 6px 6px, 6px 6px,
+    4px 6px, 4px 6px, 6px 4px, 6px 4px;
+  background-repeat:
+    no-repeat, no-repeat, no-repeat, no-repeat,
+    repeat-x, repeat-x, repeat-y, repeat-y;
 }
 
-/* Plaquinha: sem costura e sem nós (assets/ui/plaquinha.png). */
+/* Plaquinha: sem costura e sem nós (assets/ui/plaquinha.png), mesmo jeito da janela. */
 .plaquinha {
   border: 3px solid transparent;
-  border-image: url('/assets/ui/plaquinha.png') 3 fill / 3px repeat;
+  background-color: var(--cor-janela);
+  background-origin: border-box;
+  background-clip: border-box;
+  background-image:
+    var(--plaquinha-ce), var(--plaquinha-cd), var(--plaquinha-be), var(--plaquinha-bd),
+    var(--plaquinha-topo), var(--plaquinha-base), var(--plaquinha-esq), var(--plaquinha-dir);
+  background-position:
+    0 0, 100% 0, 0 100%, 100% 100%,
+    3px 0, 3px 100%, 0 3px, 100% 3px;
+  background-size:
+    3px 3px, 3px 3px, 3px 3px, 3px 3px,
+    1px 3px, 1px 3px, 3px 1px, 3px 1px;
+  background-repeat:
+    no-repeat, no-repeat, no-repeat, no-repeat,
+    repeat-x, repeat-x, repeat-y, repeat-y;
 }
 
 /* ───────────── Cenário e campo ───────────── */
@@ -177,8 +210,23 @@
   border: 3px solid transparent;
 }
 
+/* Mesma moldura da .plaquinha (só aparece no lado da vez). */
 .bloco-turnos.da-vez {
-  border-image: url('/assets/ui/plaquinha.png') 3 fill / 3px repeat;
+  background-color: var(--cor-janela);
+  background-origin: border-box;
+  background-clip: border-box;
+  background-image:
+    var(--plaquinha-ce), var(--plaquinha-cd), var(--plaquinha-be), var(--plaquinha-bd),
+    var(--plaquinha-topo), var(--plaquinha-base), var(--plaquinha-esq), var(--plaquinha-dir);
+  background-position:
+    0 0, 100% 0, 0 100%, 100% 100%,
+    3px 0, 3px 100%, 0 3px, 100% 3px;
+  background-size:
+    3px 3px, 3px 3px, 3px 3px, 3px 3px,
+    1px 3px, 1px 3px, 3px 1px, 3px 1px;
+  background-repeat:
+    no-repeat, no-repeat, no-repeat, no-repeat,
+    repeat-x, repeat-x, repeat-y, repeat-y;
 }
 
 .rosto .rosto-desenho {
@@ -581,7 +629,7 @@
 }
 
 .aviso-central.sombrio {
-  background: var(--cor-contorno);
+  background-color: var(--cor-contorno); /* só a cor: "background" apagaria a moldura */
 }
 
 .aviso-central.saindo {

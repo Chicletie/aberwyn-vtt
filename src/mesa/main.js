@@ -10,6 +10,7 @@ import { abrirCanal } from '../canal.js';
 import { carregarDados } from '../dados.js';
 import { salvarLocal, carregarLocal, criarPilhaDesfazer } from '../persistencia.js';
 import { criarPalco } from '../palco/palco.js';
+import { prepararMolduras } from '../molduras.js';
 import { avisoRapido, haJanelaAberta, fecharJanela } from './ui.js';
 import { desenharTopo, desenharEsquerda, desenharCentro, desenharDireita } from './secoes.js';
 
@@ -222,6 +223,7 @@ async function iniciar() {
     document.fonts.load('27px "Jersey 15 PF"'),
     document.fonts.load('18.6667px "Jersey 10 PF"'),
     document.fonts.load('8px "Silkscreen"'),
+    prepararMolduras(),
   ]);
   ctx.dados = await carregarDados();
   ctx.palcoPrevia = criarPalco(document.createElement('div'), { cenarios: ctx.dados.cenarios });

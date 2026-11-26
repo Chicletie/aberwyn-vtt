@@ -14,6 +14,7 @@
 
 import { cores, clarear, escurecer } from '../paleta.js';
 import { pixelArte, elipse, recolorir, rotulo3x5 } from './pixel.js';
+import { cortarMoldura, aplicarMoldura } from '../molduras.js';
 import { posicoesHerois, posicoesInimigos, tamanhoProvisorio, CHAO_PADRAO } from './layout.js';
 
 const UI = './assets/ui/';
@@ -640,7 +641,8 @@ export function criarPalco(raiz, opcoes = {}) {
 
     const caixa = criar('div', 'janela aviso-central', camadas.janelas);
     if (tom.fundo) caixa.classList.add('sombrio');
-    recolorir(`${UI}janela.png`, { '#c7cfcc': tom.borda }).then((url) => (caixa.style.borderImageSource = `url(${url})`));
+    // Tom do aviso: a borda clara da moldura vira a cor do tom (os pedaços são recortados de novo).
+    cortarMoldura(`${UI}janela.png`, 6, 4, { '#c7cfcc': tom.borda }).then((partes) => aplicarMoldura(caixa, 'janela', partes));
     const titulo = criar('div', 't-titulo aviso-titulo', caixa);
     titulo.style.color = tom.titulo;
     const fimTitulo = escreverLetraPorLetra(titulo, aviso.titulo, 350, 25);
