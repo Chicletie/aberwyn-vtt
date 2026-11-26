@@ -54,11 +54,11 @@ export function gravarSala(sala, estadoPublico) {
   });
 }
 
-/** Escuta a sala: chama a função com o estado público sempre que ele mudar. */
+/** Escuta a sala: chama a função com o estado público sempre que ele mudar (null = sala vazia). */
 export function escutarSala(sala, funcao) {
   return onValue(ref(banco(), `salas/${sala}/publico`), (foto) => {
     const valor = foto.val();
-    if (valor?.json) funcao(JSON.parse(valor.json));
+    funcao(valor?.json ? JSON.parse(valor.json) : null);
   });
 }
 

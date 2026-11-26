@@ -77,16 +77,24 @@ const pronto = Promise.all([
 const sala = new URLSearchParams(location.search).get('sala')?.toUpperCase() || null;
 const canal = abrirCanal({ sala, online: !!sala, palco: true });
 
+// Testando no próprio computador (localhost)? Então o palco sem código escuta a mesa local.
+const noComputadorDoMestre = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+
 canal.aoReceberEstado(async (estado) => {
   // Fica no console para conferir com F12 o que REALMENTE chegou (e o que não chegou).
   console.log('[palco] estado recebido:', estado);
+  const p = await pronto;
+  // Sala existe no link, mas está vazia: código errado, ou a mesa nunca transmitiu nela.
+  if (!estado) return p.renderizar(null, `Sala ${sala} vazia. Confira o link com o mestre.`);
   window.ultimoEstado = estado;
-  (await pronto).renderizar(estado);
+  p.renderizar(estado);
 });
 
 pronto.then((p) => {
-  // "Aguardando a mesa…" até chegar o primeiro estado.
-  if (!window.ultimoEstado) p.renderizar(null);
+  if (window.ultimoEstado) return;
+  // Sem código da sala no link (fora do computador do mestre): explicar, em vez de esperar à toa.
+  if (!sala && !noComputadorDoMestre) p.renderizar(null, 'Peça ao mestre o link da sala.');
+  else p.renderizar(null); // "Aguardando a mesa…" até chegar o primeiro estado
   canal.pedirEstado();
 });
 

@@ -192,10 +192,11 @@ export function criarPalco(raiz, opcoes = {}) {
   /**
    * Redesenha o palco a partir do estado público.
    * @param {object|null} estado null = ainda não chegou nada da mesa.
+   * @param {string} [espera] o que mostrar enquanto não chega nada (ex.: "Peça o link ao mestre").
    */
-  function renderizar(estado) {
+  function renderizar(estado, espera = 'Aguardando a mesa…') {
     if (!estado) {
-      desenharCortina({ nomeCampanha: 'Errantes', linha: 'Aguardando a mesa…' });
+      desenharCortina({ nomeCampanha: 'Errantes', linha: espera });
       mostrarCamadaCortina(true);
       return;
     }
