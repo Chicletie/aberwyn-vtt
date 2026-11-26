@@ -606,8 +606,13 @@ export function criarPalco(raiz, opcoes = {}) {
     if (efeito) Object.assign(trocas, { '#1b2b46': cores.contorno });
     posicionar(caudaEsq, -14, altura - 14, 19, 19);
     posicionar(caudaDir, largura - 5, altura - 14, 19, 19);
-    recolorir(`${UI}fita.png`, trocas, { x: 15, y: 5, largura: 19, altura: 19 }).then((url) => (caudaEsq.style.backgroundImage = `url(${url})`));
-    recolorir(`${UI}fita.png`, trocas, { x: 76, y: 5, largura: 19, altura: 19 }).then((url) => (caudaDir.style.backgroundImage = `url(${url})`));
+    // O recorte de cada cauda pega junto uns pixels da ponta da faixa (que a faixa de verdade
+    // cobre). Eles são apagados, senão aparecem como uma "segunda rebarba" se a cauda e a faixa
+    // ficarem 1–2 px desencontradas (aconteceu no Firefox). Fica só a cauda e a dobra escura.
+    recolorir(`${UI}fita.png`, trocas, { x: 15, y: 5, largura: 19, altura: 19 }, { x: 14, y: 0, largura: 5, altura: 14 })
+      .then((url) => (caudaEsq.style.backgroundImage = `url(${url})`));
+    recolorir(`${UI}fita.png`, trocas, { x: 76, y: 5, largura: 19, altura: 19 }, { x: 0, y: 0, largura: 6, altura: 14 })
+      .then((url) => (caudaDir.style.backgroundImage = `url(${url})`));
   }
 
   // ───────────── Aviso central ─────────────

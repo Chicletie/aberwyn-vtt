@@ -305,6 +305,25 @@
   animation: fita-estica 300ms steps(10) var(--atraso, 0ms) both;
 }
 
+/* Imagens pequenas (uma por caixa): o tamanho da imagem é sempre o da caixa, dito com todas
+   as letras. Sem isso, cada navegador decide sozinho como escalar a imagem com o zoom
+   (o Firefox decidia diferente do Chrome). */
+.fita-cauda,
+.seta-agindo,
+.sombra,
+.anel,
+.icone-condicao,
+.rotulo-3x5,
+.pena,
+.setinha,
+.marca-agindo,
+.seta-vez,
+.losango,
+.cursor-alvo,
+.seta-fala {
+  background-size: 100% 100%;
+}
+
 .fita-cauda {
   background-repeat: no-repeat;
   animation: aparece 1ms calc(var(--atraso, 0ms) + 300ms) both;

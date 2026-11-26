@@ -73,10 +73,12 @@ function carregarImagem(url) {
  * @param {string} url Imagem original (em assets/ui/).
  * @param {Object<string,string>} trocas cor original → cor nova (hex minúsculo)
  * @param {{x:number,y:number,largura:number,altura:number}} [recorte] parte da imagem a usar
+ * @param {{x:number,y:number,largura:number,altura:number}} [apagar] parte do recorte que fica
+ *   transparente (ex.: os pixels da faixa que vêm junto no recorte da cauda da fita)
  * @returns {Promise<string>} data URL
  */
-export async function recolorir(url, trocas, recorte) {
-  const chave = JSON.stringify([url, trocas, recorte]);
+export async function recolorir(url, trocas, recorte, apagar) {
+  const chave = JSON.stringify([url, trocas, recorte, apagar]);
   if (cache.has(chave)) return cache.get(chave);
   const img = await carregarImagem(url);
   const r = recorte ?? { x: 0, y: 0, largura: img.width, altura: img.height };
@@ -98,6 +100,7 @@ export async function recolorir(url, trocas, recorte) {
     }
   }
   ctx.putImageData(dados, 0, 0);
+  if (apagar) ctx.clearRect(apagar.x, apagar.y, apagar.largura, apagar.altura);
   const saida = tela.toDataURL();
   cache.set(chave, saida);
   return saida;
