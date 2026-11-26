@@ -224,3 +224,12 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - **Com conta que não é do mestre** (Rules Playground, feito pelo Cadu, UID `jogador-teste`): gravar na sala NEGADO; ler o backup da mesa NEGADO.
 - **Ponta a ponta:** a mesa do Cadu, logada, grava a sala `5UUD8`; o palco publicado no GitHub Pages, aberto pela internet, mostra a mesa ao vivo (o vilão escondido chega como "???", sem nome nem PV).
 - **Reconexão:** o aviso RECONECTANDO… está ligado ao estado de conexão do Firebase, mas não simulei uma queda de internet de verdade; fica para o ensaio do Marco 4 (desligar o Wi-Fi do celular no meio da sessão).
+
+### Alerta do GitHub sobre a "Google API Key" (26/11)
+- O GitHub avisou que `src/config-online.js` tem uma chave do Google. É a `apiKey` do Firebase para sites: ela **não é senha**, só diz qual projeto usar, e todo site com Firebase a mostra para qualquer visitante. Quem protege os dados são as regras do servidor (testadas no Marco 3).
+- Mesmo assim, duas travas extras (feitas pelo Cadu, no console): **restringir a chave aos endereços do projeto** (GitHub Pages e localhost) e **desligar o cadastro aberto** no Firebase Auth (as contas são criadas só pelo mestre, como pede a SPEC). Depois, o alerta é fechado no GitHub como "Won't fix", com o motivo.
+
+### Pedidos do Cadu depois do teste no celular (26/11)
+- **App instalável (PWA)** sai de "janeiro" e entra no Marco 4: abre deitado e em tela cheia, então o palco ganha um degrau de escala (3× → 4× num celular comum). O mestre pede para os jogadores instalarem.
+- **Moldura em volta do palco:** Marco 4 (arte).
+- **Entrada dos jogadores (Marco 5):** tela inicial com nome + chave **antes** de ver a mesa → código da sala (lembrado nas próximas vezes) → cortina com os retratos de quem já entrou acendendo ("aguardando os jogadores"). A surpresa fica para quando a mesa abre. A "presença" (quem está conectado) usa o recurso do Firebase que percebe quando alguém sai ou cai.
