@@ -124,3 +124,25 @@ body.girando #suporte {
   text-align: center;
   color: var(--cor-costura);
 }
+
+/* "Reconectando…": discreto, no canto de cima à direita, piscando devagar. */
+#reconectando {
+  position: absolute;
+  right: 4px;
+  top: 36px;
+  margin: 0;
+  z-index: 9998;
+  padding: 2px 4px;
+  color: var(--cor-dourado);
+  background: var(--cor-contorno);
+  animation: pisca-devagar 1200ms steps(1) infinite;
+}
+
+#reconectando[hidden] {
+  display: none;
+}
+
+@keyframes pisca-devagar {
+  0% { visibility: visible; }
+  70% { visibility: hidden; }
+}

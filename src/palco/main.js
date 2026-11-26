@@ -72,7 +72,10 @@ const pronto = Promise.all([
   prepararMolduras(),
 ]).then(([, , , dados]) => criarPalco(palco, { cenarios: dados.cenarios, interativo: true }));
 
-const canal = abrirCanal('local');
+// O código da sala vem no endereço: palco.html?sala=XXXXX (o link que o mestre manda).
+// Sem código, o palco escuta só a mesa no mesmo navegador (modo local, para testes).
+const sala = new URLSearchParams(location.search).get('sala')?.toUpperCase() || null;
+const canal = abrirCanal({ sala, online: !!sala, palco: true });
 
 canal.aoReceberEstado(async (estado) => {
   // Fica no console para conferir com F12 o que REALMENTE chegou (e o que não chegou).
@@ -82,9 +85,24 @@ canal.aoReceberEstado(async (estado) => {
 });
 
 pronto.then((p) => {
-  p.renderizar(null); // "Aguardando a mesa…" até chegar o primeiro estado
+  // "Aguardando a mesa…" até chegar o primeiro estado.
+  if (!window.ultimoEstado) p.renderizar(null);
   canal.pedirEstado();
 });
+
+// "Reconectando…" discreto se a internet cair; some sozinho quando a conexão volta.
+// (O Firebase reconecta sozinho e, ao voltar, entrega o estado mais recente da sala.)
+const avisoConexao = document.getElementById('reconectando');
+if (sala && canal.online) {
+  let primeiraVez = true;
+  canal.aoMudarConexao((conectado) => {
+    // Na abertura a conexão leva um instante: só avisa se cair DEPOIS de ter conectado.
+    if (conectado) primeiraVez = false;
+    avisoConexao.hidden = conectado || primeiraVez;
+  });
+} else if (sala) {
+  console.warn('[palco] link com sala, mas o modo online ainda não foi configurado (config-online.js).');
+}
 
 /**
  * Lupa de depuração (só pelo console, F12): amplia o palco e mostra a partir do ponto (x, y)
