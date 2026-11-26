@@ -865,8 +865,6 @@ export function criarPalco(raiz, opcoes = {}) {
     q('.faixinha').style.background = c.corAssinatura;
     const nome = q('.nome');
     nome.textContent = c.nome.slice(0, 8); // nomes com mais de 8 letras são cortados
-    posicionar(nome, 5, -3);
-
     const xRotulos = larga ? 70 : 50;
     const larguraNumero = larga ? 50 : 20;
     const larguraPi = 12;
@@ -877,6 +875,8 @@ export function criarPalco(raiz, opcoes = {}) {
     const larguraIcones = maxIcones ? maxIcones * 8 + 2 : 0;
     // Rótulo (7 px) + 2 px de folga antes da barra, alinhado pelo topo com o contorno da barra.
     const xBarra = xRotulos + 9;
+    // O nome nunca encosta no rótulo PV: a caixa do nome acaba 3 px antes e corta o que sobrar.
+    posicionar(nome, 5, -3, xRotulos - 8);
     const larguraBarra = largura - xBarra - folga - larguraNumero - folga - larguraPi - larguraIcones;
 
     posicionar(q('.r-pv'), xRotulos, 0, 7, 5);

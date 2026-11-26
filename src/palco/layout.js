@@ -106,7 +106,8 @@ export function posicoesInimigos(inimigos, chao = CHAO_PADRAO) {
   colunasX.forEach((xColuna, ci) => {
     const coluna = normais.slice(ci * porColuna, (ci + 1) * porColuna);
     const n = coluna.length;
-    const passo = n > 1 ? Math.min(32, altura / (n - 1)) : 0;
+    // Inimigos de 32 px precisam de um vão entre eles; 40 px de passo deixa 8 px de chão aparecendo.
+    const passo = n > 1 ? Math.min(40, altura / (n - 1)) : 0;
     // A segunda coluna fica meio passo abaixo, para ninguém ficar exatamente atrás de outro.
     const meio = ci === 1 && n > 1 ? passo / 2 : 0;
     const y0 = centroY - (passo * (n - 1)) / 2 + 16;

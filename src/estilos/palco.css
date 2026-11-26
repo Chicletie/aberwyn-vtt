@@ -791,3 +791,8 @@
 .janela-cortina .proxima {
   color: var(--cor-dourado);
 }
+
+/* O nome do status é cortado na largura da caixa (nunca invade o rótulo PV). */
+.linha-status .nome {
+  overflow: hidden;
+}
