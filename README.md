@@ -3,7 +3,7 @@
 Mesa virtual (VTT) com tela no estilo JRPG clássico e pixel art, feita para a campanha **Errantes**.
 O mestre controla tudo numa **mesa** no próprio computador; cada jogador abre o **palco** no navegador e assiste.
 
-> Projeto em construção (Marco 0: preparação).
+> Projeto em construção (Marco 2: mesa completa, ainda só no computador do mestre).
 
 ## Avisos
 
@@ -21,7 +21,7 @@ npm install
 npm run dev
 ```
 
-O navegador abre o palco. A mesa fica em `http://localhost:5173/`.
+O navegador abre a **mesa** (`http://localhost:5173/`). O **palco** (a tela dos jogadores) abre pelo link "ABRIR PALCO ↗" no canto. O botão **?** da mesa mostra os atalhos e o salvamento em arquivo. Os arquivos que o mestre edita à mão estão explicados em [`docs/DADOS.md`](docs/DADOS.md).
 
 ## Créditos
 

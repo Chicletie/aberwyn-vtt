@@ -41,3 +41,14 @@ Termos técnicos que apareceram no projeto, em 1–2 frases.
 - **Transição / animação CSS:** mudança suave de uma propriedade (posição, largura). `steps(n)` faz a mudança em n pulos, como quadros de pixel art.
 - **Console (F12):** painel do navegador onde aparecem mensagens do código (`console.log`). Também é onde qualquer jogador veria os dados que chegam, por isso os segredos nem são enviados.
 - **HMR (recarregar ao salvar):** o Vite recarrega a página sozinho quando um arquivo muda. Na mesa mínima isso zera o estado, porque ela ainda não salva (o salvamento é o Marco 2).
+
+## Marco 2
+- **localStorage:** uma "gaveta" do navegador onde o site guarda texto no seu computador. A mesa salva o estado ali a cada clique.
+- **JSON:** formato de texto para guardar dados (`{ "nome": "Joshua", "pv": 60 }`). Os arquivos de `dados/` e o backup da mesa são JSON.
+- **Modal (janela):** caixa que abre por cima da tela e pede atenção (ficha, aviso, formação).
+- **Fábrica (função):** função que cria um objeto já com os campos padrão (`novoHeroi`, `novoInimigo`).
+- **Migração:** atualizar dados salvos num formato antigo para o formato novo, sem perder nada.
+- **Pilha (do desfazer):** lista em que o último que entra é o primeiro que sai, como uma pilha de pratos.
+- **Evento:** algo que acontece na página (clique, tecla, mudança de campo) e que o código "escuta" para reagir.
+- **`fetch`:** como o JavaScript lê um arquivo do site (ex.: `dados/cenas.json`).
+- **`setInterval`:** faz o navegador repetir uma função de tempos em tempos (a mesa confere a cada segundo se é hora de uma frase de efeito).

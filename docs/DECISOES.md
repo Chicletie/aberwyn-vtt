@@ -41,7 +41,7 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - `src/canal.js`: única peça que sabe como o estado viaja. Agora é local (BroadcastChannel, entre abas do mesmo navegador); no Marco 3 ganha o modo online com as mesmas funções.
 - `src/paleta.js`: a paleta (Apollo + extras, ordem fixa, `versao: 1`) e os **nomes de uso** (`janela`, `pv`, `inimigo`…). O CSS só usa variáveis geradas daqui (`--cor-janela`…).
 - `src/palco/layout.js`: só matemática da formação (onde ficam os pés de cada um).
-- `src/palco/renderizar.js`: desenha o palco a partir do estado público.
+- `src/palco/palco.js` (era `renderizar.js` no Marco 1): desenha o palco a partir do estado público.
 - `src/palco/pixel.js`: cria pixel art por código (setas, elipses, rótulos 3×5) e recolore imagens.
 - `src/mesa/main.js`: mesa **mínima**, só para testar. A mesa de verdade é o Marco 2.
 
@@ -72,8 +72,53 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - Rosto na faixa de turnos: quadrado 24×24 na cor com a inicial.
 
 ### Coisas que ajustei da SPEC (registrar para o Cadu decidir)
-- **Fita mais larga (pedido do Cadu):** a SPEC limita a 300 px para sobrar o canto dos ícones de relógio. Como os relógios só chegam em janeiro, a fita agora vai até **440 px** (x 20–460) antes de quebrar a linha. Quando houver relógio visível, volta a 300 (constante `LARGURA_MAX_FITA` em `renderizar.js`).
+- **Fita mais larga (pedido do Cadu):** a SPEC limita a 300 px para sobrar o canto dos ícones de relógio. Como os relógios só chegam em janeiro, a fita agora vai até **440 px** (x 20–460) antes de quebrar a linha. Quando houver relógio visível, volta a 300 (constante `LARGURA_MAX_FITA` em `palco.js`).
 - **Fita com 2 linhas** passa da faixa de HUD (32–58): uma linha já ocupa 19 px, duas ocupam 34. Fica por cima do campo nesses casos. Com 440 px, isso quase não acontece.
 - **Fita some animada:** as caudas recolhem e a faixa fecha para o centro (~0,2 s). Se vier outra mensagem, a nova só abre depois que a antiga fechou.
 - **Status na coluna larga** mostra `atual/máx` só do PV; o PM aparece pela barra (o número do PM vem com o balão de clique, no Marco 2).
 - **Números flutuantes** nascem ao lado do peito do alvo, para não cobrir a fita.
+
+## Marco 2 — Mesa completa (local)
+
+### A mesa é pixel art também (grade de 960×540)
+- Igual às prévias: a mesa é uma grade de 960×540 ampliada por número inteiro, com as mesmas fontes nos tamanhos nativos.
+- **Diferente do palco:** a escala segue só a **largura** da janela. Num monitor 1080p com a barra do navegador, a altura não cabe em 2×, e cair para 1× deixaria a mesa pequena demais. Então fica em 2× e a página rola um pouco na vertical. Com F11 (tela cheia) cabe inteira.
+
+### O palco ao vivo dentro da mesa é o MESMO código do palco
+- `src/palco/palco.js` virou `criarPalco(elemento)`: monta um palco em qualquer `<div>`. A página do jogador e a prévia "O QUE OS JOGADORES VEEM" usam a mesma função, então o mestre vê exatamente o que o jogador vê.
+- **VER COMO [JOGADORES | MESTRE]:** "mestre" desenha com tudo revelado (nomes, PV) **só na tela da mesa**; isso nunca vai para o canal. Ver como um jogador específico depende das fichas (Marco 5).
+- A prévia é criada uma vez e nunca sai da tela, senão as animações reiniciariam a cada clique.
+
+### Clique na linha = quem age; clique direito ou ✎ = ficha
+- A prévia dizia "clique num herói: ficha". Mas escolher quem age é a jogada mais comum, e a SPEC pede "uma jogada comum em 3–4 cliques" e "o raro mora na ficha ou num clique direito". Então: **clique = quem age**, **clique direito (ou ✎) = ficha**. Fácil de inverter se preferir.
+
+### DESFAZER guarda cópias inteiras do estado
+- Antes de cada ação, a mesa guarda uma cópia do estado inteiro (até 50). Desfazer = voltar para a cópia anterior. Simples, e desfaz a ação **inteira** (dano em 2 alvos + PM + condição de uma vez), como a SPEC pede.
+- Pré-visualização (alvos marcados, menu destacado) e coisas automáticas (frase de efeito, aviso que some sozinho) **não** entram no DESFAZER, senão o Ctrl+Z ficaria "comendo" cliques que não mudaram o jogo.
+
+### Salvamento
+- **Automático** no navegador (localStorage) a cada alteração: F5 na mesa não perde nada.
+- **Arquivo .json** (botão "?" → SALVAR ARQUIVO / ABRIR ARQUIVO): backup e combates preparados antes.
+- `estado.versao` subiu para 2; `migrar()` atualiza estados salvos de versões antigas, para nada se perder.
+
+### Interpretação de regra (confirmar com o Cadu)
+- **ERROU e FALHA CRÍTICA não aplicam dano nem condição.** Aparece "Errou" / "Falha!" sobre o alvo. ACERTOU e CRÍTICO aplicam o dano digitado (o crítico só muda a fita: "… Crítico!"). Nenhum número é calculado: o mestre digita o dano de cada alvo.
+- **ENCERRAR TURNO** gasta um turno de quem age e passa a vez para o lado sugerido (o outro lado, se ainda tiver alguém com turno; senão o mesmo; se ninguém tiver, FIM DA RODADA fica dourado). O mestre sempre pode trocar no botão "VEZ".
+- **FIM DA RODADA:** todos voltam a ter turnos, o lado que venceu a iniciativa começa (p. 61), quem estava marcado "chega no fim da rodada" entra com o aviso "<Nome> chegou!" (p. 60), e sai a frase "Rodada N." com uma frase de efeito.
+
+### Frases de efeito (12c)
+- Saem sozinhas no começo de cada rodada e quando o turno fica parado (sem nenhuma ação na mesa) por 40 s (ajustável). Ficam ~5 s na fita apagada.
+- Vêm de `dados/cenas.json`: as da **fase atual** do chefe (F1/F2/F3 na linha do vilão); sem frases de combate, usa as de ambiente. Ordem embaralhada sem repetir. As de **tensão** entram quando houver relógios (janeiro).
+
+### Cenário e faixa de chão
+- O editor (botão CHÃO) guarda o ajuste **na mesa** (`estado.chaos`), porque um site não pode gravar arquivos no seu computador. Para fixar no arquivo, copie os números para `dados/cenarios.json`.
+- Cenário sem arquivo (ou com arquivo que ainda não existe) mostra as faixas de cor.
+
+### Cortina
+- Nome da campanha, rótulo opcional, a linha da sessão, "— quem disse" opcional e a próxima sessão, editados no painel CORTINA (aparece no lugar da AÇÃO). Os rostos que acendem quando cada jogador chega e o botão "Entrar" (som) dependem do modo online e do som (Marco 3 / janeiro).
+
+### O que ficou para depois (de propósito)
+- **Relógios, som, pendentes, Pontos de Fabula, ÉPICA:** janeiro (aparecem desligados na mesa).
+- **Clique direito em texto do palco para editar:** a correção de textos está nos campos da mesa (botões Aa, Tt, ␣ e o aviso "NÃO CABE"). O clique direito no palco ao vivo fica para o Marco 4.
+- **Posição manual de inimigo** (`posicao`): o formato existe, mas ainda não há editor (arrastar no palco). Marco 4, se fizer falta.
+- **Status com 5 a 8 heróis** não mostra ícones de condição (não sobra espaço sem esmagar a barra); nesses casos as condições aparecem nos rostos da faixa de turnos.
