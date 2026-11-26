@@ -165,3 +165,37 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - **Erro meu, não do Firefox:** o recorte das caudas em `fita.png` estava 3 linhas acima e 1 coluna à esquerda do lugar certo. Ele cortava a borda de baixo da cauda (por isso só aparecia a de cima) e pegava um pedaço da faixa (a "segunda rebarba"). A cauda direita também estava 1 px para fora.
 - Agora: a faixa da `fita.png` ocupa as linhas 3–21 e as colunas 30–82; cada cauda, as linhas 8–26. O recorte segue isso, e os pixels da ponta da faixa que vêm junto são apagados (`recolorir(…, apagar)`). Conferido montando a fita pixel a pixel e no navegador.
 - Todas as imagens pequenas do palco (caudas, setas, ícones, pena, rótulos) têm `background-size: 100% 100%`, para nenhum navegador escalar a imagem diferente da caixa.
+
+## Marco 3 — Online
+
+### Firebase continua a escolha (conferido em 26/11/2026)
+- Plano grátis (Spark) do Realtime Database: até 100 conexões simultâneas por banco (a mesa usa ~7). Passando disso, novas conexões são recusadas; quem já está conectado continua.
+- Alternativa mais comum, Supabase: no plano grátis o projeto **pausa após 7 dias com pouca atividade**, um risco real com sessões semanais. Sem motivo forte para trocar.
+
+### Como o estado viaja
+- `src/online.js` é o único arquivo que conhece o Firebase. `src/canal.js` usa ele e continua com as mesmas funções (`enviarEstado`, `aoReceberEstado`): mesa e palco não mudaram de jeito de falar.
+- **Dependência nova:** `firebase` (o kit oficial do Google para o navegador): sem ele, falar com o serviço exigiria reescrever o protocolo de tempo real na mão.
+- A mesa grava `salas/{codigo}/publico` = `{ json, em }`. O estado vai como **texto JSON**, porque o Firebase apaga listas vazias ao gravar (o palco receberia um herói sem `condicoes` e quebraria).
+- **Freio de gravação:** no máximo 10 gravações por segundo, sempre com o estado mais recente (nada se perde, só se junta).
+- O canal local (abas do mesmo navegador) continua funcionando junto, para testes e para a prévia.
+- **Só o estado público vai para o serviço:** o banco nunca vê nome, PV nem anotações de inimigo escondido.
+
+### Sala e link
+- Código de 5 letras/números sem os que se confundem (O/0, I/1, L), guardado no navegador da mesa (não no estado).
+- O palco lê a sala do endereço: `palco.html?sala=XXXXX`. Sem `?sala`, ele escuta só a mesa local.
+- **NOVA SALA** troca o código (o link antigo para de receber), útil se o link vazar.
+
+### Login e regras (a proteção de verdade)
+- Os valores de `src/config-online.js` não são segredo: qualquer site com Firebase os expõe. Quem protege são as **regras do servidor** (`database.rules.json`):
+  - `salas/*`: qualquer um lê (os jogadores precisam); só quem está em `mestres/{uid}: true` escreve.
+  - `fichas/{heroiId}` (Marco 5): só o mestre ou a conta ligada ao herói em `donos/{uid}`.
+  - `donos` e `mestres`: ninguém além do mestre escreve; `mestres` só se marca pelo console.
+  - Tudo o mais: negado. Também não dá para listar as salas (`/salas` inteiro é negado; só uma sala pelo código).
+- O mestre entra na mesa com e-mail e senha criados por ele no console (a senha nunca passa por mim).
+- **Teste sem login** (`node scripts/testar-regras.mjs`): tenta ler e escrever pela internet como um jogador mal-intencionado. **Teste com contas:** Rules Playground do console (o simulador local do Firebase exige um Java mais novo que o instalado; ver docs/ONLINE.md).
+
+### Reconexão
+- O Firebase reconecta sozinho e, ao voltar, entrega o estado mais recente. O palco mostra "RECONECTANDO…" (discreto, piscando) só se a conexão cair depois de ter conectado; a mesa mostra o mesmo na barra de cima.
+
+### Ficou para depois
+- **Rostos que acendem na cortina quando cada jogador chega:** exige saber quem é cada jogador, o que só existe com os logins do Marco 5. (Contar conexões anônimas exigiria deixar qualquer um escrever na sala.)
