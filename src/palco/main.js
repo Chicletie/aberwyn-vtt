@@ -83,3 +83,14 @@ pronto.then((p) => {
   p.renderizar(null); // "Aguardando a mesa…" até chegar o primeiro estado
   canal.pedirEstado();
 });
+
+/**
+ * Lupa de depuração (só pelo console, F12): amplia o palco e mostra a partir do ponto (x, y)
+ * da grade, para conferir pixel por pixel. Ex.: inspecionar(30, 150, 5). F5 volta ao normal.
+ */
+window.inspecionar = (x, y, escala = 5) => {
+  const z = escala / (window.devicePixelRatio || 1);
+  palco.style.zoom = z;
+  suporte.style.left = `${-x * z}px`;
+  suporte.style.top = `${-y * z}px`;
+};

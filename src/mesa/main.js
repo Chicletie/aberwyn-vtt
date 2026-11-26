@@ -231,3 +231,16 @@ async function iniciar() {
   desenhar();
 }
 iniciar();
+
+/**
+ * Lupa de depuração (só pelo console, F12): amplia a mesa e mostra a partir do ponto (x, y)
+ * da grade. Ex.: inspecionar(240, 30, 4). F5 volta ao normal.
+ */
+window.inspecionar = (x, y, escala = 4) => {
+  const z = escala / (window.devicePixelRatio || 1);
+  mesaEl.style.zoom = z;
+  suporte.style.position = 'relative';
+  suporte.style.paddingLeft = '0';
+  suporte.style.left = `${-x * z}px`;
+  suporte.style.top = `${-y * z}px`;
+};

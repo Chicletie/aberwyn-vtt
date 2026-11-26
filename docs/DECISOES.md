@@ -131,3 +131,25 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - Segue a SPEC nova, não o GIF antigo (`gire-celular.gif`, de arco pontilhado e celular girado).
 - Os desenhos estão em `src/palco/gire.js` como código (provisórios). Se o Cadu quiser desenhar à mão, dá para trocar por uma folha de quadros em `assets/ui/`.
 - Grade própria de 200×320 em pé, com escala inteira em pixels reais, como o palco.
+
+## Auditoria visual (26/11, com o painel do navegador visível e lupa de 2× a 5×)
+
+### Restos de pintura com o `zoom` (os "quadradinhos pontilhados" do print do Cadu)
+- Com o palco ampliado por `zoom`, o Chrome às vezes **não repinta** um pedaço da tela depois de uma animação: sobravam pedaços da moldura pontilhada da janela de status (quando ela deslizava e alargava na vez dos inimigos) e letras "sumidas" em falas longas.
+- **Status:** não anima mais `left`/`width`. A janela vai direto para o tamanho final (a moldura é pintada uma vez só) e um recorte (`clip-path`) abre do retângulo antigo até o novo, em passos.
+- **Letras (fita, aviso, diálogo):** a entrada usa `visibility` e `top` em vez de `opacity` e `transform`. Opacity/transform viram camadas separadas no navegador, e era aí que a repintura falhava.
+- Testado ao vivo na escala do Cadu (2× com zoom de 125% do Windows), várias vezes: sem restos e sem letras faltando.
+
+### Outras correções da auditoria
+- **Status com 5+ heróis:** o nome ganhou 6 px e, se ainda não couber, perde letras inteiras do fim (antes era cortado no meio da letra e encostava no rótulo PV).
+- **Caixa de diálogo** cresce para cima conforme o número de linhas (antes, 3 linhas encostavam na borda de baixo).
+- **Inimigos** com 8 px de vão entre eles (antes ficavam colados).
+- **Mesa:** a borda de quem age agora sai na cor do herói (a cor não era aplicada); campos 2 px mais altos (as letras eram cortadas embaixo); listas suspensas com setinha pixel art; ✎ do inimigo na segunda linha (caía sozinho numa terceira); linha da AÇÃO cabe numa linha só.
+- **Lupa de depuração:** `inspecionar(x, y, escala)` no console (F12) do palco e da mesa amplia um pedaço da tela para conferir pixel por pixel.
+
+### Conferido e certo
+- Fita (abre do centro, caudas, letra por letra, fecha para o centro), aviso central (linha dourada, abre na vertical, título, divisor, linha), entrada em combate (clarão, heróis deslizando um atrás do outro, inimigos com fade), barra de cima e colunas da mesa.
+
+### Ainda diferente da SPEC (pequeno, anotado para o Marco 4)
+- As **cintilas** nas pontas da fita e da linha dourada do aviso ainda não existem.
+- Na coluna de inimigos da mesa em escala 1× (janela estreita), a barra de rolagem pode empurrar o ✎ para uma terceira linha; em 2× (o normal no 1080p) cabe.

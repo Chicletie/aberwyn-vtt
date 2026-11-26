@@ -14,7 +14,13 @@ export function h(tag, atributos = {}, ...filhos) {
     if (valor === undefined || valor === null || valor === false) continue;
     if (nome.startsWith('on')) el.addEventListener(nome.slice(2), valor);
     else if (nome === 'class') el.className = valor;
-    else if (nome === 'style') Object.assign(el.style, valor);
+    else if (nome === 'style') {
+      // Variáveis CSS ("--cor") só funcionam com setProperty; Object.assign as ignorava.
+      for (const [prop, v] of Object.entries(valor)) {
+        if (prop.startsWith('--')) el.style.setProperty(prop, v);
+        else el.style[prop] = v;
+      }
+    }
     else if (nome === 'dataset') Object.assign(el.dataset, valor);
     else if (nome in el && typeof valor !== 'string') el[nome] = valor;
     else el.setAttribute(nome, valor === true ? '' : valor);

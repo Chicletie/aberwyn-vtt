@@ -148,14 +148,15 @@ function linhaInimigo(c, ctx) {
       rotulo('PV', 'sigla-pv'),
       campoNumero(c.pv.atual, (n) => alterar((s) => E.definirRecurso(s, c.id, 'pv', 'atual', n)), 30),
       h('span', { class: 't-corpo m-max' }, `/${c.pv.max}`),
-      botao('−', (ev) => alterar((s) => E.aplicarDano(s, c.id, ev.shiftKey ? 10 : 1)), { classe: 'mini', titulo: 'Shift = 10' }),
-      botao('✎', () => J.abrirFicha(ctx, c.id), { classe: 'mini' })),
+      botao('−', (ev) => alterar((s) => E.aplicarDano(s, c.id, ev.shiftKey ? 10 : 1)), { classe: 'mini', titulo: 'Shift = 10' })),
     h('span', { class: 'm-inimigo-linha' },
       c.turnosPorRodada > 1 ? rotulo(`${c.turnosUsados}/${c.turnosPorRodada}T`, 'm-turnos') : null,
       rotulo('ESTUDO'),
       seletor([[null, '−'], [7, '7+'], [10, '10+'], [13, '13+']], nivel, (n) => alterar((s) => E.definirEstudo(s, c.id, n, s.agindoId))),
       botao('VER PV', () => alterar((s) => E.definirMostrarPv(s, c.id, !c.mostrarPv)), { ligado: c.mostrarPv, titulo: 'Regra da casa: barra de PV atual sob o inimigo (com Estudo 7+)' }),
-      c.lado === 'vilao' ? seletor([[1, 'F1'], [2, 'F2'], [3, 'F3']], e.fase, (f) => J.trocarFase(ctx, c, f)) : null),
+      c.lado === 'vilao' ? seletor([[1, 'F1'], [2, 'F2'], [3, 'F3']], e.fase, (f) => J.trocarFase(ctx, c, f)) : null,
+      h('span', { class: 'm-espaco' }),
+      botao('✎', () => J.abrirFicha(ctx, c.id), { classe: 'mini', titulo: 'Ficha do inimigo' })),
   );
 }
 
@@ -267,13 +268,13 @@ function painelAcao(ctx) {
         : campoTexto(r.item ?? '', (v, final) => {
             r.item = v || null;
             if (final) atualizarPrevia();
-          }, { largura: 90, placeholder: 'nome (opcional)' }),
+          }, { largura: 80, placeholder: 'nome' }),
       rotulo('CUSTO'),
       campoNumero(r.custoPm, (n) => {
         r.custoPm = Math.max(0, n);
         ctx.desenhar();
       }),
-      rotulo('PM · DESCONTA SOZINHO', 'apagado')),
+      h('span', { class: 't-rotulo', title: 'O PM é descontado sozinho ao EXECUTAR' }, 'PM')),
     h('div', { class: 'm-linha' },
       rotulo('ALVOS'),
       ...linhaAlvos,

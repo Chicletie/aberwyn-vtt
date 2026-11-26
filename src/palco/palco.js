@@ -716,7 +716,9 @@ export function criarPalco(raiz, opcoes = {}) {
     camadas.painel.classList.toggle('so-status', !comMenu);
 
     const larguraStatus = comMenu ? 322 : 400;
-    posicionar(janelaStatus, comMenu ? 156 : 40, 202, larguraStatus, 66);
+    const xStatus = comMenu ? 156 : 40;
+    animarJanelaStatus(xStatus, larguraStatus);
+    posicionar(janelaStatus, xStatus, 202, larguraStatus, 66);
     if (comMenu) {
       retratoPainel.textContent = inicial(agindo);
       retratoPainel.style.background = agindo.corAssinatura;
@@ -725,6 +727,27 @@ export function criarPalco(raiz, opcoes = {}) {
       janelaSubmenu.hidden = true;
     }
     desenharStatus(estado, herois, larguraStatus);
+  }
+
+  /**
+   * A janela de status muda entre "ao lado do menu" (156, 322 de largura) e "centralizada"
+   * (40, 400). Antes, left e width eram animados, e a moldura pontilhada era repintada em cada
+   * passo; alguns navegadores deixavam restos dela ("quadradinhos pontilhados") na janela.
+   * Agora a janela vai direto para o tamanho final (a moldura é pintada uma vez) e um recorte
+   * (clip-path) abre do retângulo antigo até o novo, em passos de pixel.
+   */
+  let statusAnterior = null;
+  function animarJanelaStatus(x, largura) {
+    const antes = statusAnterior;
+    statusAnterior = { x, largura };
+    if (!antes || primeiroEstado || (antes.x === x && antes.largura === largura)) return;
+    // Onde o retângulo antigo fica dentro do novo (o que passa da borda nova é ignorado).
+    const esquerda = Math.max(0, antes.x - x);
+    const direita = Math.max(0, x + largura - (antes.x + antes.largura));
+    janelaStatus.animate(
+      [{ clipPath: `inset(0 ${direita}px 0 ${esquerda}px)` }, { clipPath: 'inset(0 0 0 0)' }],
+      { duration: 200, easing: 'steps(10)' },
+    );
   }
 
   function desenharMenu(heroi, destaque) {
@@ -865,7 +888,7 @@ export function criarPalco(raiz, opcoes = {}) {
     q('.faixinha').style.background = c.corAssinatura;
     const nome = q('.nome');
     nome.textContent = c.nome.slice(0, 8); // nomes com mais de 8 letras são cortados
-    const xRotulos = larga ? 70 : 50;
+    const xRotulos = larga ? 70 : 56;
     const larguraNumero = larga ? 50 : 20;
     const larguraPi = 12;
     const folga = larga ? 4 : 3;
@@ -875,8 +898,12 @@ export function criarPalco(raiz, opcoes = {}) {
     const larguraIcones = maxIcones ? maxIcones * 8 + 2 : 0;
     // Rótulo (7 px) + 2 px de folga antes da barra, alinhado pelo topo com o contorno da barra.
     const xBarra = xRotulos + 9;
-    // O nome nunca encosta no rótulo PV: a caixa do nome acaba 3 px antes e corta o que sobrar.
-    posicionar(nome, 5, -3, xRotulos - 8);
+    // O nome nunca encosta no rótulo PV: se não couber, perde letras inteiras do fim
+    // (cortar no meio de uma letra fica feio em pixel art).
+    const espacoNome = xRotulos - 8;
+    nome.style.width = 'max-content';
+    while (nome.textContent.length > 1 && larguraNaGrade(nome) > espacoNome) nome.textContent = nome.textContent.slice(0, -1);
+    posicionar(nome, 5, -3, espacoNome);
     const larguraBarra = largura - xBarra - folga - larguraNumero - folga - larguraPi - larguraIcones;
 
     posicionar(q('.r-pv'), xRotulos, 0, 7, 5);
@@ -970,11 +997,18 @@ export function criarPalco(raiz, opcoes = {}) {
     const texto = criar('div', 't-corpo texto-dialogo', caixaDialogo);
     posicionar(texto, xTexto, f ? 12 : 0, 400 - 12 - xTexto - 8);
     const fim = escreverLetraPorLetra(texto, dialogo.texto, 150, 18);
+    // A caixa cresce para cima conforme o número de linhas (a base fica sempre em y=198,
+    // logo acima do painel). Mínimo de 62 px, para caber o retrato de 48×48.
+    caixaDialogo.hidden = false;
+    const escala = raiz.getBoundingClientRect().width / 480 || 1;
+    const alturaTexto = Math.round(texto.getBoundingClientRect().height / escala);
+    const alturaConteudo = Math.max(50, (f ? 12 : 0) + alturaTexto + 6);
+    const altura = alturaConteudo + 12;
     const seta = criar('div', 'seta-fala', caixaDialogo);
-    posicionar(seta, 400 - 12 - 9, 44, 5, 3);
+    posicionar(seta, 400 - 12 - 9, alturaConteudo - 6, 5, 3);
     seta.style.backgroundImage = `url(${TRIANGULO_FALA})`;
     seta.style.animationDelay = `${fim}ms`;
-    posicionar(caixaDialogo, 40, 136, 400, 62);
+    posicionar(caixaDialogo, 40, 198 - altura, 400, altura);
   }
 
   // ───────────── Números flutuantes ─────────────

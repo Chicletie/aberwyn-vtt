@@ -70,7 +70,9 @@
 }
 
 /* Letra por letra (fita, aviso, diálogo): cada letra nasce 1 px abaixo, sobe e assenta.
-   Sem valores intermediários (nada de meio transparente), como quadros de animação. */
+   Usa visibility e top (e não opacity/transform) de propósito: opacity e transform viram
+   "camadas" separadas no navegador, e com o zoom do palco o Chrome às vezes não repintava
+   o lugar da letra depois da animação (letras "sumidas" e restos de moldura). Ver DECISOES. */
 .palavra {
   display: inline-block;
   white-space: nowrap;
@@ -78,11 +80,12 @@
 
 .letra {
   display: inline-block;
+  position: relative;
   animation: letra-entra 80ms linear both;
 }
 
 @keyframes letra-entra {
-  0%, 49.9% { opacity: 0; transform: translateY(1px); }
-  50%, 99.9% { opacity: 1; transform: translateY(1px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0%, 49.9% { visibility: hidden; top: 1px; }
+  50%, 99.9% { visibility: visible; top: 1px; }
+  100% { visibility: visible; top: 0; }
 }

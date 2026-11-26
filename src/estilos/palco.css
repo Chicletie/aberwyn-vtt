@@ -325,10 +325,10 @@
   opacity: 0;
 }
 
+/* Sem transição de left/width: a troca é animada com clip-path (ver animarJanelaStatus em
+   palco.js), para a moldura não deixar restos pintados no caminho. */
 .janela-status {
-  transition:
-    left 200ms steps(10),
-    width 200ms steps(10);
+  contain: paint;
 }
 
 .retrato {
