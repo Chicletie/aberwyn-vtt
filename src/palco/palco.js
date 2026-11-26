@@ -605,13 +605,14 @@ export function criarPalco(raiz, opcoes = {}) {
     const trocas = { '#c7cfcc': cor, '#8b908e': escurecer(cor, 0.25) };
     if (efeito) Object.assign(trocas, { '#1b2b46': cores.contorno });
     posicionar(caudaEsq, -14, altura - 14, 19, 19);
-    posicionar(caudaDir, largura - 5, altura - 14, 19, 19);
-    // O recorte de cada cauda pega junto uns pixels da ponta da faixa (que a faixa de verdade
-    // cobre). Eles são apagados, senão aparecem como uma "segunda rebarba" se a cauda e a faixa
-    // ficarem 1–2 px desencontradas (aconteceu no Firefox). Fica só a cauda e a dobra escura.
-    recolorir(`${UI}fita.png`, trocas, { x: 15, y: 5, largura: 19, altura: 19 }, { x: 14, y: 0, largura: 5, altura: 14 })
+    posicionar(caudaDir, largura - 6, altura - 14, 19, 19); // a borda direita da faixa cai na coluna 5 do recorte
+    // Onde está cada parte em fita.png (110×30): a faixa ocupa as linhas 3–21 e as colunas
+    // 30–82; cada cauda ocupa as linhas 8–26 (5 abaixo da faixa) e sai 14 px para fora dela.
+    // O recorte de cada cauda (19×19) pega junto uns pixels da ponta da faixa, que a faixa de
+    // verdade cobre; eles são apagados. Fica só a cauda (com as duas bordas) e a dobra escura.
+    recolorir(`${UI}fita.png`, trocas, { x: 16, y: 8, largura: 19, altura: 19 }, { x: 14, y: 0, largura: 5, altura: 14 })
       .then((url) => (caudaEsq.style.backgroundImage = `url(${url})`));
-    recolorir(`${UI}fita.png`, trocas, { x: 76, y: 5, largura: 19, altura: 19 }, { x: 0, y: 0, largura: 6, altura: 14 })
+    recolorir(`${UI}fita.png`, trocas, { x: 77, y: 8, largura: 19, altura: 19 }, { x: 0, y: 0, largura: 6, altura: 14 })
       .then((url) => (caudaDir.style.backgroundImage = `url(${url})`));
   }
 

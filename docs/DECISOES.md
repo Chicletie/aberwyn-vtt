@@ -161,6 +161,7 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - Os tons do aviso (dourado, vermelho, vinho) recortam a mesma imagem trocando a cor da borda clara.
 - Cuidado ao estilizar uma janela: usar `background-color`, nunca o atalho `background`, que apagaria a moldura.
 
-### Fita no Firefox ("segunda rebarba", print do Cadu de 26/11)
-- A cauda da fita é recortada da `fita.png` e o recorte trazia junto uns pixels da ponta da faixa (que a faixa de verdade cobre). No Firefox, cauda e faixa ficavam 1–2 px desencontradas, e esses pixels apareciam embaixo da ponta da faixa como uma segunda rebarba. Agora esses pixels são apagados do recorte (`recolorir(…, apagar)`): fica só a cauda e a dobra escura.
+### Fita: recorte das caudas ("segunda rebarba" e borda de baixo faltando, prints do Cadu de 26/11)
+- **Erro meu, não do Firefox:** o recorte das caudas em `fita.png` estava 3 linhas acima e 1 coluna à esquerda do lugar certo. Ele cortava a borda de baixo da cauda (por isso só aparecia a de cima) e pegava um pedaço da faixa (a "segunda rebarba"). A cauda direita também estava 1 px para fora.
+- Agora: a faixa da `fita.png` ocupa as linhas 3–21 e as colunas 30–82; cada cauda, as linhas 8–26. O recorte segue isso, e os pixels da ponta da faixa que vêm junto são apagados (`recolorir(…, apagar)`). Conferido montando a fita pixel a pixel e no navegador.
 - Todas as imagens pequenas do palco (caudas, setas, ícones, pena, rótulos) têm `background-size: 100% 100%`, para nenhum navegador escalar a imagem diferente da caixa.
