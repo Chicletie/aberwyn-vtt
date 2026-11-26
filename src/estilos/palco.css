@@ -8,15 +8,20 @@ body {
   background: #090a14; /* faixa escura em volta do palco (letterbox) */
 }
 
-#palco {
+/* Posiciona o palco no centro da janela (o JS calcula left/top em pixels reais). */
+#suporte {
   position: absolute;
   left: 0;
   top: 0;
+}
+
+#palco {
+  position: relative;
   width: 480px;
   height: 270px;
   background: #253a5e;
-  /* A ampliação acontece a partir do canto de cima à esquerda; o JS calcula onde posicionar. */
-  transform-origin: 0 0;
+  /* A ampliação é feita com "zoom" (o JS define o valor). Ver DECISOES: com "transform: scale"
+     as bordas de 1 px ficavam finas ou grossas demais conforme o zoom do navegador. */
   overflow: hidden;
 }
 
