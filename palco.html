@@ -8,19 +8,13 @@
     <link rel="stylesheet" href="/src/estilos/palco.css" />
   </head>
   <body class="pixel">
-    <!-- O palco inteiro mora nesta caixa de 480×270 "pixels de pixel art".
-         O JavaScript amplia por um número inteiro para caber na tela sem borrar. -->
     <!-- O "suporte" só posiciona o palco no centro; quem amplia é o #palco (via zoom). -->
     <div id="suporte">
-    <div id="palco">
-      <div class="janela-teste">
-        <p class="titulo">Olá, Errantes!</p>
-        <p class="corpo">Anciã, Guardião, Põe, Ação, Coração</p>
-        <p class="corpo">Poção, Éter, Feitiço, Ação</p>
-        <p class="rotulo">PV PM RODADA GRUPO</p>
+      <!-- O palco inteiro mora nesta caixa de 480×270 "pixels de pixel art".
+           Tudo dentro dele é criado pelo src/palco/renderizar.js. -->
+      <div id="palco">
+        <p id="debug" class="t-rotulo" hidden></p>
       </div>
-      <p id="debug" hidden></p>
-    </div>
     </div>
     <script type="module" src="/src/palco/main.js"></script>
   </body>

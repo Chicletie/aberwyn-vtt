@@ -1,14 +1,17 @@
-/* Estilos do palco (a tela que os jogadores veem). Marco 0: só o teste das fontes. */
+/*
+  Estilos do palco (a tela que os jogadores veem).
+  Todas as medidas estão em pixels da grade de 480×270; o zoom do #palco amplia tudo junto.
+  As cores vêm de variáveis geradas por src/paleta.js (--cor-…).
+*/
 
 html,
 body {
   margin: 0;
   height: 100%;
   overflow: hidden;
-  background: #090a14; /* faixa escura em volta do palco (letterbox) */
+  background: var(--cor-contorno, #090a14); /* faixa escura em volta do palco (letterbox) */
 }
 
-/* Posiciona o palco no centro da janela (o JS calcula left/top em pixels reais). */
 #suporte {
   position: absolute;
   left: 0;
@@ -19,63 +22,538 @@ body {
   position: relative;
   width: 480px;
   height: 270px;
-  background: #253a5e;
-  /* A ampliação é feita com "zoom" (o JS define o valor). Ver DECISOES: com "transform: scale"
-     as bordas de 1 px ficavam finas ou grossas demais conforme o zoom do navegador. */
   overflow: hidden;
+  background: var(--cor-contorno);
+  /* A ampliação é feita com "zoom" (o JS define o valor). Ver DECISOES. */
 }
 
-/* Caixa de teste provisória (no Marco 1 vira a janela "Pena e Fio" de verdade). */
-.janela-teste {
+/* Tudo dentro do palco é posicionado na grade, em pixels inteiros. */
+#palco div {
   position: absolute;
-  left: 40px;
-  top: 60px;
-  width: 400px;
-  height: 150px;
   box-sizing: border-box;
-  padding: 12px 16px;
-  background: #253a5e;
-  border: 1px solid #c7cfcc;
-  outline: 1px solid #090a14;
+  image-rendering: pixelated;
 }
 
-.janela-teste p {
-  margin: 0;
+#palco [hidden] {
+  display: none;
 }
 
-.titulo {
+/* ───────────── Texto (tamanhos nativos; ver fontes.css) ───────────── */
+
+.t-titulo {
   font-family: var(--fonte-titulo);
   font-size: var(--tam-titulo);
-  line-height: 32px;
-  color: #e8c170;
+  line-height: 30px; /* = subida + descida da fonte: a linha de base cai num pixel inteiro */
+  white-space: nowrap;
 }
 
-.corpo {
+.t-corpo {
   font-family: var(--fonte-corpo);
   font-size: var(--tam-corpo);
-  line-height: 24px; /* folga para acentos e cedilha (ver SPEC: linhas de corpo) */
-  color: #ebede9;
+  line-height: 19px;
+  white-space: nowrap;
+  color: var(--cor-texto);
 }
 
-.rotulo {
+.t-rotulo {
   font-family: var(--fonte-rotulo);
   font-size: var(--tam-rotulo);
-  line-height: 16px;
-  color: #a8b5b2;
+  line-height: 9px; /* idem: 8px deixava a letra em meio pixel */
+  white-space: nowrap;
   text-transform: uppercase;
-  margin-top: 8px !important;
+  color: var(--cor-texto-secundario);
 }
 
-/* Modo debug (tecla D): mostra a escala real e o dpr num canto. */
+/* ───────────── Janelas (molduras 9-slice desenháveis à mão) ───────────── */
+
+/* Janela grande: borda, chanfro, costura e nós dourados vêm de assets/ui/janela.png. */
+.janela {
+  border: 6px solid transparent;
+  border-image: url('/assets/ui/janela.png') 6 fill / 6px repeat;
+}
+
+/* Plaquinha: sem costura e sem nós (assets/ui/plaquinha.png). */
+.plaquinha {
+  border: 3px solid transparent;
+  border-image: url('/assets/ui/plaquinha.png') 3 fill / 3px repeat;
+}
+
+/* ───────────── Cenário e campo ───────────── */
+
+.cenario,
+.campo,
+.hud,
+.painel,
+.flutuantes,
+.cortina {
+  left: 0;
+  top: 0;
+  width: 480px;
+  height: 270px;
+}
+
+.lutador {
+  transition:
+    left 200ms steps(10),
+    top 200ms steps(10),
+    transform 160ms steps(12);
+}
+
+.lutador.sem-transicao {
+  transition: none;
+}
+
+.lutador .corpo {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--cor-contorno);
+  color: var(--cor-contorno);
+  text-align: center;
+  padding-top: 8px;
+}
+
+.lutador .sombra,
+.lutador .anel,
+.lutador .seta-agindo {
+  background-repeat: no-repeat;
+}
+
+.lutador .anel,
+.lutador .seta-agindo {
+  display: none;
+}
+
+/* Quem age: passo de 12 px para a frente, anel no chão e a seta atrás dele. */
+.lutador.agindo {
+  transform: translateX(12px);
+}
+
+.lutador.inimigo.agindo {
+  transform: translateX(-12px);
+}
+
+.lutador.agindo .sombra {
+  display: none;
+}
+
+.lutador.agindo .anel,
+.lutador.agindo .seta-agindo {
+  display: block;
+}
+
+.lutador.agindo .seta-agindo {
+  animation: seta-empurra 640ms steps(1) infinite;
+}
+
+.lutador.inimigo .seta-agindo {
+  transform: scaleX(-1);
+  animation-name: seta-empurra-inimigo;
+}
+
+/* Vai e volta 0→3 px na direção do herói, em passos de 1 pixel. */
+@keyframes seta-empurra {
+  0% { translate: 0 0; }
+  25% { translate: 1px 0; }
+  50% { translate: 2px 0; }
+  75% { translate: 3px 0; }
+}
+
+@keyframes seta-empurra-inimigo {
+  0% { translate: 0 0; }
+  25% { translate: -1px 0; }
+  50% { translate: -2px 0; }
+  75% { translate: -3px 0; }
+}
+
+/* Inimigo não revelado: silhueta. */
+.lutador.oculto .corpo {
+  filter: brightness(0);
+  opacity: 0.85;
+  color: transparent;
+}
+
+/* Herói caído: desbotado e deitado (até existir a pose "caido"). */
+.lutador.caido .corpo {
+  filter: grayscale(1);
+  opacity: 0.6;
+  transform: rotate(90deg);
+}
+
+/* Barra fina de PV do inimigo (regra da casa, "mostrar PV"). */
+.barra-inimigo {
+  background: var(--cor-fundo-escuro);
+  border: 1px solid var(--cor-contorno);
+}
+
+.barra-inimigo::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 2px;
+  width: calc(round(down, var(--fracao) * 24px, 1px));
+  background: var(--cor-pv);
+}
+
+/* ───────────── Faixa de turnos (0–32) ───────────── */
+
+.faixa-turnos {
+  left: 0;
+  top: 0;
+  width: 480px;
+  height: 32px;
+  background: var(--cor-fundo-escuro);
+  border-bottom: 1px solid var(--cor-contorno);
+  box-shadow: inset 0 -1px 0 var(--cor-linha-escura);
+}
+
+.rotulo-rodada {
+  left: 5px;
+  top: 2px;
+}
+
+.numero-rodada {
+  left: 6px;
+  top: 5px;
+  color: var(--cor-dourado);
+}
+
+/* O bloco só ganha moldura quando é a vez daquele lado. */
+.bloco-turnos {
+  border-image: none;
+}
+
+.bloco-turnos.da-vez {
+  border-image: url('/assets/ui/plaquinha.png') 3 fill / 3px repeat;
+}
+
+.rosto .rosto-desenho {
+  left: 0;
+  top: 0;
+  width: 24px;
+  height: 24px;
+  text-align: center;
+  color: var(--cor-contorno);
+  padding-top: 1px;
+}
+
+.rosto .rosto-sublinhado {
+  left: 0;
+  top: 24px;
+  width: 24px;
+  height: 1px;
+}
+
+.rosto.agiu .rosto-desenho {
+  filter: grayscale(0.7);
+  opacity: 0.45;
+}
+
+.icone-condicao {
+  background-repeat: no-repeat;
+}
+
+.icone-condicao.mais {
+  background: var(--cor-contorno);
+}
+
+.icone-condicao.mais::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 1px;
+  width: 1px;
+  height: 5px;
+  background: var(--cor-texto);
+  box-shadow: -2px 2px 0 -0px transparent;
+}
+
+.ponto-turno {
+  background: var(--cor-dourado);
+}
+
+.ponto-turno.usado {
+  background: var(--cor-costura);
+}
+
+.marca-agindo,
+.seta-vez,
+.setinha {
+  background-repeat: no-repeat;
+}
+
+.seta-vez {
+  transition: left 200ms steps(8);
+}
+
+/* ───────────── Fita (caixa de mensagem) ───────────── */
+
+.fita-faixa {
+  background: var(--cor-janela);
+  /* De fora para dentro: 1 px preto + 1 px na cor de quem age (só em cima e embaixo). */
+  border-top: 1px solid var(--cor-contorno);
+  border-bottom: 1px solid var(--cor-contorno);
+  border-left: 1px solid var(--cor-contorno);
+  border-right: 1px solid var(--cor-contorno);
+  box-shadow:
+    inset 0 1px 0 var(--cor-fita),
+    inset 0 -1px 0 var(--cor-fita),
+    inset 0 2px 0 var(--cor-janela-claro);
+  /* Estica a partir do centro (~0,3 s), em passos. */
+  animation: fita-estica 300ms steps(10) both;
+}
+
+.fita-cauda {
+  background-repeat: no-repeat;
+  animation: aparece 1ms 300ms both;
+}
+
+.fita-texto {
+  left: 8px;
+  top: -2px;
+  text-align: center;
+}
+
+.fita-texto.quebra {
+  white-space: normal;
+  line-height: 15px;
+  top: 1px;
+}
+
+.fita-texto .palavra {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.fita-texto .letra {
+  display: inline-block;
+  animation: letra-entra 80ms linear both;
+}
+
+@keyframes fita-estica {
+  from { clip-path: inset(0 50% 0 50%); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes aparece {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Cada letra nasce 1 px abaixo, sobe e assenta. Sem valores intermediários (nada de meio
+   transparente): cada trecho segura um valor fixo, como quadros de animação. */
+@keyframes letra-entra {
+  0%, 49.9% { opacity: 0; transform: translateY(1px); }
+  50%, 99.9% { opacity: 1; transform: translateY(1px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ───────────── Painel (200–270) ───────────── */
+
+.painel {
+  pointer-events: none;
+}
+
+.painel::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 200px;
+  width: 480px;
+  height: 70px;
+  background: var(--cor-fundo-escuro);
+}
+
+.janela-retrato,
+.janela-menu {
+  transition: opacity 150ms steps(4);
+}
+
+.painel.so-status .janela-retrato,
+.painel.so-status .janela-menu {
+  opacity: 0;
+}
+
+.janela-status {
+  transition:
+    left 200ms steps(10),
+    width 200ms steps(10);
+}
+
+.retrato {
+  left: 1px;
+  top: 3px;
+  width: 48px;
+  height: 48px;
+  text-align: center;
+  padding-top: 10px;
+  color: var(--cor-contorno);
+  font-family: var(--fonte-titulo);
+  font-size: var(--tam-titulo);
+  line-height: 30px;
+}
+
+.item-menu.proprio {
+  color: var(--cor-dourado);
+}
+
+.item-menu.selecionado {
+  color: var(--cor-dourado);
+}
+
+.pena {
+  background: url('/assets/ui/pena.png') no-repeat;
+}
+
+/* Linha do status */
+.linha-status .destaque-linha {
+  left: -3px;
+  top: -3px;
+  width: calc(100% + 6px);
+  height: 17px;
+  background: var(--cor-fundo-escuro);
+  border: 1px solid;
+}
+
+.linha-status .faixinha {
+  left: 0;
+  top: 1px;
+  width: 2px;
+  height: 9px;
+}
+
+.linha-status.caido-linha .nome {
+  color: var(--cor-costura);
+}
+
+.linha-status.crise .numero {
+  color: var(--cor-laranja);
+}
+
+.linha-status .numero {
+  text-align: right;
+}
+
+.linha-status .numero-pi {
+  color: var(--cor-texto);
+}
+
+.rotulo-3x5 {
+  background-repeat: no-repeat;
+}
+
+.linha-status .caido {
+  color: var(--cor-pv-crise);
+  text-align: center;
+  background: var(--cor-fundo-escuro);
+}
+
+/* Barras: contorno 1 px, fundo vazio escuro, cor com brilho em cima e sombra embaixo. */
+.barra {
+  background: var(--cor-fundo-escuro);
+  border: 1px solid var(--cor-contorno);
+}
+
+.barra .cheio,
+.barra .rastro {
+  left: 0;
+  top: 0;
+  height: 100%;
+}
+
+.barra .rastro {
+  background: var(--cor-texto);
+  transition: width 400ms steps(10);
+}
+
+.barra-pv .cheio {
+  background: linear-gradient(
+    var(--cor-pv-brilho) 0 1px,
+    var(--cor-pv) 1px 3px,
+    var(--cor-pv-sombra) 3px 4px
+  );
+}
+
+.crise .barra-pv .cheio {
+  background: linear-gradient(
+    var(--cor-pv-crise-brilho) 0 1px,
+    var(--cor-pv-crise) 1px 3px,
+    var(--cor-pv-crise-sombra) 3px 4px
+  );
+}
+
+.barra-pm .cheio {
+  background: linear-gradient(var(--cor-pm-brilho) 0 1px, var(--cor-pm) 1px 2px, var(--cor-pm-sombra) 2px 3px);
+}
+
+.caido-linha .barra .cheio,
+.caido-linha .barra .rastro {
+  display: none;
+}
+
+/* Marquinha dourada no meio da barra de PV (ponto de crise). */
+.marca-crise {
+  background: var(--cor-dourado);
+}
+
+/* ───────────── Números flutuantes ───────────── */
+
+.flutuante {
+  pointer-events: none;
+  /* Contorno de 1 px em volta (8 vizinhos). */
+  text-shadow:
+    -1px -1px 0 var(--cor-contorno), 0 -1px 0 var(--cor-contorno), 1px -1px 0 var(--cor-contorno),
+    -1px 0 0 var(--cor-contorno), 1px 0 0 var(--cor-contorno),
+    -1px 1px 0 var(--cor-contorno), 0 1px 0 var(--cor-contorno), 1px 1px 0 var(--cor-contorno);
+  animation: flutua 1500ms steps(30) forwards;
+}
+
+.flutuante.dano {
+  color: var(--cor-texto);
+}
+
+.flutuante.cura {
+  color: var(--cor-pv-brilho);
+}
+
+.flutuante.pm {
+  color: var(--cor-pm);
+}
+
+.flutuante.condicao {
+  color: var(--cor-texto-secundario);
+}
+
+/* Sobe uns pixels e some. */
+@keyframes flutua {
+  0% { transform: translateY(4px); opacity: 1; }
+  20% { transform: translateY(-2px); opacity: 1; }
+  80% { transform: translateY(-6px); opacity: 1; }
+  100% { transform: translateY(-8px); opacity: 0; }
+}
+
+/* ───────────── Cortina ───────────── */
+
+.cortina {
+  background: var(--cor-contorno);
+}
+
+.janela-cortina .t-corpo {
+  left: 10px;
+  top: 6px;
+}
+
+/* ───────────── Debug (tecla D) ───────────── */
+
 #debug {
   position: absolute;
   right: 2px;
   bottom: 2px;
   margin: 0;
-  font-family: var(--fonte-rotulo);
-  font-size: var(--tam-rotulo);
-  line-height: 8px;
-  color: #a8ca58;
-  background: #090a14;
+  z-index: 9999;
+  color: var(--cor-pv-brilho);
+  background: var(--cor-contorno);
   padding: 2px;
 }

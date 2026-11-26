@@ -1,6 +1,14 @@
-// Ponto de entrada do palco. No Marco 0 ele só faz duas coisas:
+// Ponto de entrada do palco (a tela dos jogadores):
 // 1) amplia o palco por um número INTEIRO de pixels reais da tela (pixel art nítida);
-// 2) liga/desliga o modo debug com a tecla D.
+// 2) escuta o canal e redesenha tudo a cada estado que a mesa mandar;
+// 3) liga/desliga o modo debug com a tecla D.
+// O palco nunca altera o estado: só desenha.
+
+import { aplicarPaletaNoCss } from '../paleta.js';
+import { abrirCanal } from '../canal.js';
+import { renderizar } from './renderizar.js';
+
+aplicarPaletaNoCss();
 
 const LARGURA = 480;
 const ALTURA = 270;
@@ -45,4 +53,28 @@ ajustarEscala();
 
 window.addEventListener('keydown', (evento) => {
   if (evento.key === 'd' || evento.key === 'D') debug.hidden = !debug.hidden;
+});
+
+// ───────────── Canal: recebe o estado da mesa ─────────────
+
+// Espera as fontes pixel carregarem antes de desenhar (a largura das fitas depende delas).
+const fontesProntas = Promise.all([
+  document.fonts.load('27px "Jersey 15 PF"'),
+  document.fonts.load('18.6667px "Jersey 10 PF"'),
+  document.fonts.load('8px "Silkscreen"'),
+]);
+
+const canal = abrirCanal('local');
+
+canal.aoReceberEstado(async (estado) => {
+  // Fica no console para conferir com F12 o que REALMENTE chegou (e o que não chegou).
+  console.log('[palco] estado recebido:', estado);
+  window.ultimoEstado = estado;
+  await fontesProntas;
+  renderizar(estado);
+});
+
+fontesProntas.then(() => {
+  renderizar(null); // "Aguardando a mesa…" até chegar o primeiro estado
+  canal.pedirEstado();
 });
