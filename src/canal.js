@@ -17,7 +17,7 @@ const INTERVALO_MINIMO_MS = 100; // no máximo 10 gravações por segundo no ser
  *   sala = código da sala online; online = usar o serviço online (se estiver configurado).
  */
 export function abrirCanal(opcoes = {}) {
-  const local = new BroadcastChannel('errante-vtt:local');
+  const local = new BroadcastChannel('aberwyn-vtt:local');
   let ultimoEnviado = null;
   let sala = opcoes.sala ?? null;
   const usarOnline = !!opcoes.online && onlineConfigurado();

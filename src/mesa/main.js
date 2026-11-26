@@ -43,7 +43,12 @@ ajustarEscala();
 
 // ───────────── Sala online ─────────────
 // O código da sala fica guardado neste navegador (não vai no estado, que pode virar arquivo).
-const CHAVE_SALA = 'errante-vtt:sala';
+const CHAVE_SALA = 'aberwyn-vtt:sala';
+// Nome antigo do projeto: se houver uma sala guardada com ele, ela é reaproveitada.
+if (!localStorage.getItem(CHAVE_SALA) && localStorage.getItem('errante-vtt:sala')) {
+  localStorage.setItem(CHAVE_SALA, localStorage.getItem('errante-vtt:sala'));
+  localStorage.removeItem('errante-vtt:sala');
+}
 
 /** Código de sala novo: 5 letras e números, sem os que se confundem (O/0, I/1, L). */
 function gerarCodigoSala() {

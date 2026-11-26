@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 
 export default defineConfig({
   // Caminhos relativos: assim o site funciona dentro de uma subpasta do GitHub Pages
-  // (ex.: usuario.github.io/errante-vtt/) sem precisar configurar o endereço.
+  // (ex.: usuario.github.io/aberwyn-vtt/) sem precisar configurar o endereço.
   base: './',
   build: {
     // O projeto tem DUAS páginas: a mesa (index.html) e o palco (palco.html).

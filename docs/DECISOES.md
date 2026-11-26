@@ -16,7 +16,7 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - Por isso os caminhos ficam `public/assets/...` no seu computador, mas `assets/...` no site.
 
 ### Caminhos relativos (`base: './'`)
-- O GitHub Pages publica o site numa subpasta (`usuario.github.io/errante-vtt/`). Com caminhos relativos, o site funciona lá sem configurar o endereço.
+- O GitHub Pages publica o site numa subpasta (`usuario.github.io/aberwyn-vtt/`). Com caminhos relativos, o site funciona lá sem configurar o endereço.
 
 ### Escala pixel perfeita já no Marco 0
 - O teste das fontes só vale se a escala estiver certa, então a ampliação inteira com `devicePixelRatio` já entrou agora (`src/palco/main.js`). No teste deste computador: zoom do Windows de 125% (`dpr 1,25`) e escala real 2×, exatamente o caso que a especificação previu.
@@ -199,3 +199,9 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 
 ### Ficou para depois
 - **Rostos que acendem na cortina quando cada jogador chega:** exige saber quem é cada jogador, o que só existe com os logins do Marco 5. (Contar conexões anônimas exigiria deixar qualquer um escrever na sala.)
+
+### Nome do projeto: aberwyn-vtt (26/11)
+- O projeto passou de `errante-vtt` (nome provisório da SPEC) para **`aberwyn-vtt`**, por tematização. Continua sem "Fabula" no nome, como a licença pede.
+- O nome da **campanha** na cortina ("Errantes") é outra coisa: é um texto editável na mesa (painel CORTINA) e não depende do nome do projeto.
+- Os salvamentos do navegador mudaram de nome (`aberwyn-vtt:estado`, `aberwyn-vtt:sala`); na primeira vez, a mesa lê os antigos (`errante-vtt:…`) e muda para os novos, então nada se perde.
+- A pasta no computador continua `errante-vtt` por enquanto (renomear agora quebraria o servidor que está rodando); dá para renomear depois sem mudar nada no código.

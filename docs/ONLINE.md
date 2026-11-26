@@ -9,17 +9,17 @@ Você faz os passos que exigem a sua conta (criar, entrar, copiar); o resto já 
 
 1. Abra **https://console.firebase.google.com** e entre com a sua conta Google.
 2. Clique em **"Criar um projeto"** (ou "Adicionar projeto").
-   - Nome: `errante-vtt` (pode ser outro; o Firebase pode acrescentar umas letras no fim).
+   - Nome: `aberwyn-vtt` (pode ser outro; o Firebase pode acrescentar umas letras no fim).
    - Gemini / Google Analytics: pode **desativar** os dois. Não precisamos.
    - Clique em **Criar projeto** e espere. Deve aparecer "Seu novo projeto está pronto". **Continuar**.
 3. **Registrar o app da web:** na página inicial do projeto, clique no ícone **`</>`** ("Web").
-   - Apelido: `errante-vtt`. **Não** marque "Firebase Hosting". Clique em **Registrar app**.
+   - Apelido: `aberwyn-vtt`. **Não** marque "Firebase Hosting". Clique em **Registrar app**.
    - Aparece um bloco de código com `const firebaseConfig = { apiKey: "...", ... }`.
    - **Copie esse bloco inteiro e me mande aqui no chat.** (Não é senha: esses valores ficam visíveis no site de qualquer jeito. Quem protege os dados são as regras do passo 6.)
 4. **Banco de dados:** no menu da esquerda, **Criação → Realtime Database** → **Criar banco de dados**.
    - Local: **Estados Unidos (us-central1)**.
    - Regras de segurança: escolha **"Iniciar no modo bloqueado"**. → **Ativar**.
-   - Deve aparecer uma página com um endereço tipo `https://errante-vtt-xxxx-default-rtdb.firebaseio.com/` e `null` embaixo.
+   - Deve aparecer uma página com um endereço tipo `https://aberwyn-vtt-xxxx-default-rtdb.firebaseio.com/` e `null` embaixo.
 5. **Login:** menu da esquerda, **Criação → Authentication** → **Vamos começar**.
    - Em "Provedores de login", clique em **E-mail/senha**, ative a **primeira** chave (não a de "link por e-mail") e **Salvar**.
    - Vá na aba **Usuários** → **Adicionar usuário**: o e-mail e a senha que **você** vai usar para entrar na mesa. **A senha fica só com você; não me mande.**
@@ -53,6 +53,6 @@ Em **Realtime Database → Regras**, clique em **Rules Playground** (ou "Simulad
 
 ## Parte 4 — Publicar o palco (GitHub Pages)
 
-Eu crio o repositório `errante-vtt` na sua conta do GitHub e envio o projeto (com a sua autorização).
+Eu crio o repositório `aberwyn-vtt` na sua conta do GitHub e envio o projeto (com a sua autorização).
 Depois, no GitHub: **Settings → Pages → Source: GitHub Actions**. Em uns 2 minutos o palco fica em
-`https://<seu-usuario>.github.io/errante-vtt/palco.html`, e o botão COPIAR LINK da mesa já usa esse endereço.
+`https://<seu-usuario>.github.io/aberwyn-vtt/palco.html`, e o botão COPIAR LINK da mesa já usa esse endereço.

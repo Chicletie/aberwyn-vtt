@@ -161,7 +161,7 @@ export function abrirAjuda(ctx) {
     tituloSecao('ARQUIVO'),
     h('div', { class: 't-rotulo m-dica' }, 'A MESA SALVA SOZINHA NESTE NAVEGADOR. O ARQUIVO .JSON É O BACKUP (E SERVE PARA PREPARAR COMBATES).'),
     h('div', { class: 'm-linha' },
-      botao('SALVAR ARQUIVO', () => exportarJson(ctx.estado, `errante-sessao-${ctx.estado.sessao}.json`)),
+      botao('SALVAR ARQUIVO', () => exportarJson(ctx.estado, `aberwyn-sessao-${ctx.estado.sessao}.json`)),
       botao('ABRIR ARQUIVO', async () => {
         try {
           const novo = await importarJson();

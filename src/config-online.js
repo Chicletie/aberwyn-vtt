@@ -12,6 +12,6 @@ export const firebaseConfig = null;
 
 /**
  * Endereço do palco publicado no GitHub Pages (o link que os jogadores abrem).
- * Ex.: 'https://seu-usuario.github.io/errante-vtt/palco.html'. null = usa o endereço atual.
+ * Ex.: 'https://seu-usuario.github.io/aberwyn-vtt/palco.html'. null = usa o endereço atual.
  */
 export const urlPalcoPublicado = null;

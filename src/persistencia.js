@@ -7,7 +7,9 @@
 
 import { migrar } from './estado.js';
 
-const CHAVE = 'errante-vtt:estado';
+const CHAVE = 'aberwyn-vtt:estado';
+// Nome antigo do projeto (errante-vtt): lido uma vez e mudado para o novo, para não perder nada.
+const CHAVE_ANTIGA = 'errante-vtt:estado';
 const MAX_DESFAZER = 50;
 
 /** Salva o estado no navegador. */
@@ -22,6 +24,10 @@ export function salvarLocal(estado) {
 
 /** Lê o estado salvo (ou null se não houver). */
 export function carregarLocal() {
+  if (!localStorage.getItem(CHAVE) && localStorage.getItem(CHAVE_ANTIGA)) {
+    localStorage.setItem(CHAVE, localStorage.getItem(CHAVE_ANTIGA));
+    localStorage.removeItem(CHAVE_ANTIGA);
+  }
   const texto = localStorage.getItem(CHAVE);
   if (!texto) return null;
   try {

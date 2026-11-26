@@ -1,9 +1,9 @@
-# errante-vtt
+# aberwyn-vtt
 
 Mesa virtual (VTT) com tela no estilo JRPG clássico e pixel art, feita para a campanha **Errantes**.
 O mestre controla tudo numa **mesa** no próprio computador; cada jogador abre o **palco** no navegador e assiste.
 
-> Projeto em construção (Marco 2: mesa completa, ainda só no computador do mestre).
+> Projeto em construção (Marco 3: pondo online).
 
 ## Avisos
 

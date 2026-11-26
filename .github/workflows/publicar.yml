@@ -1,6 +1,6 @@
 # Publica o site no GitHub Pages sempre que algo é enviado para a branch "main".
 # O GitHub roda isto sozinho: instala as dependências, gera a pasta dist/ (npm run build)
-# e publica. O palco fica em https://<usuario>.github.io/errante-vtt/palco.html
+# e publica. O palco fica em https://<usuario>.github.io/aberwyn-vtt/palco.html
 
 name: Publicar no GitHub Pages
 
