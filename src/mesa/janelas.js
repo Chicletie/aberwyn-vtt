@@ -409,3 +409,82 @@ export function abrirOrdemPainel(ctx) {
   abrirJanela('ORDEM DO PAINEL', corpo, { largura: 300 });
 }
 
+
+// ───────────── Online: login do mestre, sala e link ─────────────
+
+/** Mensagens de erro do login em português (os códigos vêm do Firebase). */
+const ERROS_LOGIN = {
+  'auth/invalid-credential': 'E-mail ou senha errados.',
+  'auth/invalid-email': 'Esse e-mail não parece certo.',
+  'auth/too-many-requests': 'Muitas tentativas. Espere um pouco e tente de novo.',
+  'auth/network-request-failed': 'Sem internet (ou o Firebase não respondeu).',
+};
+
+export function abrirOnline(ctx) {
+  const o = ctx.online;
+  if (!o.configurado) {
+    return abrirJanela('ONLINE', [
+      h('div', { class: 't-corpo' }, 'O modo online ainda não foi configurado.'),
+      h('div', { class: 't-rotulo m-dica' }, 'FALTA COLAR OS DADOS DO PROJETO DO FIREBASE EM SRC/CONFIG-ONLINE.JS (O CLAUDE TE GUIA). ATÉ LÁ, O PALCO FUNCIONA SÓ EM OUTRA ABA DESTE NAVEGADOR.'),
+    ], { largura: 340 });
+  }
+
+  if (!o.logado) {
+    let email = '';
+    let senha = '';
+    const erro = h('div', { class: 't-rotulo perigo m-dica', hidden: true });
+    const campoSenha = h('input', { class: 'm-campo t-corpo', type: 'password', style: { width: '200px' }, autocomplete: 'current-password', oninput: (e) => (senha = e.target.value), onkeydown: (e) => { e.stopPropagation(); if (e.key === 'Enter') tentar(); } });
+    const tentar = async () => {
+      erro.hidden = true;
+      try {
+        await ctx.entrar(email.trim(), senha);
+        fecharJanela();
+        avisoRapido('Conectado. A sala já está recebendo a mesa.');
+      } catch (e) {
+        erro.textContent = (ERROS_LOGIN[e.code] ?? `Não consegui entrar (${e.code ?? e.message}).`).toUpperCase();
+        erro.hidden = false;
+      }
+    };
+    return abrirJanela('ENTRAR COMO MESTRE', [
+      h('div', { class: 't-rotulo m-dica' }, 'SÓ A CONTA DO MESTRE CONSEGUE ESCREVER NA SALA. QUEM CONFERE É O SERVIDOR (AS REGRAS DO FIREBASE).'),
+      h('div', { class: 'm-linha' }, h('span', { class: 'm-rotulo-fixo' }, rotulo('E-MAIL')),
+        h('input', { class: 'm-campo t-corpo', type: 'email', style: { width: '200px' }, autocomplete: 'username', oninput: (e) => (email = e.target.value), onkeydown: (e) => e.stopPropagation() })),
+      h('div', { class: 'm-linha' }, h('span', { class: 'm-rotulo-fixo' }, rotulo('SENHA')), campoSenha),
+      erro,
+    ], { largura: 320, botoes: [botao('ENTRAR', tentar, { tom: 'ouro' })] });
+  }
+
+  const link = ctx.linkDoPalco();
+  const copiar = async () => {
+    try {
+      await navigator.clipboard.writeText(link);
+      avisoRapido('Link copiado. Mande no Discord.');
+    } catch {
+      avisoRapido('Não consegui copiar; selecione o link e copie à mão.');
+    }
+  };
+  abrirJanela('ONLINE', [
+    h('div', { class: 'm-linha' }, h('span', { class: 'm-rotulo-fixo' }, rotulo('MESTRE')), h('span', { class: 't-corpo' }, o.email)),
+    h('div', { class: 'm-linha' }, h('span', { class: 'm-rotulo-fixo' }, rotulo('SALA')), h('span', { class: 't-titulo titulo-dourado' }, o.sala)),
+    h('div', { class: 'm-linha' }, h('span', { class: 'm-rotulo-fixo' }, rotulo('CONEXÃO')),
+      rotulo(o.erro ? `ERRO: ${o.erro}` : o.conectado ? 'TRANSMITINDO' : 'RECONECTANDO…', o.erro ? 'perigo' : o.conectado ? 'dourado' : '')),
+    tituloSecao('LINK DOS JOGADORES'),
+    h('input', { class: 'm-campo t-corpo', readonly: true, value: link, style: { width: '330px' }, onfocus: (e) => e.target.select() }),
+    h('div', { class: 't-rotulo m-dica' }, 'NOVA SALA = UM CÓDIGO NOVO; O LINK ANTIGO PARA DE RECEBER (BOM SE O LINK VAZAR).'),
+  ], {
+    largura: 360,
+    botoes: [
+      botao('SAIR', async () => {
+        await ctx.sair();
+        fecharJanela();
+      }),
+      botao('NOVA SALA', () => {
+        if (!confirm('Trocar o código da sala? Os jogadores vão precisar do link novo.')) return;
+        ctx.novaSala();
+        fecharJanela();
+        abrirOnline(ctx);
+      }),
+      botao('COPIAR LINK', copiar, { tom: 'ouro' }),
+    ],
+  });
+}

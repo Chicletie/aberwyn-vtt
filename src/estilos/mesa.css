@@ -738,3 +738,25 @@ select.m-campo option {
   border: 1px solid var(--cor-dourado);
   box-shadow: 0 0 0 1px var(--cor-contorno);
 }
+
+/* Indicador do modo online na barra de cima: a cor do ponto diz a situação. */
+.m-conexao .m-ponto {
+  background: var(--cor-costura);
+}
+
+.m-conexao.ok .m-ponto {
+  background: var(--cor-pv-brilho);
+}
+
+.m-conexao.atencao .m-ponto {
+  background: var(--cor-dourado);
+}
+
+.m-conexao.erro {
+  color: var(--cor-pv-crise);
+  border-color: var(--cor-inimigo);
+}
+
+.m-conexao.erro .m-ponto {
+  background: var(--cor-pv-crise);
+}

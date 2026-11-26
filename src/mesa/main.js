@@ -7,6 +7,8 @@
 import { aplicarPaletaNoCss } from '../paleta.js';
 import * as E from '../estado.js';
 import { abrirCanal } from '../canal.js';
+import { onlineConfigurado, entrar, sair, aoMudarLogin } from '../online.js';
+import { urlPalcoPublicado } from '../config-online.js';
 import { carregarDados } from '../dados.js';
 import { salvarLocal, carregarLocal, criarPilhaDesfazer } from '../persistencia.js';
 import { criarPalco } from '../palco/palco.js';
@@ -39,7 +41,23 @@ ajustarEscala();
 
 // ───────────── Núcleo ─────────────
 
-const canal = abrirCanal('local');
+// ───────────── Sala online ─────────────
+// O código da sala fica guardado neste navegador (não vai no estado, que pode virar arquivo).
+const CHAVE_SALA = 'errante-vtt:sala';
+
+/** Código de sala novo: 5 letras e números, sem os que se confundem (O/0, I/1, L). */
+function gerarCodigoSala() {
+  const letras = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  return Array.from({ length: 5 }, () => letras[Math.floor(Math.random() * letras.length)]).join('');
+}
+
+let salaAtual = localStorage.getItem(CHAVE_SALA);
+if (!salaAtual) {
+  salaAtual = gerarCodigoSala();
+  localStorage.setItem(CHAVE_SALA, salaAtual);
+}
+
+const canal = abrirCanal({ sala: salaAtual, online: true });
 const pilha = criarPilhaDesfazer();
 
 /** Contexto compartilhado com as seções (estado, dados e o que é só da tela da mesa). */
@@ -61,6 +79,19 @@ const ctx = {
   mostrarFrase,
   pularFrase,
   palcoPrevia: null,
+  /** Situação do modo online (mostrada na barra de cima). */
+  online: {
+    configurado: onlineConfigurado(),
+    logado: false,
+    email: '',
+    sala: salaAtual,
+    conectado: false,
+    erro: null,
+  },
+  entrar: (email, senha) => entrar(email, senha),
+  sair: () => sair(),
+  novaSala,
+  linkDoPalco,
 };
 window.mesa = ctx; // para inspecionar no F12, se precisar
 
@@ -106,8 +137,29 @@ function desfazer() {
 /** Depois de toda alteração: salva, avisa os palcos e redesenha a mesa. */
 function depois() {
   salvarLocal(ctx.estado);
-  canal.enviarEstado(E.estadoPublico(ctx.estado));
+  enviarAoPalco();
   desenhar();
+}
+
+/** Manda o estado público: sempre para as abas locais; para a sala online só com o mestre logado. */
+function enviarAoPalco() {
+  canal.enviarEstado(E.estadoPublico(ctx.estado), { gravarOnline: ctx.online.logado });
+}
+
+/** Troca o código da sala (o link antigo para de receber). */
+function novaSala() {
+  salaAtual = gerarCodigoSala();
+  localStorage.setItem(CHAVE_SALA, salaAtual);
+  ctx.online.sala = salaAtual;
+  canal.definirSala(salaAtual);
+  enviarAoPalco();
+  desenhar();
+}
+
+/** Link do palco para os jogadores (o publicado no GitHub Pages, se configurado). */
+function linkDoPalco() {
+  const base = urlPalcoPublicado ?? new URL('./palco.html', location.href).href;
+  return `${base}?sala=${ctx.online.sala}`;
 }
 
 // ───────────── Desenho da mesa ─────────────
@@ -229,7 +281,27 @@ async function iniciar() {
   ctx.palcoPrevia = criarPalco(document.createElement('div'), { cenarios: ctx.dados.cenarios });
   ctx.tela.rascunho = novoRascunho(ctx.estado.agindoId);
   ctx.novoRascunho = novoRascunho;
-  canal.enviarEstado(E.estadoPublico(ctx.estado));
+  enviarAoPalco();
+  // Modo online: acompanha o login, a conexão e os erros de gravação (ex.: sem permissão).
+  if (ctx.online.configurado) {
+    aoMudarLogin((usuario) => {
+      ctx.online.logado = !!usuario;
+      ctx.online.email = usuario?.email ?? '';
+      ctx.online.erro = null;
+      if (usuario) enviarAoPalco(); // ao entrar, a sala recebe o estado atual na hora
+      desenhar();
+    });
+    canal.aoMudarConexao((conectado) => {
+      ctx.online.conectado = conectado;
+      desenhar();
+    });
+    canal.aoErroDeGravacao((erro) => {
+      const codigo = erro ? (erro.code || erro.message) : null;
+      if (codigo === ctx.online.erro) return;
+      ctx.online.erro = codigo;
+      desenhar();
+    });
+  }
   desenhar();
 }
 iniciar();

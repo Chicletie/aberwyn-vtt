@@ -33,7 +33,7 @@ export function desenharTopo(area, ctx) {
   encher(area, 
     h('span', { class: 't-titulo m-logo' }, 'Mesa'),
     h('span', { class: 't-rotulo m-sessao', title: 'Clique para mudar o número da sessão', onclick: () => J.abrirSessao(ctx) }, `SESSÃO ${e.sessao}`),
-    h('span', { class: 't-rotulo m-conexao' }, h('span', { class: 'm-ponto' }), 'LOCAL'),
+    indicadorOnline(ctx),
     botao('CORTINA', () => alterar((s) => E.definirModo(s, 'cortina')), { ligado: e.modo === 'cortina' }),
     h('span', { class: 'm-seletor' },
       botao('CENA', null, { desligado: true, titulo: 'Modo cena: janeiro' }),
@@ -57,6 +57,23 @@ export function desenharTopo(area, ctx) {
     botao(`DESFAZER${ctx.pilhaTamanho ? ` ${ctx.pilhaTamanho}` : ''}`, () => ctx.desfazer(), { desligado: !ctx.pilhaTamanho, titulo: 'Ctrl+Z' }),
     botao('?', () => J.abrirAjuda(ctx)),
   );
+}
+
+/**
+ * Situação do modo online na barra de cima (clique abre a janela ONLINE):
+ * LOCAL (não configurado) · ENTRAR (configurado, sem login) · SALA XXXXX (transmitindo).
+ * Ponto verde = transmitindo; amarelo = sem login ou sem conexão; vermelho = erro.
+ */
+function indicadorOnline(ctx) {
+  const o = ctx.online;
+  let texto = 'LOCAL';
+  let estado = 'local';
+  if (o.configurado && !o.logado) [texto, estado] = ['ENTRAR', 'atencao'];
+  else if (o.configurado && o.erro) [texto, estado] = ['SEM PERMISSÃO', 'erro'];
+  else if (o.configurado && !o.conectado) [texto, estado] = [`SALA ${o.sala} · RECONECTANDO`, 'atencao'];
+  else if (o.configurado) [texto, estado] = [`SALA ${o.sala}`, 'ok'];
+  return h('button', { class: `m-botao m-conexao ${estado}`, type: 'button', title: 'Modo online', onclick: () => J.abrirOnline(ctx) },
+    h('span', { class: 'm-ponto' }), texto);
 }
 
 // ═════════════════════════ ESQUERDA: heróis e inimigos ═════════════════════════
