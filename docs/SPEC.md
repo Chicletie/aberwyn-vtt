@@ -41,7 +41,7 @@ Uma **tela de jogo estilo JRPG, controlada só pelo mestre, que cada jogador abr
 
 Duas partes:
 - **Mesa do mestre** (`index.html`): painel de controle. Roda no meu computador. Só eu vejo.
-- **Palco** (`palco.html`): a tela em pixel art, hospedada na web. Cada jogador abre pelo link com um código de sala. **Nada que mude o jogo.** Só desenha o que a mesa mandar. O jogador pode clicar/tocar apenas para **consultar** (abrir o nome de um relógio, a lista de relógios, a ficha estudada de um inimigo); isso é estado local da tela dele, nunca vai para a sala.
+- **Palco** (`palco.html`): a tela em pixel art, hospedada na web. Cada jogador abre pelo link com um código de sala. **Nada que mude o jogo.** Só desenha o que a mesa mandar. O jogador pode clicar/tocar apenas para **consultar** (abrir o nome de um relógio, a lista de relógios, a ficha estudada de um inimigo); isso é estado local da tela dele, nunca vai para a sala. **Única exceção: a ficha do próprio personagem** (seção "Fichas dos jogadores"), que o jogador edita depois de entrar com nome e chave.
 
 A campanha não depende deste app. Se ele quebrar no meio da sessão, a gente segue no teatro da mente pela call de voz. Então: simples, robusto, poucas peças.
 
@@ -59,10 +59,10 @@ Para não fechar a porta: o estado já tem o campo `modo` com espaço para `"cen
 |---|---|
 | HTML + CSS + JavaScript puro, com módulos ES | Fundamentos legíveis para eu estudar em janeiro. Sem React, sem TypeScript nesta etapa (JSDoc para documentar formatos). |
 | Vite para dev e build | Módulos ES precisam de servidor; o Vite resolve e gera a pasta estática para publicar. |
-| **Fluxo de mão única: Estado → Canal → Palco** | Um único objeto `estado` é a verdade. Só a mesa altera, sempre por funções pequenas e nomeadas (`aplicarDano`, `encerrarTurno`...). Depois de cada alteração, o estado público vai ao palco, que redesenha tudo (`renderizar(estado)`). O palco nunca muda nada. |
+| **Fluxo de mão única: Estado → Canal → Palco** | Um único objeto `estado` é a verdade. Só a mesa altera, sempre por funções pequenas e nomeadas (`aplicarDano`, `encerrarTurno`...). Depois de cada alteração, o estado público vai ao palco, que redesenha tudo (`renderizar(estado)`). O palco nunca muda a sala. As fichas são um caminho à parte (ver "Fichas dos jogadores"). |
 | **`estadoPublico(estado)`**, função pura em `src/estado.js` | Remove o que os jogadores não podem ver: nome, sprite e PV de inimigo não revelado (vira `"???"` e silhueta), tudo da ficha do inimigo acima do nível de Estudo alcançado, PV atual de inimigo se a opção estiver desligada, anotações do mestre. No modo cortina, o público é só a cortina. O canal NUNCA envia o estado completo: o palco roda no navegador dos jogadores e qualquer um abre o F12. |
 | **`canal.js` isolado** com `enviarEstado` / `aoReceberEstado` | Única peça que sabe como o estado viaja. Local: BroadcastChannel entre abas (para eu testar sem internet). Online: serviço de tempo real. Mesa e palco não mudam na troca. Pode deixar os dois modos disponíveis (ex.: `?local=1`). |
-| Serviço de tempo real gerenciado: **proposta Firebase Realtime Database** | Sem servidor para manter ligado. A mesa grava o estado público em `salas/{codigo}`; o palco escuta e redesenha. Regras: leitura pública por sala, escrita só da conta do mestre logado (proteção no servidor, não só no front). Antes de configurar, me diga em 5 linhas se há algo melhor hoje e confira o plano grátis; se não houver motivo forte, siga com Firebase. |
+| Serviço de tempo real gerenciado: **proposta Firebase Realtime Database** | Sem servidor para manter ligado. A mesa grava o estado público em `salas/{codigo}`; o palco escuta e redesenha. Regras: leitura pública por sala, escrita só da conta do mestre logado (proteção no servidor, não só no front). As fichas ficam fora da sala, em `fichas/{heroiId}`, com regra própria (ver "Fichas dos jogadores"). Antes de configurar, me diga em 5 linhas se há algo melhor hoje e confira o plano grátis; se não houver motivo forte, siga com Firebase. |
 | Palco no **GitHub Pages** | Grátis, estático, e o link vira vitrine de portfólio. A mesa pode rodar local. |
 | Persistência da mesa em **localStorage** + exportar/importar JSON | F5 não perde nada; JSON serve de backup e para preparar combates antes. |
 | Palco em **DOM**, não Canvas | Mais simples de manter e de eu entender depois. |
@@ -120,16 +120,48 @@ Conceito: o jogo é sobre histórias (Fabula) e conexões (Laços). Daí dois mo
 ## Telas e peças decididas em 25/11 (prévias aprovadas para refinar)
 
 ### Condições no palco
-- As 6 condições do livro (Lento, Confuso, Fraco, Abalado, Enfurecido, Envenenado) aparecem como **ícones de 7×7** (5×5 de desenho + contorno) no **canto superior esquerdo do rosto** de cada um na faixa de turnos, até 3; mais que isso vira "+". Inimigos também. O canto inferior direito é do contador de PF.
-- Desenhos provisórios (o Cadu vai redesenhar; ficam em `assets/ui/condicoes/<nome>.png`): ampulheta azul-clara (Lento), interrogação rosa (Confuso), seta para baixo azul (Fraco), tremor cinza (Abalado), veia de raiva vermelha (Enfurecido), gota verde (Envenenado).
+- As 6 condições do livro (Lento, Atordoado, Fraco, Abalado, Enfurecido, Envenenado; nomes do livro em português, p. 94) aparecem como **ícones de 7×7** (5×5 de desenho + contorno) no **canto superior esquerdo do rosto** de cada um na faixa de turnos, até 3; mais que isso vira "+". Inimigos também. O canto inferior direito é do contador de PF.
+- Desenhos provisórios (o Cadu vai redesenhar; ficam em `assets/ui/condicoes/<nome>.png`): ampulheta azul-clara (Lento), interrogação rosa (Atordoado), seta para baixo azul (Fraco), tremor cinza (Abalado), veia de raiva vermelha (Enfurecido), gota verde (Envenenado).
 
-### Ficha do jogador (janela sobre o palco)
-- Abre ao clicar no **sprite, no rosto da faixa de turnos ou na linha do status** de um herói. O jogador abre a do próprio personagem (e vê as dos outros só no resumo, se eu permitir); eu abro todas, pela mesa ou pelo palco.
-- **Abas:** RESUMO · INVENTÁRIO · REGISTRO (desligada, "em breve": é onde as rolagens vão aparecer quando o VTT tiver dados) · FICHA COMPLETA (desligada, futuro).
-- **Cabeçalho:** retrato 48×48 em janela, nome do personagem em título dourado, linha de rótulo com jogador · nível · classes, e os **Pontos de Fabula como losangos** dourados. Botão FECHAR (plaquinha).
-- **RESUMO:** RECURSOS (PV, PM, PI com barra e "atual / máximo"), ATRIBUTOS (DES, AST, VIG, VON como chips com o dado: d6, d8…), DEFESA (DEF, D.MÁG, INIC.), CONDIÇÕES (as 6 listadas; as ativas com ícone e nome em branco, as outras apagadas; **clicáveis para marcar**: o jogador marca as dele, eu marco tudo; é o "tracking"), TRAÇOS (Identidade, Tema, Origem), LAÇOS (alvo com a faixinha da cor dele, emoções em rótulo e força em 3 quadradinhos).
-- **INVENTÁRIO:** itens (nome, efeito em rótulo, custo em PI) com o selecionado destacado; EQUIPAMENTO (mão principal, secundária, armadura, acessório); ZENIT.
-- Dados em `dados/herois.json` (por herói); a mesa edita tudo.
+### Fichas dos jogadores (decidido em 26/11; prévias das abas novas ainda serão feitas)
+Os jogadores montaram as fichas numa planilha do Google (modelo da comunidade) que mistura tudo na ordem de criação do personagem. A ficha do VTT substitui essa planilha e organiza pela **frequência de uso no jogo**, no estilo "Pena e Fio".
+
+**Acesso**
+- Cada jogador vê e edita **só a própria ficha**. Eu (mestre) vejo e edito todas. Nenhum jogador vê a ficha de outro (o palco já mostra as barras de todos).
+- Entrada com **nome do jogador + chave** (eu mando a chave de cada um por DM no Discord). Nada de login Google, nada de cadastro aberto. Implementar com o login de e-mail e senha do próprio Firebase Auth: a tela pede só "nome" e "chave"; por baixo, o e-mail é montado do nome (ex.: `edu@errantes.mesa`) e a chave é a senha. As contas sou eu que crio (me guie no console). **A conferência é sempre do servidor**, pelas regras do Firebase; nunca no código da página, que qualquer um lê com F12.
+- Regras: `fichas/{heroiId}` só pode ser lida e escrita pela conta ligada àquele herói (`donos/{uid}: heroiId`, que só eu gravo) e pela conta do mestre.
+- Onde abre: no palco, clicando no próprio herói; e **também com a sessão fechada**, pelo botão "MINHA FICHA" na cortina, para eles atualizarem entre sessões.
+- **Gravação campo a campo** (`update` só no caminho alterado), nunca a ficha inteira: se eu aplico dano na mesa enquanto o jogador gasta PM, nada se perde. A mesa lê PV, PM, PI, PF e condições da ficha e escreve nesses mesmos campos (dano, cura, condição, PF gasto); o estado público da sala continua sendo montado pela mesa. O DESFAZER da mesa vale para o que a mesa escreveu.
+- Na mesa, VER COMO [jogador] mostra a ficha exatamente como ele vê.
+
+**Abas (nomes decididos por mim): BÁSICO · AÇÕES · INFORMAÇÕES · INVENTÁRIO · DIÁRIO · REGISTRO**
+- **Cabeçalho** (todas as abas): retrato 48×48 em janela, nome em título dourado, rótulo com jogador · nível · classes, PF em losangos dourados, FECHAR.
+- **BÁSICO** (o que se olha a cada turno): PV, PM e PI com barra e "atual / máximo"; **recursos de classe** como contadores genéricos com nome e máximo (ex.: Pontos de Alma da Hilda, Forjador de Almas); atributos DES, AST, VIG, VON com o **dado atual** grande e o base pequeno e apagado ao lado quando forem diferentes; DEF, D.MÁG, INIC.; condições clicáveis (jogador marca as dele); **afinidades**: os 9 tipos de dano do livro com ícone, mostrando a sigla do livro (VU, RE, IM, AB) só quando não for normal.
+- **AÇÕES** (na vez dele): armas equipadas (nome, teste de precisão como texto, dano, tipo); feitiços (nome, PM, alvo, duração; a descrição abre ao tocar); poderes que se ativam; **Poder Zero** (regra opcional: o campo existe, mas hoje está vazio em todas as fichas).
+- **INFORMAÇÕES** (entre cenas): Identidade, Tema, Origem; os 6 Laços (alvo com a cor dele, emoções dos três pares Admiração/Inferioridade, Lealdade/Desconfiança, Afeto/Ódio, força em quadradinhos); classes com nível e benefício grátis; poderes passivos e heroicos; **Peculiaridade**; nível e XP; pronomes e dados pessoais.
+- **INVENTÁRIO** (prévia `ficha-inventario.png`): coluna 1 = EQUIPADO (4 vagas: mão principal, mão secundária, armadura, acessório; rótulo da vaga com o número principal à direita na mesma linha, ex. "RA+6", "DEF +1"; nome embaixo; vaga vazia = "Vazio" apagado) + PODE EQUIPAR (4 linhas com caixinha: armadura, escudo, arma corpo a corpo, arma à distância, marciais). Coluna 2 = **ITENS** (contagem no título): os **itens de inventário padrão do livro (p. 104, texto liberado pela licença): Remédio 3 PI (+50 PV), Elixir 3 PI (+50 PM), Tônico 2 PI (todas as condições), Fragmento elemental 2 PI (10 de dano de ar, fogo, gelo, raio ou terra), Barraca mágica 4 PI (descanso nos ermos)**, e depois os personalizados da mesa. Cada um: nome ("…" + letreiro se não couber); embaixo, efeito curto à esquerda e custo em dourado à direita; **o que custa mais que os PI atuais fica apagado**. Usar = abrir o detalhe e confirmar (desconta os PI). **Mais itens não criam coluna:** a lista rola e abre inteira pelo título, como as outras. Coluna 3 = **PONTOS DE INVENTÁRIO em destaque** (são o centro mecânico da aba): número atual grande na fonte de título dourada + "/ máx" em cinza, barra grossa (6 px) de PI ao lado, centrada no número, e "REPOR N PI · N×10 Z" embaixo; depois ZÊNITES (valor em dourado + "10 Z = 1 PI") e MOCHILA (itens próprios: raros, chaves, o que o grupo achar; a lista que cresce).
+- **DIÁRIO** (prévia `ficha-diario.png`): coluna 1 = PESSOAL (grade 2×3: pronomes, gênero, idade, altura, peso, sexualidade) + ANOTAÇÕES (caixa de texto até a base); colunas 2–3 = HISTÓRIA (caixa de texto longa, rola). Mesma base embaixo nas duas caixas.
+- **REGISTRO**: desligada, "em breve" (rolagens, quando houver dados).
+- **Prévias (26/11, terceira versão; dados reais da Hilda):** `ficha-basico.png`, `ficha-acoes.png`, `ficha-acoes-nivel-alto.png`, `ficha-informacoes.png`, `ficha-informacoes-nivel-alto.png`, `ficha-legenda-afinidade-pf.png`, `ficha-janela-laco.png`, `ficha-peculiaridade-rastreadores.png`, `ficha-letreiro.gif`, `ficha-letreiro-laco.gif`; INVENTÁRIO e DIÁRIO têm prévias próprias na mesma grade (`ficha-inventario.png`, `ficha-diario.png`).
+  - **Grade única para todas as abas:** área de conteúdo x 26–452 (426 px), **3 colunas de 134 px com vão de 12** (x 26, 172, 318), y 98–254. Tudo encaixa nessas colunas, inclusive o que ocupa a largura toda (as condições se alinham às 3 colunas; as afinidades dividem os 426 px em 9 células iguais). Nada fica encolhido num canto com sobra do lado.
+  - **Hierarquia tipográfica fixa (4 níveis):** (1) título de seção em Silkscreen dourado **+ régua 1 px `#394a50` até o fim da coluna** (com contagem opcional em cinza: "PODERES PASSIVOS 2", "LAÇOS 0 DE 6"); (2) valor principal em Jersey 10 branco; (3) nome de campo em Silkscreen `#a8b5b2`; (4) apoio/meta em Silkscreen `#577277`. Do título ao primeiro conteúdo: a tinta do conteúdo começa ~5 px abaixo da tinta do título. Do nome de campo ao valor: valor com o topo da caixa 7 px abaixo do topo do rótulo.
+  - **Alinhamento vertical medido:** Jersey 10 maiúsculas em y+5..y+14 do topo da caixa; Silkscreen 8 px em y+4..y+8. Ícones, bolinhas, quadradinhos e símbolos ao lado de texto centram nessas faixas.
+  - **Cabeçalho:** retrato, nome, linha de classes; na linha de baixo, à esquerda, "Pontos de Fabula" + **símbolos próprios do personagem** (`brilhoPF.simbolo`, 7×7, dourado, contorno) **um por ponto até onde couber antes do XP** (~12 hoje); passou disso, mostra os que cabem menos dois e "+N" em dourado (nunca empurra o XP nem quebra linha); sem símbolo desenhado, losango. **XP alinhado à direita** na mesma linha, terminando na borda do conteúdo (x 452), embaixo do FECHAR. **Linha de classes:** "NÍVEL N · CLASSE n · …" em ordem de nível; o que não couber até o FECHAR vira "· +N" em dourado (a lista inteira está em INFORMAÇÕES). Regra do livro (p. 227): até 3 classes não dominadas, dominadas sem limite; com nível máximo 50, um PJ chega a 5–6 classes.
+  - **BÁSICO:** linha de cima nas 3 colunas: RECURSOS (PV, PM, PI com barra esticada até o número alinhado à direita; recurso de classe com bolinhas e "2/4") · ATRIBUTOS 2×2 (chips 65×26) · DEFESA 2×2 (DEF, D.MÁG, INIC., CRISE em laranja). Embaixo: CONDIÇÕES (3 colunas × 2 linhas, a ativa ocupa a célula inteira com borda na cor da condição e o efeito à direita: "DES -1") e AFINIDADES (9 células). **Afinidade diferente de normal:** o ícone ganha ao lado uma etiqueta com a sigla do livro em preto sobre cor (**VU** `#cf573c`, **RE** `#4f8fba`, **IM** `#c7cfcc`, **AB** `#a8ca58`) e o nome do tipo fica branco; normal = só ícone e nome em cinza (ver `ficha-legenda-afinidade-pf.png`).
+  - **AÇÕES:** coluna 1 = ARMAS (cartão: "MÃO PRINCIPAL/SECUNDÁRIA" em apoio; nome; régua pontilhada; embaixo, lado a lado, PRECISÃO à esquerda e DANO à direita, cada um com rótulo em cima e valor embaixo; o ícone do tipo de dano fica colado à esquerda do valor do dano) e PODER ZERO. Colunas 2–3 = abas pequenas **PODERES N | FEITIÇOS N** (com o recurso de classe à direita: "ALMA 2/4"); coluna 2 = a lista (nome + custo em rótulo; selecionado com borda na cor-assinatura; ×N quando o poder foi pego mais de uma vez; **barra de rolagem** quando não cabe; **filtro "CLASSE: TODAS ▾"** só quando a lista não cabe e há mais de uma classe); coluna 3 = **descrição do selecionado na altura toda** (nome em dourado, classe, custo, régua, texto com ▼ para rolar). Em nível alto um PJ tem dezenas de poderes e vários feitiços (1 poder por nível de classe, até 3 classes não dominadas, poder heroico por classe dominada; p. 227–228): a estrutura é feita para isso.
+  - **INFORMAÇÕES em 3 colunas** (prioridade = o que muda e se consulta mais): coluna 1 = TRAÇOS + CLASSES (**só 3 linhas visíveis**, uma por classe, nível à direita, 10 em dourado = dominada, barra de rolagem; a lista inteira abre pelo título "CLASSES N" ou pelo "+N" do cabeçalho, que deve ser o caminho mais usado); coluna 2 = PECULIARIDADE compacta + PODERES PASSIVOS no resto da coluna (uma linha por poder, ~6 visíveis, heroico com nome dourado, "…" + letreiro, rolagem); coluna 3 = **LAÇOS: as 6 vagas sempre visíveis como fios** (vazia = nó vazado + linha tracejada). Laço preenchido: nó na cor do alvo, nome, e à direita **3 casas de emoção, uma por par** (admiração/inferioridade · lealdade/desconfiança · afeto/ódio), com o ícone da emoção escolhida ou vazia. **A força é o número de emoções (p. 56), então não há quadradinhos de força.** Embaixo, as emoções por extenso em rótulo; se não couberem, ficam recortadas e **rolam como letreiro** quando o laço está selecionado (`ficha-letreiro-laco.gif`). Ícones das 6 emoções (7×7, provisórios, o Cadu redesenha): estrela (admiração), estrela vazada (inferioridade), escudo (lealdade), olho (desconfiança), coração (afeto), coração partido (ódio).
+  - **Linha de base comum em INFORMAÇÕES:** a última linha de texto das 3 colunas cai na mesma altura (no exemplo: Mestre de Armas · [Passivo 7] · último fio de laço). **Toda lista usa um passo INTEIRO e igual entre todas as linhas** (nunca passo fracionado, que mistura vãos de 14 e 15 px, e nunca esticar só a última): PASSIVOS usa o mesmo passo de 14 px das CLASSES (assim as linhas das duas colunas se alinham entre si) e põe quantas linhas couberem; os 6 LAÇOS usam um passo inteiro calculado pela altura disponível (25 px no exemplo). As listas são **ancoradas na linha de base**: a última linha fica nela e a sobra, sempre menor que um passo, vai para o vão entre o título da seção e a primeira linha. **Seleção numa lista** = caixa `#172038` com borda na cor do item, ocupando a largura da coluna, de 3 px acima do nome até 2 px abaixo da cedilha da linha de rótulo; nada encosta na régua do título nem sai da coluna (as 3 casas de emoção terminam na borda da coluna). **Letreiro:** a faixa recortada que rola tem altura para til, acento e cedilha inteiros.
+  - **PECULIARIDADE = nome + rastreador opcional, nunca texto corrido** (o efeito inteiro fica na janela de detalhe). Três tipos, tirados das peculiaridades reais da mesa (`ficha-peculiaridade-rastreadores.png`): **relógio** (nome + "2/6" + relógio de seções; ex.: a ruína do Portador Ruína), **uso por sessão** (nome + caixinha que zera ao começar a sessão; ex.: a oferta da Herança) e **lista** (nome + contagem + marquinhas; ex.: os mandamentos dos Grilhões do coração, cada um um texto curto na janela de detalhe). Sem rastreador: só o nome. O tamanho dos relógios quem define sou eu na mesa.
+  - **Todo item de toda lista abre uma janela de detalhe** (poder, feitiço, passivo, classe, item, arma, peculiaridade, laço). Modelo: `ficha-janela-laco.png`. A janela cobre só a área de conteúdo (o cabeçalho continua visível), usa a mesma grade de 3 colunas, tem uma plaquinha com o tipo ("LAÇO") à esquerda e "< VOLTAR" à direita (o FECHAR do cabeçalho continua fechando a ficha inteira).
+  - **Janela do laço** (`ficha-janela-laco.png`), em 2 faixas sobre a grade de 3 colunas: **faixa 1** = coluna 1 com o alvo (retrato 48×48 em moldura; ao lado, nome em dourado, tipo do alvo em 2 linhas de rótulo e "FORÇA N" com as 3 casas alinhadas à direita da coluna; sem retrato: nó grande na cor do alvo com a inicial) e colunas 2–3 com **COMO VÊ** (texto livre do jogador, 3 linhas visíveis, o resto rola); **faixa 2** = **EMOÇÕES**, **um cartão por coluna da grade** (ícone + nome da emoção centralizados no topo, na cor dela; régua; o significado escrito pelo jogador, ~4 linhas). Sem rótulo do par. Par sem emoção: cartão tracejado com "+" para o dono adicionar. Só o dono e o mestre leem e escrevem (regra da casa "emoções com significado expandido").
+  - **Letreiro (nome que não cabe):** qualquer nome cortado com "…" numa lista, quando o item está selecionado, **rola para o lado**: pausa ~0,7 s no começo, anda 1 px por quadro até mostrar o fim, pausa e volta (prévia `ficha-letreiro.gif`). No celular, "selecionado" = tocado uma vez. Sem hover.
+  - **Expandir sob demanda:** todo título de seção com contagem ("PODERES 14", "PODERES PASSIVOS 7", "CLASSES 5") é tocável e abre a lista inteira numa janela que cobre as 3 colunas (lista à esquerda, descrição à direita, mesma grade), com FECHAR. É o que garante que as abas aguentam nível alto sem encolher a letra.
+  - **Afinidade com etiqueta:** ícone e etiqueta lado a lado, centralizados na célula; o nome fica 2 px mais abaixo do que nas outras linhas de ícone, porque o acento de FÍSICO sobe acima das maiúsculas.
+  - Espaçamento de linha de corpo: 14 px no mínimo também aqui.
+
+**Cálculos automáticos: só dois.** (1) Ponto de crise = metade do PV máximo, arredondado para baixo. (2) Atributo atual = base reduzido um passo por condição que o afeta (p. 94): Lento → DES; Atordoado → AST; Fraco → VIG; Abalado → VON; Enfurecido → DES e AST; Envenenado → VIG e VON; cumulativas, nunca abaixo de d6. Todo o resto é campo que o jogador digita (poderes, feitiços e equipamento são texto). Não reproduza as fórmulas da planilha.
+
+**Importador (uma vez só):** os 5 já preencheram a planilha. Na mesa, eu escolho o arquivo exportado da planilha (texto com uma seção `## Sheet name: Personagem N` por personagem; exemplo real em `docs/exemplo-planilha.txt`, layout fixo) e o importador preenche as fichas, **mostrando o que leu para eu conferir antes de gravar**. Campo que ele não entender fica vazio e marcado, nunca inventado.
 
 ### Cortina (sessão fechada) — em revisão
 - O que qualquer pessoa vê ao abrir o link quando eu não abri a sessão: fundo escuro com pontinhos que cintilam devagar, janela central com o **nome da campanha** (provisório "Errantes"; vai virar um **logotipo** desenhado por mim, então deixe um espaço de imagem no lugar do texto), divisor, uma **linha que eu escrevo a cada sessão** (fala de NPC, de jogador, hype; o que eu quiser), com **rótulo opcional** em cima e **"— quem disse" opcional** embaixo, a próxima sessão (data, hora e quanto falta, vindos da mesa), os **rostos do grupo**, que **acendem quando cada jogador se conecta** ("N DE 5 JÁ CHEGARAM"), e a **pena escrevendo uma linha de tinta sem fim**. Quando eu abro, a cortina sai com a transição normal. **Som só começa depois de um clique** (regra dos navegadores): a cortina tem que ter um botão "Entrar" que libera o áudio.
@@ -501,6 +533,33 @@ const estado = {
 };
 ```
 
+Fichas (fora da sala, em `fichas/{heroiId}`; proposta):
+```js
+const ficha = {
+  jogador: "Edu", heroiId: "joshua", nome: "Sir Joshua Carmim", pronomes: "",
+  nivel: 5, xp: 0, pf: 3,
+  pv: { atual: 70, max: 70 }, pm: { atual: 45, max: 45 }, pi: { atual: 6, max: 6 },
+  recursos: [],                                       // contadores de classe, ex.: { nome: "Pontos de Alma", atual: 2, max: 4 }
+  atributos: { des: 8, ast: 8, vig: 10, von: 8 },     // dado BASE; o atual é calculado
+  defesa: 11, defesaMagica: 7, iniciativa: 0,
+  condicoes: [],
+  afinidades: { fisico: "normal", ar: "normal" /* … os 9 */ },  // "normal" | "vulneravel" | "resistente" | "imune" | "absorve"
+  tracos: { identidade: "", tema: "", origem: "" },
+  lacos: [ { alvo: "", tipo: "personagem", retrato: null, cor: "#hex", visao: "",      // visao = "como eu vejo" (texto do jogador)
+             emocoes: [ { emocao: "lealdade", significado: "" } ] } ],  // força = emocoes.length (máx. 3, uma por par)
+  classes: [ { nome: "Guardião", nivel: 1, beneficio: "pv" } ],
+  poderes: [ { nome: "", classe: "", nivel: 1, tipo: "ativo", texto: "" } ],  // "ativo" | "passivo" | "heroico"
+  feiticos: [ { nome: "", pm: "", alvo: "", duracao: "", texto: "" } ],
+  peculiaridade: { nome: "", texto: "", rastreador: null },  // null | {tipo:"relogio",nome,atual,max} | {tipo:"uso",nome,usado} | {tipo:"lista",nome,itens:[""]}
+  poderZero: { nome: "", gatilho: "", efeito: "", usado: false },
+  equipamento: { principal: null, secundaria: null, armadura: null, acessorio: null },  // { nome, numero: "RA+6" | "DEF +1", texto }
+  podeEquipar: { armadura: false, escudo: false, cac: false, distancia: false },     // marciais
+  pessoal: { pronomes: "", genero: "", idade: "", altura: "", peso: "", sexualidade: "" },
+  mochila: [ { item: "", custo: "", texto: "" } ], zenit: 0,
+  diario: { historia: "", anotacoes: "" }
+};
+```
+
 `dados/coringas.json`: amorfo, espírito, besta, voador, planta, construto magitec, humanoide armado, aldeão, nobre (só nome, sprite e PV/PM editáveis; nada do bestiário).
 
 ## Estrutura de pastas sugerida
@@ -524,9 +583,11 @@ errante-vtt/
 
 **Marco 2 — Mesa completa (local).** Cenas com frases de ambiente (`dados/cenas.json`), elenco, editor de formação, editor do painel, editor de cenário (faixa de chão), ação rápida, turnos com sugestão de alternância, desfazer, menu, banner, diálogo, condições, revelar inimigo, mostrar PV, cortina, autosave, exportar/importar.
 
-**Marco 3 — Online.** Serviço de tempo real (eu crio a conta e faço login; você me guia clique a clique), código de sala, regras de segurança testadas (mostre que um navegador sem login NÃO consegue escrever), palco publicado no GitHub Pages, reconexão.
+**Marco 3 — Online.** Serviço de tempo real (eu crio a conta e faço login; você me guia clique a clique), código de sala, regras de segurança testadas (mostre que um navegador sem login NÃO consegue escrever; e que a conta de um jogador não lê nem escreve a ficha de outro), palco publicado no GitHub Pages, reconexão.
 
 **Marco 4 — Arte e ensaio.** Carregar meus PNGs de `assets/` com fallbacks; fonte provisória com acentos. Roteiro de ensaio que eu sigo sozinho: uma luta com 5 heróis × 4 inimigos e um vilão com 2 turnos por rodada, com o palco aberto no celular e em outro computador. Lista de bugs encontrados e corrigidos. README com link e prints. Por fim, `docs/TOUR.md`: ordem de leitura do código para eu estudar em janeiro, com perguntas para eu responder sozinho a cada arquivo.
+
+**Marco 5 — Fichas.** Contas dos jogadores (nome + chave), regras de `fichas/` testadas, as 6 abas, botão MINHA FICHA na cortina, ligação da mesa com PV/PM/PI/PF/condições, os dois cálculos automáticos e o importador da planilha. Até este marco, a planilha continua valendo na mesa. Mas o formato da ficha e as regras do Firebase já nascem pensados para ela no Marco 1 e no Marco 3.
 
 ## Pronto para a mesa quando
 
@@ -534,13 +595,13 @@ errante-vtt/
 - F5 em qualquer janela não perde nada.
 - Um jogador abre o link num monitor 1080p, num notebook com zoom 125% e no celular deitado, e lê as barras; no debug, a escala real é inteira nas telas grandes.
 - Nenhum dado de inimigo não revelado aparece no palco nem nos dados do serviço.
-- Ninguém além da minha conta altera a sala.
+- Ninguém além da minha conta altera a sala; cada jogador só alcança a própria ficha.
 - Se a internet do jogador cair e voltar, o palco se recupera sozinho.
 - Funciona sem nenhuma arte desenhada.
 
 ## Fora do escopo agora
 
-Modo cena e relógios, PWA, validação de cor, escudo do mestre, jogadores interagindo, cutscenes, fichas, dados, cálculo de regras, Pontos de Fabula/Ultima, animação de sprite, troca de paleta por código, som, mapas, servidor próprio.
+Modo cena e relógios, PWA, validação de cor, escudo do mestre, jogadores interagindo, cutscenes, dados, cálculo de regras (além dos dois da ficha), Pontos de Fabula/Ultima, animação de sprite, troca de paleta por código, som, mapas, servidor próprio.
 
 ## Primeira tarefa
 
