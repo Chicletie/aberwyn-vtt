@@ -17,6 +17,14 @@
         <p id="debug" class="t-rotulo" hidden></p>
         <!-- Aparece só se a conexão com o servidor cair (modo online). -->
         <p id="reconectando" class="t-rotulo" hidden>RECONECTANDO…</p>
+        <!-- Caixa para o jogador digitar o código da sala (aparece se o link veio sem código). -->
+        <form id="entrar-sala" autocomplete="off" hidden>
+          <label for="codigo-sala" class="t-rotulo">CÓDIGO DA SALA</label>
+          <input id="codigo-sala" class="t-corpo" maxlength="80" spellcheck="false"
+                 autocapitalize="characters" enterkeyhint="go" />
+          <button type="submit" class="t-rotulo">ENTRAR</button>
+          <p id="erro-sala" class="t-rotulo" hidden></p>
+        </form>
       </div>
     </div>
     <!-- Tela "Gire o celular" (só aparece com o celular em pé). Montada por src/palco/gire.js. -->

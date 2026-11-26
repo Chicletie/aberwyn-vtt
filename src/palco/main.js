@@ -80,21 +80,60 @@ const canal = abrirCanal({ sala, online: !!sala, palco: true });
 // Testando no próprio computador (localhost)? Então o palco sem código escuta a mesa local.
 const noComputadorDoMestre = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
 
+// ───────────── Caixa para digitar o código da sala ─────────────
+// O jogador digita o código (ou cola o link inteiro) e a página recarrega já com ?sala=XXXXX.
+const formSala = document.getElementById('entrar-sala');
+const campoSala = document.getElementById('codigo-sala');
+const erroSala = document.getElementById('erro-sala');
+
+/** Aceita "5uud8", " 5UUD8 " ou o link inteiro colado; devolve o código limpo (ou null). */
+function lerCodigo(texto) {
+  const doLink = texto.match(/[?&]sala=([A-Za-z0-9]+)/);
+  const codigo = (doLink ? doLink[1] : texto).replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+  return /^[A-Z0-9]{4,8}$/.test(codigo) ? codigo : null;
+}
+
+function mostrarCaixaSala(mostrar) {
+  formSala.hidden = !mostrar;
+}
+
+formSala.addEventListener('submit', (evento) => {
+  evento.preventDefault();
+  const codigo = lerCodigo(campoSala.value);
+  if (!codigo) {
+    erroSala.textContent = 'CÓDIGO INVÁLIDO (4 A 8 LETRAS/NÚMEROS)';
+    erroSala.hidden = false;
+    return;
+  }
+  const endereco = new URL(location.href);
+  endereco.searchParams.set('sala', codigo);
+  location.href = endereco.toString();
+});
+campoSala.addEventListener('input', () => {
+  erroSala.hidden = true;
+});
+
 canal.aoReceberEstado(async (estado) => {
   // Fica no console para conferir com F12 o que REALMENTE chegou (e o que não chegou).
   console.log('[palco] estado recebido:', estado);
   const p = await pronto;
   // Sala existe no link, mas está vazia: código errado, ou a mesa nunca transmitiu nela.
-  if (!estado) return p.renderizar(null, `Sala ${sala} vazia. Confira o link com o mestre.`);
+  if (!estado) {
+    mostrarCaixaSala(true);
+    return p.renderizar(null, `Sala ${sala} vazia. Confira o código com o mestre.`);
+  }
+  mostrarCaixaSala(false);
   window.ultimoEstado = estado;
   p.renderizar(estado);
 });
 
 pronto.then((p) => {
   if (window.ultimoEstado) return;
-  // Sem código da sala no link (fora do computador do mestre): explicar, em vez de esperar à toa.
-  if (!sala && !noComputadorDoMestre) p.renderizar(null, 'Peça ao mestre o link da sala.');
-  else p.renderizar(null); // "Aguardando a mesa…" até chegar o primeiro estado
+  // Sem código da sala no link (fora do computador do mestre): pedir o código, em vez de esperar à toa.
+  if (!sala && !noComputadorDoMestre) {
+    p.renderizar(null, 'Digite o código da sala que o mestre passou.');
+    mostrarCaixaSala(true);
+  } else p.renderizar(null); // "Aguardando a mesa…" até chegar o primeiro estado
   canal.pedirEstado();
 });
 

@@ -138,6 +138,74 @@ body.girando #suporte {
   animation: pisca-devagar 1200ms steps(1) infinite;
 }
 
+/* ───────────── Caixa "Código da sala" (abaixo da janela da cortina) ───────────── */
+
+#entrar-sala {
+  position: absolute;
+  left: 0;
+  top: 186px;
+  width: 480px;
+  margin: 0;
+  z-index: 9997;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+#entrar-sala[hidden] {
+  display: none;
+}
+
+#entrar-sala label {
+  width: 100%;
+  text-align: center;
+  color: var(--cor-dourado);
+}
+
+#codigo-sala {
+  width: 66px;
+  height: 21px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 3px;
+  line-height: 19px;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--cor-texto);
+  background: var(--cor-fundo-escuro);
+  border: 1px solid var(--cor-costura);
+  border-radius: 0;
+  outline: none;
+}
+
+#codigo-sala:focus {
+  border-color: var(--cor-dourado);
+}
+
+#entrar-sala button {
+  height: 21px;
+  margin: 0;
+  padding: 0 6px;
+  color: var(--cor-contorno);
+  background: var(--cor-dourado);
+  border: 1px solid var(--cor-contorno);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+#erro-sala {
+  width: 100%;
+  margin: 0;
+  text-align: center;
+  color: var(--cor-pv-brilho);
+}
+
+#erro-sala[hidden] {
+  display: none;
+}
+
 #reconectando[hidden] {
   display: none;
 }
