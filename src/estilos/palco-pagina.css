@@ -28,3 +28,99 @@ body {
   background: var(--cor-contorno);
   padding: 2px;
 }
+
+/* ───────────── Tela "Gire o celular" (celular em pé) ───────────── */
+
+#gire {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: var(--cor-contorno);
+}
+
+#gire[hidden] {
+  display: none;
+}
+
+/* Enquanto ela aparece, o palco some (ele continua recebendo o estado por baixo). */
+body.girando #suporte {
+  visibility: hidden;
+}
+
+.gire-suporte {
+  position: absolute;
+}
+
+/* Grade de 200×320 em pé, ampliada por número inteiro (o JS define o zoom). */
+.gire-grade {
+  position: relative;
+  width: 200px;
+  height: 320px;
+}
+
+.gire-grade div,
+.gire-grade canvas {
+  position: absolute;
+  box-sizing: border-box;
+  image-rendering: pixelated;
+}
+
+.gire-janela {
+  left: 10px;
+  top: 58px;
+  width: 180px;
+  height: 204px;
+}
+
+.gire-desenho {
+  left: 36px;
+  top: 6px;
+  width: 96px;
+  height: 64px;
+}
+
+.gire-titulo {
+  left: 0;
+  top: 70px;
+  width: 168px;
+  text-align: center;
+  color: var(--cor-dourado);
+}
+
+.gire-divisor {
+  left: 14px;
+  top: 103px;
+  width: 140px;
+  height: 1px;
+  background: var(--cor-costura);
+}
+
+.gire-losango {
+  left: 68px;
+  top: -2px;
+  width: 5px;
+  height: 5px;
+  background:
+    linear-gradient(var(--cor-dourado), var(--cor-dourado)) 2px 0 / 1px 1px no-repeat,
+    linear-gradient(var(--cor-dourado), var(--cor-dourado)) 1px 1px / 3px 1px no-repeat,
+    linear-gradient(var(--cor-dourado), var(--cor-dourado)) 0 2px / 5px 1px no-repeat,
+    linear-gradient(var(--cor-dourado), var(--cor-dourado)) 1px 3px / 3px 1px no-repeat,
+    linear-gradient(var(--cor-dourado), var(--cor-dourado)) 2px 4px / 1px 1px no-repeat;
+}
+
+.gire-texto {
+  left: 4px;
+  top: 108px;
+  width: 160px;
+  white-space: normal;
+  line-height: 15px;
+  text-align: center;
+}
+
+.gire-assinatura {
+  left: 0;
+  top: 178px;
+  width: 168px;
+  text-align: center;
+  color: var(--cor-costura);
+}

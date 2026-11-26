@@ -124,3 +124,10 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - **Clique direito em texto do palco para editar:** a correção de textos está nos campos da mesa (botões Aa, Tt, ␣ e o aviso "NÃO CABE"). O clique direito no palco ao vivo fica para o Marco 4.
 - **Posição manual de inimigo** (`posicao`): o formato existe, mas ainda não há editor (arrastar no palco). Marco 4, se fizer falta.
 - **Status com 5 a 8 heróis** não mostra ícones de condição (não sobra espaço sem esmagar a barra); nesses casos as condições aparecem nos rostos da faixa de turnos.
+
+### Tela "Gire o celular" (feita depois do Marco 2, a pedido do Cadu)
+- Aparece no palco quando a tela está **em pé e é de toque** (celular/tablet). Num computador com a janela estreita ela não aparece; para testar no computador, abra `palco.html?gire=1`.
+- O celular é desenhado **quadro a quadro** num canvas de 96×64 (nunca girado por código, que serrilharia): em pé → deitado com o contorno de onde estava sumindo → telinha acendendo um mini palco. Arco dourado de 2 px com um brilho correndo e ponta de seta de 8 px. 28 quadros a 10 por segundo = 2,8 s.
+- Segue a SPEC nova, não o GIF antigo (`gire-celular.gif`, de arco pontilhado e celular girado).
+- Os desenhos estão em `src/palco/gire.js` como código (provisórios). Se o Cadu quiser desenhar à mão, dá para trocar por uma folha de quadros em `assets/ui/`.
+- Grade própria de 200×320 em pé, com escala inteira em pixels reais, como o palco.

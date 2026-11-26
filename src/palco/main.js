@@ -8,6 +8,7 @@ import { aplicarPaletaNoCss } from '../paleta.js';
 import { abrirCanal } from '../canal.js';
 import { criarPalco } from './palco.js';
 import { carregarDados } from '../dados.js';
+import { criarTelaGire } from './gire.js';
 
 aplicarPaletaNoCss();
 
@@ -49,6 +50,8 @@ function ajustarEscala() {
 }
 
 window.addEventListener('resize', ajustarEscala);
+// Celular em pé: tela "Gire o celular" no lugar do palco (some sozinha ao deitar).
+criarTelaGire(document.getElementById('gire'));
 // Mudar o zoom do navegador (Ctrl + / Ctrl -) também dispara "resize", então já está coberto.
 ajustarEscala();
 
