@@ -101,8 +101,10 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - **Arquivo .json** (botão "?" → SALVAR ARQUIVO / ABRIR ARQUIVO): backup e combates preparados antes.
 - `estado.versao` subiu para 2; `migrar()` atualiza estados salvos de versões antigas, para nada se perder.
 
-### Interpretação de regra (confirmar com o Cadu)
-- **ERROU e FALHA CRÍTICA não aplicam dano nem condição.** Aparece "Errou" / "Falha!" sobre o alvo. ACERTOU e CRÍTICO aplicam o dano digitado (o crítico só muda a fita: "… Crítico!"). Nenhum número é calculado: o mestre digita o dano de cada alvo.
+### Acerto e erro (conferido no Livro Base, p. 68–69 e 115)
+- Quem não é atingido não perde PV nem recebe a condição; aparece "Errou" / "Falha!" sobre ele. **CRÍTICO** atinge todos os alvos; **FALHA CRÍTICA** e **ERROU** erram todos. Nenhum número é calculado: o mestre digita o dano de cada alvo (inclusive dobrar/dividir por afinidade).
+- **Ataque multi:** um teste só é comparado com a Defesa de **cada** alvo, então dá para acertar um e errar outro. Por isso cada alvo tem o botão **✗** ("este alvo esquivou"), que vale quando o resultado é ACERTOU.
+- Feitiço sem teste (cura, por exemplo): marque ACERTOU.
 - **ENCERRAR TURNO** gasta um turno de quem age e passa a vez para o lado sugerido (o outro lado, se ainda tiver alguém com turno; senão o mesmo; se ninguém tiver, FIM DA RODADA fica dourado). O mestre sempre pode trocar no botão "VEZ".
 - **FIM DA RODADA:** todos voltam a ter turnos, o lado que venceu a iniciativa começa (p. 61), quem estava marcado "chega no fim da rodada" entra com o aviso "<Nome> chegou!" (p. 60), e sai a frase "Rodada N." com uma frase de efeito.
 

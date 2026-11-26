@@ -599,18 +599,21 @@ export function definirChegaNoFim(estado, id, chega) {
 /**
  * Executa uma ação inteira de uma vez (é isso que o DESFAZER desfaz junto).
  * Nada de regra: o mestre informa quanto de dano, se acertou, qual condição.
- * Interpretação (ver DECISOES): ERROU e FALHA CRÍTICA não aplicam dano nem condição.
+ * Como o livro manda (p. 68–69 e 115): quem não é atingido não perde PV nem recebe o efeito.
+ * - ACERTOU: atinge cada alvo, menos os marcados com "errou" (no ataque multi, um teste só é
+ *   comparado com a Defesa de cada alvo, então dá para acertar um e errar outro).
+ * - CRÍTICO: atinge todos. ERROU e FALHA CRÍTICA: erra todos.
  * @param {Estado} estado
  * @param {{quemId:string, acao:string|null, item:string|null, custoPm:number,
- *   alvos:{id:string,valor:number}[], resultado:'acertou'|'errou'|'critico'|'falha',
+ *   alvos:{id:string,valor:number,errou?:boolean}[], resultado:'acertou'|'errou'|'critico'|'falha',
  *   tipo:string, condicao:Condicao|null}} a
  */
 export function executarAcao(estado, a) {
   const quem = acharCombatente(estado, a.quemId);
   if (a.custoPm > 0) alterarPm(estado, quem.id, a.custoPm);
-  const acertou = a.resultado === 'acertou' || a.resultado === 'critico';
   for (const alvo of a.alvos) {
-    if (!acertou) {
+    const atingido = a.resultado === 'critico' || (a.resultado === 'acertou' && !alvo.errou);
+    if (!atingido) {
       registrarEfeito(estado, alvo.id, 'texto', a.resultado === 'falha' ? 'Falha!' : 'Errou');
       continue;
     }

@@ -218,7 +218,13 @@ function painelAcao(ctx) {
       botao(c?.nome ?? '?', () => {
         r.alvos.splice(i, 1);
         atualizarPrevia();
-      }, { ligado: true, titulo: 'Tirar este alvo' }),
+      }, { ligado: !a.errou, titulo: 'Tirar este alvo' }),
+      // Ataque multi: um teste só, comparado com a Defesa de cada alvo (p. 69).
+      // ✗ marca que ESTE alvo não foi atingido (só vale com ACERTOU; crítico atinge todos).
+      botao('✗', () => {
+        a.errou = !a.errou;
+        ctx.desenhar();
+      }, { classe: 'mini', ligado: !!a.errou, tom: a.errou ? 'perigo' : undefined, titulo: 'Este alvo esquivou (errou só ele)' }),
       rotulo(r.tipo === 'cura' ? 'CURA' : 'DANO'),
       campoNumero(a.valor, (n) => {
         a.valor = Math.max(0, n);
@@ -274,7 +280,7 @@ function painelAcao(ctx) {
       candidatos.length
         ? lista([['', '+ ALVO'], ['@inimigos', 'todos os inimigos'], ['@herois', 'todos os heróis'], ...candidatos.map((c) => [c.id, c.nome])], '', (id) => {
             const novos = id === '@inimigos' ? candidatos.filter((c) => c.lado !== 'heroi') : id === '@herois' ? candidatos.filter((c) => c.lado === 'heroi') : candidatos.filter((c) => c.id === id);
-            r.alvos.push(...novos.map((c) => ({ id: c.id, valor: 0 })));
+            r.alvos.push(...novos.map((c) => ({ id: c.id, valor: 0, errou: false })));
             atualizarPrevia();
           }, 76)
         : null),
