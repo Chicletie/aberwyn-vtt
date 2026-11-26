@@ -3,7 +3,7 @@
 Mesa virtual (VTT) com tela no estilo JRPG clássico e pixel art, feita para a campanha **Errantes**.
 O mestre controla tudo numa **mesa** no próprio computador; cada jogador abre o **palco** no navegador e assiste.
 
-> Projeto em construção (Marco 3: pondo online).
+> Projeto em construção. **Palco online:** https://chicletie.github.io/aberwyn-vtt/palco.html (com `?sala=CÓDIGO`, que a mesa gera).
 
 ## Avisos
 

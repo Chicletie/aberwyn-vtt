@@ -212,3 +212,15 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - Ao entrar, a mesa compara o backup com o deste navegador. Se a nuvem for mais nova, pergunta: **RECUPERAR DA NUVEM** (dá para desfazer) ou **MANTER A DESTE NAVEGADOR** (que vira o novo backup). Fechar a janela sem escolher = manter (o mais seguro).
 - O arquivo `.json` (? → SALVAR ARQUIVO) continua como segunda cópia.
 - O plano grátis do Firebase não pausa por falta de uso; passando dos limites, desliga até o mês seguinte, mas não apaga. Ele não tem backup automático do banco: por isso a segunda cópia em arquivo.
+
+### Publicação (26/11)
+- Repositório público: **https://github.com/Chicletie/aberwyn-vtt**. Palco: **https://chicletie.github.io/aberwyn-vtt/palco.html?sala=CÓDIGO** (a mesa também fica publicada, em `.../aberwyn-vtt/`, para o mestre usar de qualquer computador; sem a conta dele, ninguém escreve na sala).
+- Publicação automática pelo GitHub Actions (`.github/workflows/publicar.yml`): cada envio para `main` gera o site e publica em ~1 minuto.
+- **Privacidade:** os commits deste projeto usam o e-mail privado do GitHub (`…@users.noreply.github.com`), configurado só neste repositório. O histórico foi reescrito antes do primeiro envio para tirar o Gmail. A configuração geral do Git do computador não mudou.
+- O GitHub pediu a permissão "workflow" para enviar o arquivo de publicação; o Cadu autorizou no próprio GitHub (`gh auth login … --scopes workflow`).
+
+### Testes do Marco 3 (26/11)
+- **Sem login** (`node scripts/testar-regras.mjs`, pela internet): ler a sala PERMITIDO; escrever na sala, ler/escrever fichas, backups, donos, mestres e raiz NEGADO.
+- **Com conta que não é do mestre** (Rules Playground, feito pelo Cadu, UID `jogador-teste`): gravar na sala NEGADO; ler o backup da mesa NEGADO.
+- **Ponta a ponta:** a mesa do Cadu, logada, grava a sala `5UUD8`; o palco publicado no GitHub Pages, aberto pela internet, mostra a mesa ao vivo (o vilão escondido chega como "???", sem nome nem PV).
+- **Reconexão:** o aviso RECONECTANDO… está ligado ao estado de conexão do Firebase, mas não simulei uma queda de internet de verdade; fica para o ensaio do Marco 4 (desligar o Wi-Fi do celular no meio da sessão).
