@@ -1,0 +1,11 @@
+[
+  { "id": "amorfo", "nome": "Amorfo", "sprite": "amorfo", "pv": { "atual": 30, "max": 30 }, "pm": { "atual": 10, "max": 10 } },
+  { "id": "espirito", "nome": "Espírito", "sprite": "espirito", "pv": { "atual": 30, "max": 30 }, "pm": { "atual": 20, "max": 20 } },
+  { "id": "besta", "nome": "Besta", "sprite": "besta", "pv": { "atual": 40, "max": 40 }, "pm": { "atual": 10, "max": 10 } },
+  { "id": "voador", "nome": "Voador", "sprite": "voador", "pv": { "atual": 25, "max": 25 }, "pm": { "atual": 10, "max": 10 } },
+  { "id": "planta", "nome": "Planta", "sprite": "planta", "pv": { "atual": 35, "max": 35 }, "pm": { "atual": 10, "max": 10 } },
+  { "id": "construto", "nome": "Construto magitec", "sprite": "construto", "pv": { "atual": 50, "max": 50 }, "pm": { "atual": 10, "max": 10 } },
+  { "id": "humanoide", "nome": "Humanoide armado", "sprite": "humanoide", "pv": { "atual": 35, "max": 35 }, "pm": { "atual": 15, "max": 15 } },
+  { "id": "aldeao", "nome": "Aldeão", "sprite": "aldeao", "pv": { "atual": 15, "max": 15 }, "pm": { "atual": 5, "max": 5 } },
+  { "id": "nobre", "nome": "Nobre", "sprite": "nobre", "pv": { "atual": 20, "max": 20 }, "pm": { "atual": 15, "max": 15 } }
+]

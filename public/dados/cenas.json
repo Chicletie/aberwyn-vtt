@@ -1,0 +1,29 @@
+[
+  {
+    "id": "bosque-marco",
+    "titulo": "Bosque do Marco Sem Nome",
+    "cenario": "floresta",
+    "descricao": "Um bosque antigo engolindo uma estrada de pedra. A luz chega verde e cansada; ninguém passa por aqui há muito tempo.",
+    "ambiente": [
+      "Um sabiá canta e para no meio, como se tivesse esquecido o resto.",
+      "O musgo cobre um marco de pedra. O nome entalhado já não se lê.",
+      "Ao longe, um zumbido metálico que não pertence à floresta."
+    ],
+    "tensao": ["As folhas param de cair, todas ao mesmo tempo."],
+    "combate": {
+      "fases": {
+        "1": ["O vento muda de direção.", "Algo grande se mexe entre as árvores.", "A chuva aperta. A lama puxa os pés."],
+        "2": ["As cores ao redor do vilão começam a desbotar.", "O chão esquece a forma das pegadas."]
+      },
+      "tensao": ["A ponte range. Mais uma vez."]
+    },
+    "avisos": [
+      { "titulo": "Reforços!", "linha": "Mais dois Espectros no fim da rodada.", "tom": "neutro", "duracao": 4 },
+      { "titulo": "Rendição", "linha": "O Guardião baixa a guarda e espera.", "tom": "dourado", "duracao": null },
+      { "titulo": "O Marco desperta", "linha": "O chão treme sob vocês.", "tom": "vinho", "duracao": 4 },
+      { "titulo": "Cuidado", "linha": "O teto da caverna começa a ceder.", "tom": "vermelho", "duracao": 4 }
+    ],
+    "retratoLocal": "bosque-marco",
+    "intervalo": 25
+  }
+]

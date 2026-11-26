@@ -1,0 +1,19 @@
+[
+  { "id": "joshua", "nome": "Joshua", "jogador": "Edu", "corAssinatura": "#da863e",
+    "pv": { "atual": 60, "max": 60 }, "pm": { "atual": 40, "max": 40 }, "pi": { "atual": 6, "max": 6 },
+    "menu": [
+      { "id": "ataque", "nome": "Ataque" }, { "id": "poder", "nome": "Poder" },
+      { "id": "provocar", "nome": "Provocar", "proprio": true },
+      { "id": "guarda", "nome": "Guarda" }, { "id": "estudo", "nome": "Estudo" },
+      { "id": "inventario", "nome": "Inventário" }, { "id": "outro", "nome": "Outro" }
+    ] },
+  { "id": "nue", "nome": "Nue", "jogador": "Jonaz", "corAssinatura": "#a4dddb",
+    "pv": { "atual": 60, "max": 60 }, "pm": { "atual": 40, "max": 40 }, "pi": { "atual": 6, "max": 6 },
+    "submenu": { "feitico": ["Chama", "Gelo", "Purificação"] } },
+  { "id": "drake", "nome": "Drake", "jogador": "Pedro", "corAssinatura": "#a8ca58",
+    "pv": { "atual": 60, "max": 60 }, "pm": { "atual": 40, "max": 40 }, "pi": { "atual": 6, "max": 6 } },
+  { "id": "feitan", "nome": "Feitan", "jogador": "Feitan", "corAssinatura": "#df84a5",
+    "pv": { "atual": 60, "max": 60 }, "pm": { "atual": 40, "max": 40 }, "pi": { "atual": 6, "max": 6 } },
+  { "id": "alienx", "nome": "AlienX", "jogador": "AlienX", "corAssinatura": "#4f8fba",
+    "pv": { "atual": 60, "max": 60 }, "pm": { "atual": 40, "max": 40 }, "pi": { "atual": 6, "max": 6 } }
+]

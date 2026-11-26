@@ -1,0 +1,4 @@
+[
+  { "id": "padrao", "nome": "Sem cenário (faixas de cor)", "arquivo": null, "chaoTopo": 106, "chaoBase": 194 },
+  { "id": "floresta", "nome": "Floresta", "arquivo": "floresta.png", "chaoTopo": 120, "chaoBase": 192 }
+]
