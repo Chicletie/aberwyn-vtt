@@ -337,4 +337,5 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 ### Ponto de atenção para o Marco 5: toque no celular (27/11)
 - Com o palco em 3× no celular, 1 px da grade ≈ 1 px de tela (~0,28 mm). Hoje está ok: inimigos (≥ 32 px ≈ 8 mm), caixa de código e botão de tela cheia (tamanho próprio, pensado para o dedo).
 - Risco: botões pequenos da ficha (abas, "+", caixinhas de 10–15 px ≈ 3–4 mm), abaixo dos ~7–9 mm recomendados para toque.
+- O mesmo vale para o **próprio palco** na fase interativa: os jogadores vão tocar no menu (Ataque, Poder, Feitiço…), cujos itens têm ~14 px de altura (≈ 4 mm). A área de toque maior resolve: cada item do menu pode aceitar o toque na largura inteira da janela do menu e na altura do espaçamento entre as linhas.
 - Plano, em ordem: (1) área de toque invisível maior que o desenho do botão (sem mudar o visual); (2) se não bastar, layout próprio da ficha no celular. A ficha cobre o palco, então dá para ter outra grade só para ela. Uma interface mobile inteira separada fica como último recurso, porque dobraria a manutenção.
