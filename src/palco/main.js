@@ -24,6 +24,8 @@ const fundo = document.getElementById('fundo-palco');
 // (caminho relativo pelo JS: no GitHub Pages o site mora numa subpasta)
 fundo.style.backgroundImage = 'url(./assets/ui/fundo-palco.png)';
 const ceu = criarCeu(fundo);
+let tintaJaMostrada = false;
+window.ceu = ceu; // depuração (F12): ceu.definirTinta(3, { imediato: true })
 
 // ───────────── Objetos da mesa, espalhados em volta do palco ─────────────
 // Uma mesa de verdade: cada objeto num lugar diferente, em alturas diferentes, pouca simetria;
@@ -238,7 +240,9 @@ canal.aoReceberEstado(async (estado) => {
   }
   mostrarCaixaSala(false);
   window.ultimoEstado = estado;
-  ceu.definirTinta(estado.tinta ?? 1);
+  // Na primeira vez a tinta já aparece no tamanho certo; depois, as mudanças do mestre animam.
+  ceu.definirTinta(estado.tinta ?? 1, { imediato: !tintaJaMostrada });
+  tintaJaMostrada = true;
   p.renderizar(estado);
 });
 

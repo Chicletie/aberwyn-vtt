@@ -339,3 +339,9 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - Risco: botões pequenos da ficha (abas, "+", caixinhas de 10–15 px ≈ 3–4 mm), abaixo dos ~7–9 mm recomendados para toque.
 - O mesmo vale para o **próprio palco** na fase interativa: os jogadores vão tocar no menu (Ataque, Poder, Feitiço…), cujos itens têm ~14 px de altura (≈ 4 mm). A área de toque maior resolve: cada item do menu pode aceitar o toque na largura inteira da janela do menu e na altura do espaçamento entre as linhas.
 - Plano, em ordem: (1) área de toque invisível maior que o desenho do botão (sem mudar o visual); (2) se não bastar, layout próprio da ficha no celular. A ficha cobre o palco, então dá para ter outra grade só para ela. Uma interface mobile inteira separada fica como último recurso, porque dobraria a manutenção.
+
+### Tinta: aparece pronta ao abrir o palco (27/11)
+- Bug achado ao comparar os níveis: ao abrir o palco, a tinta sempre **crescia** do nível 1 até o nível atual (um jogador entrando com TINTA 4 via a mancha "nascer" à toa). Agora o primeiro desenho é imediato; só as mudanças que o mestre faz durante a sessão animam.
+- O céu passou a trocar o elemento \`canvas\` a cada redesenho (força o navegador a pintar de novo dentro do \`zoom\`). Pode ter sido só um efeito da aba escondida durante o teste, mas a troca não custa nada.
+- Comparação dos níveis 0 a 5: \`docs/prints/tinta-niveis.png\`.
+- \`window.ceu\` fica exposto para depuração no F12: \`ceu.definirTinta(3, { imediato: true })\`.

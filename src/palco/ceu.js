@@ -96,7 +96,7 @@ function sorteador(semente) {
 }
 
 export function criarCeu(fundo) {
-  const tela = document.createElement('canvas');
+  let tela = document.createElement('canvas');
   tela.className = 'ceu';
   fundo.append(tela);
   const piscas = document.createElement('div');
@@ -140,6 +140,13 @@ export function criarCeu(fundo) {
   function desenhar() {
     if (!medidas) return;
     const { largura, altura, centro, proibidas, fonte, fio } = medidas;
+    // Um canvas NOVO a cada desenho: redesenhar o mesmo canvas dentro de um elemento com "zoom"
+    // às vezes não aparecia na tela no Chrome (a tinta mudava de nível e a tela continuava a
+    // antiga). Trocar o elemento obriga o navegador a pintar de novo.
+    const nova = document.createElement('canvas');
+    nova.className = 'ceu';
+    tela.replaceWith(nova);
+    tela = nova;
     tela.width = largura;
     tela.height = altura;
     tela.style.width = `${largura}px`;
@@ -294,14 +301,18 @@ export function criarCeu(fundo) {
     desenhar();
   }
 
-  /** Nível de tinta (0 a 5). Mudou? A mancha cresce (ou encolhe) aos poucos, ~1 s. */
-  function definirTinta(novo) {
+  /**
+   * Nível de tinta (0 a 5). Mudou? A mancha cresce (ou encolhe) aos poucos, ~1 s.
+   * imediato = sem animação (ao abrir o palco: a mancha já está lá, não "cresce" do nada).
+   */
+  function definirTinta(novo, { imediato = false } = {}) {
     novo = Math.max(0, Math.min(5, Math.round(Number(novo) || 0)));
-    if (novo === alvo) return;
+    if (novo === alvo && !imediato) return;
     alvo = novo;
     clearInterval(animando);
-    if (!medidas) {
+    if (!medidas || imediato) {
       nivel = alvo;
+      desenhar();
       return;
     }
     const inicio = nivel;
