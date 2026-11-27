@@ -327,3 +327,9 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - **Esquadro:** chanfro claro na borda inclinada, o vão do meio em baixo-relevo (filete escuro + filete claro), régua com marcas a cada 2 px (de 10 em 10, mais compridas), um furo de pendurar com rebite e uma estrelinha gravada.
 - **Compasso:** arco de ajuste entre as pernas, com o parafuso; cabeça com dobradiça e parafuso de fenda; pináculo em cima para segurar.
 - **Baralho:** o conjunto inteiro inclinado 16° na mesa (`INCLINACAO_BARALHO`). A estrela da carta virada é desenhada sempre "em pé", qualquer que seja o ângulo da carta.
+
+### A escala passa a contar a moldura (27/11, decisão do Cadu)
+- No celular em tela cheia (2340×1080), o palco em 4× ocupa exatamente os 1080 pixels de altura: a moldura de cima e de baixo ficava fora da tela e os objetos das laterais apareciam cortados (print do Cadu).
+- Opções apresentadas: palco um degrau menor com a moldura inteira; palco grande com moldura adaptada (só colunas laterais); ou o jogador escolher. **O Cadu escolheu o palco um degrau menor.**
+- Agora a escala é a maior escala inteira em que **o palco com a moldura** (504×294) cabe. No celular, 4× → 3×: moldura inteira e mesa larga dos dois lados. Num monitor 1080p em tela cheia (F11), também 4× → 3×; numa janela comum do navegador, nada muda (já era 3×).
+- Custo conhecido: o texto fica ~25% menor nesses casos.

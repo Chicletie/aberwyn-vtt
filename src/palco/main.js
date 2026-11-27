@@ -70,8 +70,13 @@ function ajustarEscala() {
   const larguraReal = window.innerWidth * dpr;
   const alturaReal = window.innerHeight * dpr;
 
-  let escalaReal = Math.floor(Math.min(larguraReal / LARGURA, alturaReal / ALTURA));
-  // Tela menor que 480×270 pixels reais (celular pequeno): reduz fracionado só para caber.
+  // A escala conta o palco COM a moldura (12 px de cada lado): a moldura sempre aparece
+  // inteira. Se ela não couber na maior escala (ex.: celular em tela cheia, onde o palco em 4×
+  // ocupa a altura toda), o palco desce um degrau (decisão do Cadu, 27/11).
+  const MOLDURA = 12;
+  let escalaReal = Math.floor(Math.min(larguraReal / (LARGURA + 2 * MOLDURA), alturaReal / (ALTURA + 2 * MOLDURA)));
+  // Tela pequena demais até para 1× com moldura: tenta sem moldura; menor que isso, fracionado.
+  if (escalaReal < 1) escalaReal = Math.floor(Math.min(larguraReal / LARGURA, alturaReal / ALTURA));
   if (escalaReal < 1) escalaReal = Math.min(larguraReal / LARGURA, alturaReal / ALTURA);
 
   const escalaCss = escalaReal / dpr;
