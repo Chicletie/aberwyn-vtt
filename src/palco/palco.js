@@ -15,7 +15,8 @@
 import { cores, clarear, escurecer } from '../paleta.js';
 import { pixelArte, elipse, recolorir, rotulo3x5 } from './pixel.js';
 import { cortarMoldura, aplicarMoldura } from '../molduras.js';
-import { posicoesHerois, posicoesInimigos, tamanhoProvisorio, CHAO_PADRAO } from './layout.js';
+import { posicoesHerois, posicoesInimigos, tamanhoDe, CHAO_PADRAO } from './layout.js';
+import { spriteDe, pintarRosto, pintarRetrato, aoChegarArte } from '../arte.js';
 
 const UI = './assets/ui/';
 
@@ -324,11 +325,13 @@ export function criarPalco(raiz, opcoes = {}) {
         posicionar(rosto, i * 27, 0, 24, 24);
         rosto.classList.toggle('agiu', c.turnosUsados >= c.turnosPorRodada);
         rosto.dataset.id = c.id;
-        // Sem retrato ainda: quadrado na cor de quem é, com a inicial.
+        // Com arte: recorte 24×24 da cabeça (sprite) ou do retrato. Sem arte: quadrado na cor
+        // de quem é, com a inicial. Escondido: sempre "?" (a arte contaria quem é).
         const desenho = criar('div', 'rosto-desenho t-corpo', rosto);
-        desenho.textContent = inicial(c);
         desenho.style.background = c.revelado === false ? cores.fundoEscuro : corDe(c);
         desenho.style.color = c.revelado === false ? cores.texto : cores.contorno;
+        const comArte = c.revelado !== false && pintarRosto(desenho, c);
+        desenho.textContent = comArte ? '' : inicial(c);
         criar('div', 'rosto-sublinhado', rosto).style.background = corDe(c);
         // Condições: até 3 ícones no canto de cima à esquerda; mais que isso vira "+".
         const conds = c.condicoes.length > 3 ? [...c.condicoes.slice(0, 2), '+'] : c.condicoes;
@@ -425,7 +428,7 @@ export function criarPalco(raiz, opcoes = {}) {
 
   function atualizarLutador(el, c, pe, estado) {
     const agindo = estado.agindoId === c.id;
-    const { largura, altura } = tamanhoProvisorio(c);
+    const { largura, altura } = tamanhoDe(c, estado);
     const cor = corDe(c);
     el.dataset.id = c.id;
     el.dataset.lado = c.lado;
@@ -439,9 +442,7 @@ export function criarPalco(raiz, opcoes = {}) {
     // Camadas: quem tem o pé mais embaixo fica na frente; quem age fica por cima de todos.
     el.style.zIndex = agindo ? '500' : String(pe.y);
 
-    const corpo = el.querySelector('.corpo');
-    corpo.textContent = inicial(c);
-    corpo.style.background = c.revelado === false ? cores.contorno : cor;
+    pintarCorpo(el.querySelector('.corpo'), c, estado, cor);
 
     const larguraSombra = largura >= 56 ? 48 : 24;
     const sombra = el.querySelector('.sombra');
@@ -476,6 +477,43 @@ export function criarPalco(raiz, opcoes = {}) {
       nome.textContent = c.nome.slice(0, 10);
       posicionar(nome, (largura - larguraNaGrade(nome)) / 2, altura + 7);
     }
+  }
+
+  /**
+   * O "corpo" do lutador: o sprite de verdade (com os quadros animados), a silhueta pronta
+   * de um inimigo escondido, ou o desenho provisório (retângulo na cor com a inicial).
+   */
+  function pintarCorpo(corpo, c, estado, cor) {
+    const s = c.silhueta ? null : spriteDe(c.sprite, posesDe(c, estado));
+    const imagem = s?.url ?? c.silhueta?.url ?? null;
+    corpo.classList.toggle('com-arte', !!imagem);
+    if (!imagem) {
+      corpo.textContent = inicial(c);
+      corpo.style.background = c.revelado === false ? cores.contorno : cor;
+      corpo.style.animation = '';
+      corpo.dataset.arte = '';
+      return;
+    }
+    // Só mexe na imagem quando ela muda (senão a animação dos quadros recomeçaria a cada estado).
+    const chave = s ? `${s.url}|${s.quadros}` : imagem;
+    if (corpo.dataset.arte === chave) return;
+    corpo.dataset.arte = chave;
+    corpo.textContent = '';
+    corpo.style.background = `url(${imagem}) 0 0 / auto no-repeat`;
+    if (s && s.quadros > 1) {
+      corpo.style.setProperty('--fim', `${-s.largura * s.quadros}px`);
+      const duracao = Math.round((1000 * s.quadros) / s.fps);
+      corpo.style.animation = `sprite-quadros ${duracao}ms steps(${s.quadros}) ${s.repetir ? 'infinite' : '1 forwards'}`;
+    } else {
+      corpo.style.animation = '';
+    }
+  }
+
+  /** Poses em ordem de preferência (a primeira que existir na pasta do sprite é usada). */
+  function posesDe(c, estado) {
+    const caido = c.lado === 'heroi' && c.pv?.atual === 0;
+    const fase = c.lado === 'vilao' && estado.fase > 1 ? `fase${estado.fase}` : null;
+    return [c.pose, caido ? 'caido' : null, fase, 'parado'];
   }
 
   // ───────────── Cartão do inimigo (consulta local) ─────────────
@@ -729,8 +767,8 @@ export function criarPalco(raiz, opcoes = {}) {
     animarJanelaStatus(xStatus, larguraStatus);
     posicionar(janelaStatus, xStatus, 202, larguraStatus, 66);
     if (comMenu) {
-      retratoPainel.textContent = inicial(agindo);
       retratoPainel.style.background = agindo.corAssinatura;
+      retratoPainel.textContent = pintarRetrato(retratoPainel, agindo) ? '' : inicial(agindo);
       desenharMenu(agindo, estado.acaoDestacada);
     } else {
       janelaSubmenu.hidden = true;
@@ -995,7 +1033,7 @@ export function criarPalco(raiz, opcoes = {}) {
       const retrato = criar('div', 'retrato-dialogo t-titulo', caixaDialogo);
       posicionar(retrato, 2, 2, 48, 48);
       retrato.style.background = f.cor;
-      retrato.textContent = (f.nome || '?')[0];
+      retrato.textContent = pintarRetrato(retrato, f) ? '' : (f.nome || '?')[0];
       const faixinha = criar('div', 'faixinha-dialogo', caixaDialogo);
       posicionar(faixinha, xTexto, 2, 2, 9);
       faixinha.style.background = f.cor;
@@ -1042,6 +1080,13 @@ export function criarPalco(raiz, opcoes = {}) {
       el.addEventListener('animationend', () => el.remove());
     }
   }
+
+  // Arte nova chegou (sprite, retrato): redesenha o último estado para ela aparecer.
+  aoChegarArte(() => {
+    if (!ultimo || ultimo.modo === 'cortina') return;
+    dialogoAtual = null; // a caixa de diálogo só se redesenha quando muda; força uma vez
+    renderizar(ultimo);
+  });
 
   return { renderizar, raiz };
 }

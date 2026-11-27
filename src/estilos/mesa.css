@@ -760,3 +760,9 @@ select.m-campo option {
 .m-conexao.erro .m-ponto {
   background: var(--cor-pv-crise);
 }
+
+/* Rosto com arte: recorte 24×24 da cabeça, sem borrar. */
+.m-rosto {
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}

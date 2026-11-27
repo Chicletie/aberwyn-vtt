@@ -8,6 +8,7 @@ import * as E from '../estado.js';
 import { cores } from '../paleta.js';
 import { h, botao, seletor, tituloSecao, rotulo, campoNumero, campoTexto, lista, quadradinhosCondicao, rosto, avisoRapido, encher } from './ui.js';
 import * as J from './janelas.js';
+import { silhuetaDe } from '../arte.js';
 
 /** Cor de um combatente na mesa (o mestre vê o vilão em vinho mesmo escondido). */
 function corNaMesa(c) {
@@ -208,7 +209,7 @@ export function desenharCentro(area, ctx) {
       ctx.desenhar();
     }),
   );
-  ctx.palcoPrevia.renderizar(E.estadoPublico(e, { verTudo: ctx.tela.verComo === 'mestre' }));
+  ctx.palcoPrevia.renderizar(E.estadoPublico(e, { verTudo: ctx.tela.verComo === 'mestre', silhueta: silhuetaDe }));
 
   encher(painel, e.modo === 'cortina' ? painelCortina(ctx) : painelAcao(ctx));
 }

@@ -2,6 +2,7 @@
 // São funções pequenas que criam elementos; as seções da mesa montam a tela com elas.
 
 import { CONDICOES, NOMES_CONDICOES } from '../estado.js';
+import { pintarRosto } from '../arte.js';
 
 /**
  * Cria um elemento. Exemplo: h('div', { class: 'linha' }, 'texto', outroElemento)
@@ -198,14 +199,16 @@ export function quadradinhosCondicao(ativas, aoAlternar) {
   );
 }
 
-/** Rosto 24×24 (sem arte: quadrado na cor com a inicial). */
+/** Rosto 24×24: recorte da cabeça do sprite ou do retrato; sem arte, quadrado na cor com a inicial. */
 export function rosto(c, cor) {
-  return h(
+  const el = h(
     'span',
     { class: 'm-rosto t-corpo', style: { background: cor } },
     (c.nome || '?')[0].toUpperCase(),
     h('span', { class: 'm-rosto-sublinhado', style: { background: cor } }),
   );
+  if (pintarRosto(el, c)) el.firstChild.textContent = '';
+  return el;
 }
 
 // ───────────── Janelas (modais) ─────────────

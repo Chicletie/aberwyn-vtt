@@ -863,3 +863,25 @@
 .linha-status .nome {
   overflow: hidden;
 }
+
+/* ───────────── Arte de verdade (sprites e retratos), quando existir ───────────── */
+
+/* Sprite: sem a moldura e a inicial do desenho provisório; a imagem já traz o contorno. */
+.lutador .corpo.com-arte {
+  border: 0;
+  padding: 0;
+  image-rendering: pixelated;
+}
+
+/* Vários quadros lado a lado: anda a imagem para a esquerda, um quadro por vez. */
+@keyframes sprite-quadros {
+  from { background-position-x: 0; }
+  to { background-position-x: var(--fim); }
+}
+
+.rosto .rosto-desenho,
+.retrato,
+.caixa-dialogo .retrato-dialogo {
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}

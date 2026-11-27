@@ -233,3 +233,10 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - **App instalável (PWA)** sai de "janeiro" e entra no Marco 4: abre deitado e em tela cheia, então o palco ganha um degrau de escala (3× → 4× num celular comum). O mestre pede para os jogadores instalarem.
 - **Moldura em volta do palco:** Marco 4 (arte).
 - **Entrada dos jogadores (Marco 5):** tela inicial com nome + chave **antes** de ver a mesa → código da sala (lembrado nas próximas vezes) → cortina com os retratos de quem já entrou acendendo ("aguardando os jogadores"). A surpresa fica para quando a mesa abre. A "presença" (quem está conectado) usa o recurso do Firebase que percebe quando alguém sai ou cai.
+
+## Marco 4 — Arte e ensaio
+
+### Arte com reserva (`src/arte.js`)
+- Ninguém espera imagem: quem desenha pergunta "já tem a arte?" e recebe a resposta na hora. Se ainda não tem, o arquivo é procurado em segundo plano e, quando chega, a mesa e o palco se redesenham. Arquivo que não existe é anotado e não é procurado de novo.
+- O tamanho de cada lutador no campo passa a ser o do sprite real (o da folha de quadros); sem sprite, continua o provisório.
+- **Vazamento do nome do sprite (risco anotado no Marco 2): resolvido.** Para inimigo escondido, a mesa desenha a silhueta (todo pixel visível vira preto) e manda **a imagem pronta**, sem o nome do arquivo. Conferido no F12 do palco: nenhum "guardiao"/nome de pasta chega, e a silhueta tem ~1 KB.

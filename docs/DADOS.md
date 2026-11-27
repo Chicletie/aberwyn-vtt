@@ -61,3 +61,20 @@ Depois de salvar um arquivo, recarregue a mesa (F5). Nada se perde: o estado fic
 ## `coringas.json`
 
 Inimigos genéricos para o botão "+ INIMIGO": `{ "id", "nome", "sprite", "pv", "pm" }`. Só nome e números; nada do bestiário.
+
+## Arte: onde colocar cada PNG (`public/assets/`)
+
+O app funciona sem arte nenhuma: o que faltar vira o desenho provisório. Quando um PNG aparece na pasta certa, o palco e a mesa passam a usá-lo sozinhos (basta recarregar a página). Tudo em tamanho real (1×), fundo transparente.
+
+| O quê | Arquivo | Tamanho |
+|---|---|---|
+| Sprite de batalha | `assets/sprites/<id>/<pose>.png` | herói 32×48 por quadro; inimigo, o que você desenhar |
+| Retrato | `assets/retratos/<id>.png` | 48×48 |
+| Cenário | `assets/cenarios/<arquivo>` (nome em `cenarios.json`) | 480×270 |
+
+- **`<id>`** é o que você escreve nos campos SPRITE e RETRATO da ficha do combatente, na mesa (só letras sem acento, números, `-` e `_`).
+- **Poses** (o nome do arquivo): `parado` (obrigatória, é a reserva de todas), `caido` (herói com 0 PV), `fase2` e `fase3` (vilão depois de trocar de fase). Pose que não existe = usa `parado`.
+- **Animação:** quadros lado a lado, da esquerda para a direita. Sprite de 48 de altura: cada quadro tem 32 de largura, e o app conta sozinho. Outros tamanhos: crie `<pose>.json` ao lado, por exemplo `{ "quadros": 4, "fps": 6, "repetir": true }`. Sem `.json`: 4 quadros por segundo, em loop.
+- **Cabeça (rosto 24×24 da faixa de turnos):** por padrão, o recorte do topo do sprite, no centro. Para escolher outro ponto: `"cabeca": { "x": 4, "y": 2 }` no `.json` da pose `parado`.
+- **Retrato de reserva:** sem `retratos/<id>.png`, a caixa de 48×48 mostra a cabeça do sprite em 1× (nunca ampliada); sem nada, o quadrado colorido com a inicial.
+- **Inimigo escondido:** o palco recebe só a **silhueta já pronta**, nunca o nome do arquivo. Pode dar ao sprite o nome que quiser (`guardiao-marco`): os jogadores não veem no F12.

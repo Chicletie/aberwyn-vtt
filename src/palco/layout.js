@@ -2,6 +2,8 @@
 // recebe a lista de combatentes e devolve onde ficam os PÉS de cada um.
 // Regras em docs/SPEC.md, "Regras de layout".
 
+import { spriteDe } from '../arte.js';
+
 /** Faixa de chão padrão (cada cenário poderá definir a sua no Marco 2). */
 export const CHAO_PADRAO = { chaoTopo: 106, chaoBase: 194, heroiX: 0, inimigoX: 0 };
 
@@ -72,6 +74,17 @@ export function posicoesHerois(herois, chao = CHAO_PADRAO) {
   return posicoes;
 }
 
+/**
+ * Tamanho de cada combatente no campo: o do sprite de verdade (ou da silhueta), quando já
+ * chegou; senão, o do desenho provisório.
+ */
+export function tamanhoDe(c) {
+  if (c.silhueta) return { largura: c.silhueta.largura, altura: c.silhueta.altura };
+  const s = spriteDe(c.sprite);
+  if (s) return { largura: s.largura, altura: s.altura };
+  return tamanhoProvisorio(c);
+}
+
 /** Tamanho do desenho provisório (sem arte) de cada combatente. */
 export function tamanhoProvisorio(c) {
   if (c.lado === 'heroi') return { largura: 32, altura: 48 };
@@ -89,13 +102,13 @@ export function posicoesInimigos(inimigos, chao = CHAO_PADRAO) {
   const centroY = (chao.chaoTopo + chao.chaoBase) / 2;
   const altura = chao.chaoBase - chao.chaoTopo;
 
-  const grandes = inimigos.filter((c) => tamanhoProvisorio(c).largura >= 56);
-  const normais = inimigos.filter((c) => tamanhoProvisorio(c).largura < 56);
+  const grandes = inimigos.filter((c) => tamanhoDe(c).largura >= 56);
+  const normais = inimigos.filter((c) => tamanhoDe(c).largura < 56);
 
   // Grandes: x≈420, centralizados na vertical (dois = um acima do outro).
   grandes.forEach((c, i) => {
     const desloc = grandes.length === 1 ? 0 : (i - 0.5) * 44;
-    const { altura: h } = tamanhoProvisorio(c);
+    const { altura: h } = tamanhoDe(c);
     posicoes.set(c.id, { x: 420 + chao.inimigoX, y: Math.round(centroY + h / 2 + desloc) });
   });
 

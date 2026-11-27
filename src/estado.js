@@ -663,7 +663,9 @@ const REVELADO_POR_ESTUDO = {
  * - Quem só "chega no fim da rodada" não aparece (nem o nome).
  * - Anotações do mestre e histórico: nunca.
  * @param {Estado} estado
- * @param {{verTudo?: boolean}} [opcoes] verTudo = prévia "VER COMO MESTRE" na mesa (nunca vai ao canal).
+ * @param {{verTudo?: boolean, silhueta?: (idSprite: string) => {url:string,largura:number,altura:number}|null}} [opcoes]
+ *   verTudo = prévia "VER COMO MESTRE" na mesa (nunca vai ao canal).
+ *   silhueta = quem fornece a silhueta pronta (imagem) do sprite de um inimigo escondido.
  */
 export function estadoPublico(estado, opcoes = {}) {
   if (estado.modo === 'cortina') {
@@ -704,8 +706,12 @@ export function estadoPublico(estado, opcoes = {}) {
 
     if (escondido(c)) {
       // Escondido: "inimigo" mesmo se for vilão (a moldura vinho também contaria).
-      // ATENÇÃO: o sprite vai junto para desenhar a silhueta. Ver DECISOES (nome do arquivo).
-      return { ...comum, nome: '???', lado: 'inimigo', revelado: false, sprite: c.sprite, porte: c.porte };
+      // O sprite NÃO vai (o nome do arquivo contaria quem é): vai só a silhueta já pronta,
+      // como imagem sem nome, gerada pela mesa (opcoes.silhueta). Ver DECISOES.
+      return {
+        ...comum, nome: '???', lado: 'inimigo', revelado: false, sprite: null, pose: null, porte: c.porte,
+        silhueta: (c.sprite && opcoes.silhueta?.(c.sprite)) || null,
+      };
     }
 
     const nivel = verTudo ? 13 : (c.estudo?.nivel ?? 0);
@@ -738,6 +744,7 @@ export function estadoPublico(estado, opcoes = {}) {
   return {
     versao: estado.versao,
     modo: estado.modo,
+    fase: estado.fase ?? 1,
     cenario: estado.cenario,
     chao: estado.chaos[estado.cenario] ?? null,
     rodada: estado.rodada,

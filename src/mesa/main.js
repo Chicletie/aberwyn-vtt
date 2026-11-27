@@ -12,6 +12,7 @@ import { urlPalcoPublicado } from '../config-online.js';
 import { carregarDados } from '../dados.js';
 import { salvarLocal, carregarLocal, criarPilhaDesfazer, quandoSalvouLocal } from '../persistencia.js';
 import { criarPalco } from '../palco/palco.js';
+import { aoChegarArte, silhuetaDe } from '../arte.js';
 import { prepararMolduras } from '../molduras.js';
 import { avisoRapido, haJanelaAberta, fecharJanela } from './ui.js';
 import { oferecerRecuperarBackup } from './janelas.js';
@@ -206,7 +207,7 @@ async function conferirBackupAoEntrar() {
 
 /** Manda o estado público: sempre para as abas locais; para a sala online só com o mestre logado. */
 function enviarAoPalco() {
-  canal.enviarEstado(E.estadoPublico(ctx.estado), { gravarOnline: ctx.online.logado });
+  canal.enviarEstado(E.estadoPublico(ctx.estado, { silhueta: silhuetaDe }), { gravarOnline: ctx.online.logado });
 }
 
 /** Troca o código da sala (o link antigo para de receber). */
@@ -224,6 +225,13 @@ function linkDoPalco() {
   const base = urlPalcoPublicado ?? new URL('./palco.html', location.href).href;
   return `${base}?sala=${ctx.online.sala}`;
 }
+
+// Arte chegou (um sprite, um retrato ou a silhueta de um inimigo escondido): redesenha a mesa
+// e manda de novo ao palco, para a silhueta pronta chegar aos jogadores.
+aoChegarArte(() => {
+  desenhar();
+  enviarAoPalco();
+});
 
 // ───────────── Desenho da mesa ─────────────
 
