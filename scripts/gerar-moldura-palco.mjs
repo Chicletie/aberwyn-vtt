@@ -377,68 +377,115 @@ const mapa = nova(170, 124);
 }
 gravarPng('public/assets/ui/ornamento-mapa.png', mapa);
 
-// ─── Instrumentos de navegação: esquadro, compasso e lápis (um conjunto, no canto) ───
-const instrumentos = nova(120, 100);
+// ─── Instrumentos de navegação: esquadro, compasso e lápis (um conjunto) ───
+const instrumentos = nova(124, 104);
 {
-  // O esquadro de latão (triângulo retângulo com um vão no meio e marcas de medida).
-  girado(instrumentos, 52, 50, 14, (u, v) => {
-    // Triângulo com o ângulo reto em (−34, 30); catetos de 66 (para a direita) e 62 (para cima).
+  // O esquadro de latão: chanfro claro na borda de fora, borda de dentro em baixo-relevo,
+  // régua com marcas (as de 10 em 10 mais compridas), um furo de pendurar com rebite e uma
+  // estrelinha gravada no canto do ângulo reto.
+  girado(instrumentos, 52, 52, 14, (u, v) => {
+    // Triângulo com o ângulo reto em (−34, 30); catetos de 68 (direita) e 64 (para cima).
     const x = u + 34, y = 30 - v;
-    if (x < 0 || y < 0 || x / 66 + y / 62 > 1) return null;
-    const dentro = x > 9 && y > 9 && (x - 9) / 44 + (y - 9) / 41 < 1; // o vão do meio
+    if (x < 0 || y < 0 || x / 68 + y / 64 > 1) return null;
+    const dentro = x > 11 && y > 11 && (x - 11) / 42 + (y - 11) / 40 < 1; // o vão do meio
     if (dentro) return null;
-    let cor = x / 66 + y / 62 > 0.93 ? C.ouro : C.ouroEscuro; // a borda inclinada pega a luz
-    if (y < 1.2 && Math.round(x) % 4 === 0) cor = C.marrom; // marquinhas de medida
-    if (x < 1.2 && Math.round(y) % 4 === 0) cor = C.marrom;
-    if (y < 1.2 && Math.round(x) % 12 === 0) cor = C.contorno;
+    const hipotenusa = x / 68 + y / 64;
+    const vaoDist = (x - 11) / 42 + (y - 11) / 40; // distância até o vão (1 = encostado)
+    let cor = C.ouroEscuro;
+    if (hipotenusa > 0.95) cor = C.ouro; // chanfro da borda inclinada, pegando a luz
+    if (y < 1.2 || x < 1.2) cor = C.laranja; // as bordas retas
+    // A borda do vão: um filete escuro e, logo fora, um filete claro (baixo-relevo).
+    if (x > 9.8 && y > 9.8 && vaoDist < 1.07 && (x < 11.2 || y < 11.2 || vaoDist > 0.96)) cor = C.marrom;
+    else if (x > 8.8 && y > 8.8 && vaoDist < 1.13 && (x < 10 || y < 10 || vaoDist > 1.02)) cor = C.ouro;
+    // A régua: marcas a cada 2 px nas duas bordas retas; de 10 em 10, mais compridas.
+    const marca = (pos, prof) => Math.round(pos) % 2 === 0 && prof < (Math.round(pos) % 10 === 0 ? 4.5 : 2.2);
+    if (y < 5 && x > 3 && x < 60 && marca(x, y)) cor = C.marrom;
+    if (x < 5 && y > 3 && y < 56 && marca(y, x)) cor = C.marrom;
+    // O furo com rebite, perto do ângulo reto, e a estrelinha gravada.
+    const furo = Math.hypot(x - 6.5, y - 6.5);
+    if (furo < 2.6) cor = furo < 1.2 ? C.branco : C.marrom;
+    if ((Math.abs(x - 22) < 0.6 && Math.abs(y - 6) < 2.5) || (Math.abs(y - 6) < 0.6 && Math.abs(x - 22) < 2.5)) cor = C.marrom;
     return cor;
   });
-  // O lápis (corpo azul, ponta de madeira e grafite, borracha rosa com anel dourado).
-  girado(instrumentos, 70, 78, -24, (u, v) => {
+  // O lápis (corpo azul sextavado, ponta de madeira e grafite, anel e borracha).
+  girado(instrumentos, 70, 82, -24, (u, v) => {
     if (u < -34 || u > 34 || Math.abs(v) > 3.2) return null;
     if (u > 25) {
       const meia = 3.2 * (1 - (u - 25) / 9);
       if (Math.abs(v) > meia) return null;
-      return u > 31 ? C.cinza : v < 0 ? C.ouro : C.laranja; // madeira e grafite
+      return u > 31 ? C.cinza : v < 0 ? C.ouro : C.laranja;
     }
-    if (u < -29) return v < 0 ? '#df84a5' : '#c65197'; // borracha
-    if (u < -25) return v < -1 ? C.branco : C.ouro; // anel de metal
-    return v < -1.5 ? C.azulClaro : v > 1.5 ? C.azulMedio : C.azul; // corpo sextavado
+    if (u < -29) return v < 0 ? '#df84a5' : '#c65197';
+    if (u < -25) return v < -1 ? C.branco : Math.round(u) % 2 ? C.ouro : C.ouroEscuro;
+    if (Math.abs(u - 8) < 3 && Math.abs(v) < 1) return C.ouro; // uma marca dourada no corpo
+    return v < -1.5 ? C.azulClaro : v > 1.5 ? C.azulMedio : C.azul;
   });
-  // O compasso (duas pernas de aço abertas, dobradiça dourada com o parafuso).
-  const dobradica = [88, 10];
-  for (const [px, py] of [[70, 66], [110, 62]]) {
-    const passos = Math.hypot(px - dobradica[0], py - dobradica[1]);
-    for (let i = 4; i <= passos; i++) {
-      const x = dobradica[0] + ((px - dobradica[0]) * i) / passos;
-      const y = dobradica[1] + ((py - dobradica[1]) * i) / passos;
-      const ponta = i > passos - 6;
-      const grossura = ponta ? 1 : i < passos * 0.5 ? 3 : 2;
-      for (let g = 0; g < grossura; g++) ponto(instrumentos, x + g, y, ponta ? (g ? C.contorno : C.cinzaClaro) : g === 0 ? C.branco : g === 1 ? C.claro : C.cinzaClaro);
+  // O compasso de navegação: pernas de aço afinando até as pontas, um arco de ajuste entre elas
+  // (com o parafuso), a cabeça com dobradiça dourada e um pináculo em cima para segurar.
+  const cabeca = [90, 14];
+  const pernas = [[72, 70], [112, 66]];
+  const pontoNaPerna = (p, f) => [cabeca[0] + (p[0] - cabeca[0]) * f, cabeca[1] + (p[1] - cabeca[1]) * f];
+  for (const p of pernas) {
+    const passos = Math.hypot(p[0] - cabeca[0], p[1] - cabeca[1]);
+    for (let i = 5; i <= passos; i++) {
+      const [x, y] = pontoNaPerna(p, i / passos);
+      const ponta = i > passos - 7;
+      const grossura = ponta ? 1 : i < passos * 0.45 ? 3 : 2;
+      for (let g = 0; g < grossura; g++) {
+        ponto(instrumentos, x + g, y, ponta ? (g ? C.contorno : C.cinza) : g === 0 ? C.branco : g === 1 ? C.claro : C.cinzaClaro);
+      }
     }
   }
-  for (let dy = -5; dy <= 5; dy++) {
-    for (let dx = -5; dx <= 5; dx++) {
+  // O arco de ajuste (de uma perna à outra, a 55% do comprimento) e o parafuso dele.
+  const [ax, ay] = pontoNaPerna(pernas[0], 0.55);
+  const [bx, by] = pontoNaPerna(pernas[1], 0.55);
+  for (let t = 0; t <= 1; t += 0.02) {
+    const x = ax + (bx - ax) * t;
+    const y = ay + (by - ay) * t - Math.sin(Math.PI * t) * 5;
+    ponto(instrumentos, x, y, C.ouro);
+    ponto(instrumentos, x, y + 1, C.ouroEscuro);
+  }
+  for (const [x, y] of [[ax + 1, ay], [bx + 1, by]]) {
+    ponto(instrumentos, x, y, C.branco);
+    ponto(instrumentos, x + 1, y, C.marrom);
+  }
+  // A cabeça: dobradiça dourada redonda com o parafuso, um anel e o pináculo em cima.
+  for (let dy = -6; dy <= 6; dy++) {
+    for (let dx = -6; dx <= 6; dx++) {
       const r = Math.hypot(dx, dy);
-      if (r > 5) continue;
-      ponto(instrumentos, dobradica[0] + dx, dobradica[1] + dy, r > 4 ? C.ouroEscuro : dx + dy < -1 ? C.ouro : C.laranja);
+      if (r > 6) continue;
+      let cor = r > 5 ? C.ouroEscuro : dx + dy < -2 ? C.ouro : C.laranja;
+      if (r < 2.4) cor = r < 1.2 ? C.marrom : C.ouroEscuro; // o parafuso
+      if (Math.abs(dx + dy) < 0.5 && r < 2.2) cor = C.contorno; // a fenda do parafuso
+      ponto(instrumentos, cabeca[0] + dx, cabeca[1] + dy, cor);
     }
   }
-  ponto(instrumentos, dobradica[0], dobradica[1], C.marrom); // o parafuso
-  ponto(instrumentos, dobradica[0] - 1, dobradica[1], C.marrom);
-  ponto(instrumentos, dobradica[0] - 2, dobradica[1] - 2, C.branco);
+  ponto(instrumentos, cabeca[0] - 3, cabeca[1] - 3, C.branco);
+  for (let y = cabeca[1] - 13; y <= cabeca[1] - 6; y++) {
+    const meia = y < cabeca[1] - 10 ? 1 : 2; // pináculo: mais fino em cima
+    for (let dx = -meia; dx <= meia; dx++) ponto(instrumentos, cabeca[0] + dx, y, dx < 0 ? C.ouro : C.ouroEscuro);
+  }
+  ponto(instrumentos, cabeca[0], cabeca[1] - 14, C.branco); // a bolinha da ponta
   contornar(instrumentos);
 }
 gravarPng('public/assets/ui/ornamento-instrumentos.png', instrumentos);
+
 
 // ═══════════ Objetos dos personagens (um por PJ; os que faltam chegam depois da sessão 0) ═══════════
 
 // ─── Wesley: um baralho (na escala da pena: carta de 30×44) ───
 // O monte, três cartas espalhadas em leque e uma virada para cima.
-const baralho = nova(132, 100);
+const baralho = nova(140, 116);
+const INCLINACAO_BARALHO = 16; // o conjunto todo, um pouco torto na mesa (graus)
 {
-  const carta = (cx, cy, angulo, virada) =>
-    girado(baralho, cx, cy, angulo, (u, v) => {
+  const carta = (cx0, cy0, angulo0, virada) => {
+    // Gira a posição da carta em volta do centro do conjunto, e a carta junto.
+    const r = (INCLINACAO_BARALHO * Math.PI) / 180;
+    const [ox, oy] = [cx0 - 66, cy0 - 50];
+    const cx = 70 + ox * Math.cos(r) - oy * Math.sin(r);
+    const cy = 58 + ox * Math.sin(r) + oy * Math.cos(r);
+    const angulo = angulo0 + INCLINACAO_BARALHO;
+    return girado(baralho, cx, cy, angulo, (u, v) => {
       if (Math.abs(u) > 15 || Math.abs(v) > 22) return null;
       if (Math.abs(u) > 13 && Math.abs(v) > 20) return null; // quinas arredondadas
       if (Math.abs(u) > 14 || Math.abs(v) > 21) return C.claro; // a borda branca da carta
@@ -452,8 +499,11 @@ const baralho = nova(132, 100);
         return (Math.round(u + 40) + Math.round(v + 40)) % 4 === 0 || (Math.round(u + 40) - Math.round(v + 40) + 80) % 4 === 0 ? C.azulMedio : C.azulEscuro;
       }
       // Frente: papel claro, a estrela vermelha grande no meio, os cantinhos e uma letra.
-      const estrelaGrande = (Math.abs(u) < 1 && Math.abs(v) < 8) || (Math.abs(v) < 1 && Math.abs(u) < 6.5) || Math.abs(u) + Math.abs(v) < 3.6;
-      if (estrelaGrande) return Math.abs(u) + Math.abs(v) < 1.5 ? '#cf573c' : '#a53030';
+      // A estrela do meio fica sempre "em pé" na mesa (senão, com a carta torta, vira um X).
+      const ar = (angulo * Math.PI) / 180;
+      const su = u * Math.cos(ar) - v * Math.sin(ar), sv = u * Math.sin(ar) + v * Math.cos(ar);
+      const estrelaGrande = (Math.abs(su) < 1 && Math.abs(sv) < 8) || (Math.abs(sv) < 1 && Math.abs(su) < 6.5) || Math.abs(su) + Math.abs(sv) < 3.6;
+      if (estrelaGrande) return Math.abs(su) + Math.abs(sv) < 1.5 ? '#cf573c' : '#a53030';
       // Cantinhos: uma estrelinha e um "A" (em pixel) em cima à esquerda e embaixo à direita.
       for (const s of [1, -1]) {
         const cu = (u + 10 * s) * s, cv = (v + 16 * s) * s;
@@ -464,6 +514,7 @@ const baralho = nova(132, 100);
       }
       return v > 18 ? C.claro : C.branco;
     });
+  };
   // O monte: cinco cartas empilhadas, cada uma um pouco torta, com a espessura aparecendo.
   for (let i = 0; i < 5; i++) carta(30 + i * 0.5, 54 - i * 1.2, -8 + i * 2, false);
   // As espalhadas: duas de costas em leque e uma virada.

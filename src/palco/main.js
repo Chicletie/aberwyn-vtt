@@ -40,11 +40,11 @@ const OBJETOS_DA_MESA = {
   mapa: { largura: 170, altura: 124, onde: (px, py, f) => ({ x: px - 170 - f, y: py - 90 }) },
   tinteiro: { largura: 64, altura: 40, onde: (px, py, f) => ({ x: px + BOCA_TINTEIRO.x - 62 - f * 0.3, y: py + BOCA_TINTEIRO.y - 19 }) },
   pena: { largura: 44, altura: 116, onde: (px, py, f) => ({ x: px + BOCA_TINTEIRO.x + 6 - 40 - f * 0.3, y: py + BOCA_TINTEIRO.y + 8 - 112 }) },
-  instrumentos: { largura: 120, altura: 100, onde: (px, py, f) => ({ x: px - 104 - f * 0.7, y: py + 206 }) },
+  instrumentos: { largura: 124, altura: 104, onde: (px, py, f) => ({ x: px - 104 - f * 0.7, y: py + 206 }) },
   // Direita: o pincel da Nue saindo pelo alto, o novelo no meio, o baralho do Wesley embaixo.
   pincel: { largura: 198, altura: 152, onde: (px, py, f) => ({ x: px + 440 + f * 0.6, y: py - 70 }) },
   novelo: { largura: 60, altura: 56, onde: (px, py, f) => ({ x: px + 494 + f * 0.5, y: py + 82 }) },
-  baralho: { largura: 132, altura: 100, onde: (px, py, f) => ({ x: px + 470 + f * 0.8, y: py + 190 }) },
+  baralho: { largura: 140, altura: 116, onde: (px, py, f) => ({ x: px + 466 + f * 0.8, y: py + 182 }) },
 };
 const objetosMesa = {};
 for (const [nome, o] of Object.entries(OBJETOS_DA_MESA)) {

@@ -322,3 +322,8 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - **A pincelada e o pincel se conectam:** o pincel está deitado com a ponta exatamente onde a pincelada termina, como se tivesse acabado de traçá-la. Os dois estão na mesma imagem, então nunca se desencontram.
 - **Sem sombras redondas:** a mesa é vista de cima e a luz vem de cima, então as sombras genéricas (elipses) saíram de todos os objetos.
 - **Fio do novelo contínuo:** nos trechos rápidos da curva o fio "pulava" pixels. Agora cada ponto é ligado ao anterior pixel a pixel. O trajeto não mudou.
+
+### Detalhes nos instrumentos e baralho inclinado (versão 10)
+- **Esquadro:** chanfro claro na borda inclinada, o vão do meio em baixo-relevo (filete escuro + filete claro), régua com marcas a cada 2 px (de 10 em 10, mais compridas), um furo de pendurar com rebite e uma estrelinha gravada.
+- **Compasso:** arco de ajuste entre as pernas, com o parafuso; cabeça com dobradiça e parafuso de fenda; pináculo em cima para segurar.
+- **Baralho:** o conjunto inteiro inclinado 16° na mesa (`INCLINACAO_BARALHO`). A estrela da carta virada é desenhada sempre "em pé", qualquer que seja o ângulo da carta.

@@ -76,10 +76,10 @@ O app funciona sem arte nenhuma: o que faltar vira o desenho provisório. Quando
 | A pena (esquerda, no meio) | `assets/ui/ornamento-pena.png` | 44×116; o bico fica em (40, 112), dentro da poça |
 | O tinteiro tombado, visto de cima, com a rolha caída (esquerda, no meio) | `assets/ui/ornamento-tinteiro.png` | 64×40; a tinta sai da boca, em (62, 19), virada para o palco |
 | O mapa (esquerda, saindo pelo alto) | `assets/ui/ornamento-mapa.png` | 170×124 |
-| Esquadro, compasso e lápis (esquerda, embaixo) | `assets/ui/ornamento-instrumentos.png` | 120×100 |
+| Esquadro, compasso e lápis (esquerda, embaixo) | `assets/ui/ornamento-instrumentos.png` | 124×104 |
 | O novelo (direita, no meio) | `assets/ui/ornamento-novelo.png` | 60×56; o fio sai em (14, 40) e o código o desenha até o nó do canto de baixo |
 | Pincel japonês com tinta vermelho-sangue e a pincelada: **Nue** (direita, no alto) | `assets/ui/ornamento-pincel.png` | 198×152; a ponta do pincel (108, 128) é onde a pincelada termina |
-| Baralho: **Wesley** (direita, embaixo) | `assets/ui/ornamento-baralho.png` | 132×100 (carta de 30×44) |
+| Baralho: **Wesley** (direita, embaixo) | `assets/ui/ornamento-baralho.png` | 140×116 (carta de 30×44; o conjunto inclinado 16°) |
 | Objetos de Joshua, Drake e Hilda | a definir (sessão 0) | |
 
 As posições e tamanhos de cada objeto ficam em `src/palco/main.js`, na lista `OBJETOS_DA_MESA` (contadas a partir do canto do palco). Mudou o tamanho de um PNG? Ajuste ali a largura e a altura.
