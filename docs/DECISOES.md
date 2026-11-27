@@ -263,3 +263,13 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - **`assets/ui/moldura-palco.png`** (34×34): cantos de 12 e um trecho de borda de 10 que se repete. Por que 10: 480 e 270 são múltiplos de 10, então os losangos fecham certinho nos quatro lados, sem pedaço cortado. Desenho: ouro com brilho no alto à esquerda, faixa azul-noite com losangos e um broche em cada canto.
 - **`assets/ui/fundo-palco.png`** (32×32): tapeçaria repetida na tela toda, na mesma escala do palco, alinhada para o losango do ladrilho cair no centro do palco (fica simétrica dos dois lados). Treliça apagada, losango no cruzamento e estrelinhas: os mesmos motivos do divisor e das cintilas.
 - Os dois PNGs foram gerados por `scripts/gerar-moldura-palco.mjs` como **versão provisória**: o Cadu pode redesenhar à mão. Depois disso, não rodar o script de novo (sobrescreveria o desenho).
+
+### Moldura do palco, versão 3: "Pena e Fio" + manuscrito + luz da Fabula
+- A versão 2 (losangos geométricos) ficou "genérica, sem sabor" (Cadu). Ele escolheu juntar **Pena e Fio** e o **manuscrito apagado**, com **a luz da Fabula, as estrelas**.
+- **A moldura é o fio:** um fio dourado trançado (voltas inclinadas a cada 5 px) com um **nó** em cada canto e uma estrela de luz no nó.
+- **A pena** (`ornamento-pena.png`), no alto à esquerda, com o bico encostando no fio, como quem o escreve; da ponta sobem **luzinhas douradas**.
+- **O novelo** (`ornamento-novelo.png`), embaixo à direita, de onde o fio sai. Pena em cima e novelo embaixo formam uma diagonal: a composição não fica espelhada (simétrica demais parece genérico).
+- **O fundo é uma página de manuscrito apagado** (`fundo-palco.png`): linhas de escrita ilegível na cor da tinta, com palavras faltando (o tema do apagamento).
+- **O céu é desenhado pelo código, não pelo ladrilho** (`src/palco/ceu.js`): estrelas em lugares únicos, constelações ligadas por **fios** pontilhados (os Laços) e algumas estrelas que **piscam** devagar. No ladrilho, a constelação se repetia em grade e denunciava a repetição. O sorteio é repetível: o mesmo tamanho de tela dá sempre o mesmo céu.
+- **Escala:** o palco continua usando a maior escala inteira que cabe. Numa tela 16:9 em tela cheia (ex.: 1920×1080 com F11), ele ocupa tudo e a moldura não aparece; numa janela comum do navegador, ela aparece inteira. Diminuir o palco só para mostrar a moldura deixaria o texto menor, e a leitura vem antes da decoração.
+- Todas as peças são PNGs provisórios em `public/assets/ui/` para o Cadu redesenhar.

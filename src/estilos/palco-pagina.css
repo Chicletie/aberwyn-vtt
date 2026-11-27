@@ -33,6 +33,84 @@ body {
   image-rendering: pixelated;
 }
 
+/* O céu (estrelas e constelações) desenhado pelo src/palco/ceu.js por cima do manuscrito. */
+#fundo-palco .ceu,
+#fundo-palco .ceu-piscas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  image-rendering: pixelated;
+}
+
+.ceu-pisca {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background-size: 25px 5px;
+  background-repeat: no-repeat;
+  animation: ceu-pisca 4000ms steps(1) infinite;
+}
+
+/* Quase sempre apagada; de vez em quando acende, cresce e some. */
+@keyframes ceu-pisca {
+  0% { background-position: 0 0; }
+  70% { background-position: 0 0; }
+  76% { background-position: -5px 0; }
+  82% { background-position: -10px 0; }
+  88% { background-position: -15px 0; }
+  94% { background-position: -10px 0; }
+  100% { background-position: -20px 0; }
+}
+
+/* Pena, novelo e luzinhas: na grade do palco, por fora da moldura (o JS aplica o zoom). */
+#enfeites {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 480px;
+  height: 270px;
+}
+
+#enfeites > div {
+  position: absolute;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+
+#ornamento-pena {
+  /* A ponta do bico (33, 116 na imagem) encosta no fio da moldura, à esquerda, no alto. */
+  left: -42px;
+  top: 4px;
+  width: 40px;
+  height: 120px;
+  z-index: 2;
+}
+
+#ornamento-novelo {
+  /* O fio sai do novelo (0, 36 na imagem) e entra no fio da moldura, à direita, embaixo. */
+  left: 486px;
+  top: 150px;
+  width: 48px;
+  height: 64px;
+}
+
+.luz-pena {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  background: var(--cor-dourado);
+  opacity: 0;
+  animation: luz-sobe 2600ms steps(26) infinite;
+}
+
+/* Sobe uns 26 px, desviando de leve, e apaga (luz da Fabula saindo da escrita). */
+@keyframes luz-sobe {
+  0% { translate: 0 0; opacity: 1; background: var(--cor-branco, #ebede9); }
+  25% { background: var(--cor-dourado); }
+  60% { opacity: 1; }
+  100% { translate: var(--deriva) -26px; opacity: 0; }
+}
+
 /* Moldura ornamentada: 12 px por fora da grade de 480×270, na mesma escala, atrás do palco.
    Os pedaços (cantos e bordas) são recortados de assets/ui/moldura-palco.png pelo molduras.js.
    Onde a tela não tem sobra (celular em tela cheia), ela simplesmente fica fora da vista. */

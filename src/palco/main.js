@@ -10,6 +10,7 @@ import { criarPalco } from './palco.js';
 import { carregarDados } from '../dados.js';
 import { criarTelaGire } from './gire.js';
 import { prepararMolduras, cortarMoldura, aplicarMoldura } from '../molduras.js';
+import { criarCeu, criarLuzesDaPena } from './ceu.js';
 
 aplicarPaletaNoCss();
 
@@ -22,6 +23,12 @@ const moldura = document.getElementById('moldura-palco');
 const fundo = document.getElementById('fundo-palco');
 // (caminho relativo pelo JS: no GitHub Pages o site mora numa subpasta)
 fundo.style.backgroundImage = 'url(./assets/ui/fundo-palco.png)';
+const ceu = criarCeu(fundo);
+const enfeites = document.getElementById('enfeites');
+document.getElementById('ornamento-pena').style.backgroundImage = 'url(./assets/ui/ornamento-pena.png)';
+document.getElementById('ornamento-novelo').style.backgroundImage = 'url(./assets/ui/ornamento-novelo.png)';
+// Luzinhas saindo da ponta da pena: ponta em (33, 116) da imagem, que está em (-42, 4).
+criarLuzesDaPena(document.getElementById('luzes-pena'), -42 + 33, 4 + 116);
 const botaoTelaCheia = document.getElementById('tela-cheia');
 const debug = document.getElementById('debug');
 
@@ -59,6 +66,15 @@ function ajustarEscala() {
   fundo.style.width = `${Math.ceil(window.innerWidth / escalaCss)}px`;
   fundo.style.height = `${Math.ceil(window.innerHeight / escalaCss)}px`;
   fundo.style.backgroundPosition = `${esquerda / escalaCss + 224}px ${topo / escalaCss + 119}px`;
+  enfeites.style.zoom = escalaCss;
+  // Céu: fora do palco, da moldura, da pena e do novelo (posições na grade da tela).
+  const px = Math.round(esquerda / escalaCss);
+  const py = Math.round(topo / escalaCss);
+  ceu.atualizar(Math.ceil(window.innerWidth / escalaCss), Math.ceil(window.innerHeight / escalaCss), [
+    { x: px - 12, y: py - 12, w: 504, h: 294 },
+    { x: px - 42, y: py + 4, w: 40, h: 120 },
+    { x: px + 486, y: py + 150, w: 48, h: 64 },
+  ]);
   // Botão com pelo menos ~34 px de tela (bom para o dedo), ampliado por número inteiro de pixels reais.
   botaoTelaCheia.style.zoom = Math.ceil((34 * dpr) / 17) / dpr;
   debug.textContent = `ESCALA ${Number(escalaReal.toFixed(2))}X  DPR ${Number(dpr.toFixed(2))}`;
