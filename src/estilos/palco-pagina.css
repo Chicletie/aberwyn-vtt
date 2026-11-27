@@ -23,15 +23,42 @@ body {
   z-index: 1;
 }
 
-/* Moldura em volta do palco: 6 px de janela por fora da grade de 480×270, na mesma escala
-   (o JS aplica o mesmo zoom). Onde a tela não tem sobra, ela simplesmente fica fora da vista. */
+/* Arte da parte escura: a tapeçaria (32×32) repetida na tela toda, na mesma escala do palco
+   (o JS aplica o mesmo zoom e alinha o desenho ao centro do palco). */
+#fundo-palco {
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-repeat: repeat;
+  image-rendering: pixelated;
+}
+
+/* Moldura ornamentada: 12 px por fora da grade de 480×270, na mesma escala, atrás do palco.
+   Os pedaços (cantos e bordas) são recortados de assets/ui/moldura-palco.png pelo molduras.js.
+   Onde a tela não tem sobra (celular em tela cheia), ela simplesmente fica fora da vista. */
 #moldura-palco {
   position: absolute;
-  left: -6px;
-  top: -6px;
-  width: 492px;
-  height: 282px;
+  left: -12px;
+  top: -12px;
+  width: 504px;
+  height: 294px;
   box-sizing: border-box;
+  border: 12px solid transparent;
+  background-origin: border-box;
+  background-clip: border-box;
+  background-image:
+    var(--moldura-ce), var(--moldura-cd), var(--moldura-be), var(--moldura-bd),
+    var(--moldura-topo), var(--moldura-base), var(--moldura-esq), var(--moldura-dir);
+  background-position:
+    0 0, 100% 0, 0 100%, 100% 100%,
+    12px 0, 12px 100%, 0 12px, 100% 12px;
+  background-size:
+    12px 12px, 12px 12px, 12px 12px, 12px 12px,
+    10px 12px, 10px 12px, 12px 10px, 12px 10px;
+  background-repeat:
+    no-repeat, no-repeat, no-repeat, no-repeat,
+    repeat-x, repeat-x, repeat-y, repeat-y;
+  image-rendering: pixelated;
 }
 
 /* Botão de tela cheia: plaquinha no canto de cima à direita da tela (no celular deitado,

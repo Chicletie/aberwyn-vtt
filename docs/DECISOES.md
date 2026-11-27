@@ -257,3 +257,9 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 
 ### Publicação: etapas do GitHub atualizadas (27/11)
 - A publicação começou a falhar com "nenhum pacote github-pages encontrado". As etapas `upload-pages-artifact` (v3 → v5) e `deploy-pages` (v4 → v5) foram atualizadas para as versões atuais. Depois disso, o GitHub ainda recusou uma vez ("tente mais tarde", falha do lado dele) e passou na nova tentativa. Se acontecer de novo: **Actions → a execução que falhou → Re-run jobs**.
+
+### Moldura do palco, versão 2 (pedido do Cadu: "como nos jogos de RPG Maker")
+- A primeira versão era só um filete da janela. O Cadu queria o que os jogos de RPG Maker fazem: **arte temática na parte escura** em volta e uma **moldura encorpada** fazendo a divisão.
+- **`assets/ui/moldura-palco.png`** (34×34): cantos de 12 e um trecho de borda de 10 que se repete. Por que 10: 480 e 270 são múltiplos de 10, então os losangos fecham certinho nos quatro lados, sem pedaço cortado. Desenho: ouro com brilho no alto à esquerda, faixa azul-noite com losangos e um broche em cada canto.
+- **`assets/ui/fundo-palco.png`** (32×32): tapeçaria repetida na tela toda, na mesma escala do palco, alinhada para o losango do ladrilho cair no centro do palco (fica simétrica dos dois lados). Treliça apagada, losango no cruzamento e estrelinhas: os mesmos motivos do divisor e das cintilas.
+- Os dois PNGs foram gerados por `scripts/gerar-moldura-palco.mjs` como **versão provisória**: o Cadu pode redesenhar à mão. Depois disso, não rodar o script de novo (sobrescreveria o desenho).

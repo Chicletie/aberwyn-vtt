@@ -9,7 +9,7 @@ import { abrirCanal } from '../canal.js';
 import { criarPalco } from './palco.js';
 import { carregarDados } from '../dados.js';
 import { criarTelaGire } from './gire.js';
-import { prepararMolduras } from '../molduras.js';
+import { prepararMolduras, cortarMoldura, aplicarMoldura } from '../molduras.js';
 
 aplicarPaletaNoCss();
 
@@ -19,6 +19,9 @@ const ALTURA = 270;
 const suporte = document.getElementById('suporte');
 const palco = document.getElementById('palco');
 const moldura = document.getElementById('moldura-palco');
+const fundo = document.getElementById('fundo-palco');
+// (caminho relativo pelo JS: no GitHub Pages o site mora numa subpasta)
+fundo.style.backgroundImage = 'url(./assets/ui/fundo-palco.png)';
 const botaoTelaCheia = document.getElementById('tela-cheia');
 const debug = document.getElementById('debug');
 
@@ -50,6 +53,12 @@ function ajustarEscala() {
   suporte.style.top = `${topo}px`;
   palco.style.zoom = escalaCss;
   moldura.style.zoom = escalaCss;
+  // Tapeçaria: cobre a tela toda na mesma escala; o losango do meio do ladrilho (16, 16) cai
+  // bem no centro do palco (240, 135), para o desenho ficar simétrico dos dois lados.
+  fundo.style.zoom = escalaCss;
+  fundo.style.width = `${Math.ceil(window.innerWidth / escalaCss)}px`;
+  fundo.style.height = `${Math.ceil(window.innerHeight / escalaCss)}px`;
+  fundo.style.backgroundPosition = `${esquerda / escalaCss + 224}px ${topo / escalaCss + 119}px`;
   // Botão com pelo menos ~34 px de tela (bom para o dedo), ampliado por número inteiro de pixels reais.
   botaoTelaCheia.style.zoom = Math.ceil((34 * dpr) / 17) / dpr;
   debug.textContent = `ESCALA ${Number(escalaReal.toFixed(2))}X  DPR ${Number(dpr.toFixed(2))}`;
@@ -99,6 +108,7 @@ const pronto = Promise.all([
   document.fonts.load('8px "Silkscreen"'),
   carregarDados(),
   prepararMolduras(),
+  cortarMoldura('./assets/ui/moldura-palco.png', 12, 10).then((partes) => aplicarMoldura(moldura, 'moldura', partes)),
 ]).then(([, , , dados]) => criarPalco(palco, { cenarios: dados.cenarios, interativo: true }));
 
 // O código da sala vem no endereço: palco.html?sala=XXXXX (o link que o mestre manda).

@@ -19,9 +19,11 @@
   </head>
   <body class="pixel">
     <!-- O "suporte" só posiciona o palco no centro; quem amplia é o #palco (via zoom). -->
+    <!-- Arte temática que preenche a parte escura em volta do palco (assets/ui/fundo-palco.png). -->
+    <div id="fundo-palco" aria-hidden="true"></div>
     <div id="suporte">
-      <!-- Moldura em volta do palco (aparece onde sobra espaço na tela). -->
-      <div id="moldura-palco" class="janela" aria-hidden="true"></div>
+      <!-- Moldura ornamentada em volta do palco (assets/ui/moldura-palco.png). -->
+      <div id="moldura-palco" aria-hidden="true"></div>
       <!-- O palco inteiro mora nesta caixa de 480×270 "pixels de pixel art".
            Tudo dentro dele é criado pelo src/palco/palco.js. -->
       <div id="palco">

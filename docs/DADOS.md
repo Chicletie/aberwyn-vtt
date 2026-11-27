@@ -71,6 +71,8 @@ O app funciona sem arte nenhuma: o que faltar vira o desenho provisório. Quando
 | Sprite de batalha | `assets/sprites/<id>/<pose>.png` | herói 32×48 por quadro; inimigo, o que você desenhar |
 | Retrato | `assets/retratos/<id>.png` | 48×48 |
 | Cenário | `assets/cenarios/<arquivo>` (nome em `cenarios.json`) | 480×270 |
+| Moldura em volta do palco | `assets/ui/moldura-palco.png` | 34×34: cantos de 12, borda de 10 no meio que se repete |
+| Arte da parte escura em volta | `assets/ui/fundo-palco.png` | ladrilho que se repete (32×32 hoje; qualquer tamanho serve) |
 
 - **`<id>`** é o que você escreve nos campos SPRITE e RETRATO da ficha do combatente, na mesa (só letras sem acento, números, `-` e `_`).
 - **Poses** (o nome do arquivo): `parado` (obrigatória, é a reserva de todas), `caido` (herói com 0 PV), `fase2` e `fase3` (vilão depois de trocar de fase). Pose que não existe = usa `parado`.
