@@ -351,3 +351,4 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - **Do 1 em diante, ele tombou:** o 1 é a primeira gota (o antigo 0), e cada nível seguinte é o antigo nível anterior. O 6 é a mancha maior (o antigo 5).
 - Uma campanha nova começa no 0: a história ainda não começou a se apagar.
 - Trocar entre 0 e 1 troca a imagem e reposiciona o tinteiro e a pena na hora.
+- (27/11) O tinteiro em pé "puramente de cima" parecia uma tela de TV (um quadrado escuro com um aro). Foi redesenhado em **três quartos vistos de cima**, o mesmo ponto de vista do tombado: face da frente de vidro com o rótulo e a tinta só no fundo, ombro arredondado subindo até o gargalo, anel dourado e a boca vista como uma elipse escura.

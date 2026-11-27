@@ -118,16 +118,16 @@ function ajustarEscala() {
   const emPe = tintaAtual === 0;
   const tinteiro = objetosMesa.tinteiro;
   tinteiro.style.backgroundImage = `url(./assets/ui/ornamento-tinteiro${emPe ? '-em-pe' : ''}.png)`;
-  tinteiro.style.width = `${emPe ? 46 : OBJETOS_DA_MESA.tinteiro.largura}px`;
-  tinteiro.style.height = `${emPe ? 46 : OBJETOS_DA_MESA.tinteiro.altura}px`;
+  tinteiro.style.width = `${emPe ? 44 : OBJETOS_DA_MESA.tinteiro.largura}px`;
+  tinteiro.style.height = `${emPe ? 48 : OBJETOS_DA_MESA.tinteiro.altura}px`;
   if (emPe) {
     const x = px - 78 - folga * 0.3;
-    const y = py + 112;
+    const y = py + 121;
     tinteiro.style.left = `${x}px`;
     tinteiro.style.top = `${y}px`;
-    // A boca do tinteiro em pé fica em (21, 18) da imagem; o bico da pena, em (40, 112).
+    // A boca do tinteiro em pé fica em (21, 9) da imagem; o bico da pena, em (40, 112).
     objetosMesa.pena.style.left = `${x + 21 - 40}px`;
-    objetosMesa.pena.style.top = `${y + 18 - 112}px`;
+    objetosMesa.pena.style.top = `${y + 9 - 112}px`;
   }
   ceu.atualizar(L, A, { x: px + 240, y: py + 135 }, [{ x: px - 12, y: py - 12, w: 504, h: 294 }], {
     // A tinta sai da boca do tinteiro e escorre para dentro, por baixo do palco.

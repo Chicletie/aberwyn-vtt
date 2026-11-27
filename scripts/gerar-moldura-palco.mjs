@@ -295,53 +295,69 @@ export const TINTEIRO_BOCA = [62, 19];
 }
 gravarPng('public/assets/ui/ornamento-tinteiro.png', tinteiro);
 
-// ─── O tinteiro EM PÉ (tinta nível 0: ainda não tombou), visto de cima ───
-// De cima vemos a tampa de vidro quadrada (a tinta escura aparece através do vidro), o gargalo
-// redondo com o anel dourado e a boca aberta (tinta com um brilho), e embaixo uma faixa da face
-// da frente, com o rótulo. A pena fica mergulhada na boca (TINTEIRO_EM_PE_BOCA).
-const emPe = nova(46, 46);
-export const TINTEIRO_EM_PE_BOCA = [21, 18];
+// ─── O tinteiro EM PÉ (tinta nível 0: ainda não tombou) ───
+// Mesmo ponto de vista do tombado: de cima, um pouco inclinado (três quartos). Vemos a face da
+// frente do vidro (com o rótulo e a tinta só no fundo), o ombro arredondado subindo até o
+// gargalo, o anel dourado e a boca vista de cima como uma elipse escura. A pena entra pela boca
+// (TINTEIRO_EM_PE_BOCA).
+const emPe = nova(44, 48);
+export const TINTEIRO_EM_PE_BOCA = [21, 9];
 {
-  const [bx, by] = TINTEIRO_EM_PE_BOCA;
-  // Face de cima (o vidro): bordas claras em cima/esquerda, a tinta escura vista por dentro.
-  for (let y = 4; y <= 33; y++) {
-    for (let x = 6; x <= 37; x++) {
-      if ((x < 8 || x > 35) && (y < 6 || y > 31)) continue; // quinas arredondadas
-      let cor = C.azul;
-      if (y <= 5 || x <= 7) cor = C.azulClaro; // borda que pega a luz
-      if (y >= 32 || x >= 36) cor = C.azulMedio;
-      if (x >= 10 && x <= 33 && y >= 8 && y <= 29) cor = x + y > 52 ? C.contorno : C.tinta; // a tinta lá dentro
-      if (x === 9 && y >= 8 && y <= 20) cor = C.ciano; // reflexo comprido no vidro
+  const cx = 21; // eixo do vidro
+  // Face da frente: retângulo de quinas arredondadas (x 6..36, y 18..43).
+  for (let y = 18; y <= 43; y++) {
+    for (let x = 6; x <= 36; x++) {
+      if ((x < 8 || x > 34) && (y > 41)) continue; // quinas de baixo arredondadas
+      let cor = C.azul; // o vidro
+      if (y >= 33) cor = y >= 41 ? C.contorno : C.tinta; // a tinta lá dentro, no fundo
+      if (y === 32) cor = C.azulMedio; // a superfície da tinta
+      if (x <= 7) cor = y < 33 ? C.azulClaro : C.azulMedio; // borda esquerda pega a luz
+      if (x >= 35) cor = y < 33 ? C.azulMedio : C.contorno; // borda direita na sombra
+      if ((x === 9 || x === 10) && y >= 20 && y <= 30) cor = x === 9 ? C.branco : C.ciano; // reflexo
+      if (x === 33 && y >= 21 && y <= 25) cor = C.azulClaro; // reflexo pequeno do outro lado
       ponto(emPe, x, y, cor);
     }
   }
-  // Face da frente (a espessura, vista de cima), com o rótulo e a estrela da Fabula.
-  for (let y = 34; y <= 42; y++) {
-    for (let x = 7; x <= 36; x++) ponto(emPe, x, y, y === 34 ? C.azul : x <= 8 ? C.azulMedio : C.azulEscuro);
+  // Rótulo de papel na frente, com a estrela da Fabula e duas linhas escritas.
+  for (let y = 21; y <= 30; y++) for (let x = 14; x <= 30; x++) ponto(emPe, x, y, y === 21 ? C.branco : y === 30 ? C.cinzaClaro : C.claro);
+  estrela(emPe, 18, 25, 2, C.ouroEscuro, C.ouro);
+  for (let x = 22; x <= 28; x++) {
+    if (x % 3 !== 1) ponto(emPe, x, 24, C.cinza);
+    if (x % 4 !== 2 && x < 28) ponto(emPe, x, 27, C.cinza);
   }
-  for (let y = 35; y <= 41; y++) for (let x = 13; x <= 30; x++) ponto(emPe, x, y, y === 35 ? C.branco : y === 41 ? C.cinzaClaro : C.claro);
-  estrela(emPe, 17, 38, 1, C.ouroEscuro, C.ouro);
-  for (let x = 20; x <= 28; x++) if (x % 3 !== 1) ponto(emPe, x, 38, C.cinza);
-  // Gargalo redondo com o anel dourado, e a boca com a tinta (e um brilho na superfície).
-  for (let dy = -8; dy <= 8; dy++) {
-    for (let dx = -8; dx <= 8; dx++) {
-      const r = Math.hypot(dx, dy);
-      if (r > 7.5) continue;
-      let cor = dx + dy < -2 ? C.ouro : dx + dy > 3 ? C.ouroEscuro : C.laranja; // o anel
-      if (r > 6.6) cor = C.marrom;
-      if (r < 4.6) cor = C.contorno; // a boca, cheia de tinta
-      if (r < 4.6 && dx === -2 && dy === -2) cor = C.azulMedio; // brilho na tinta
-      if (r < 4.6 && dx === -1 && dy === -2) cor = C.azulEscuro;
-      ponto(emPe, bx + dx, by + dy, cor);
+  // O ombro: uma cúpula de vidro vista de cima, da face da frente até o gargalo.
+  for (let y = 9; y <= 17; y++) {
+    const meia = 15.5 * Math.sqrt(1 - ((17.5 - y) / 9.5) ** 2); // elipse: larga embaixo, estreita em cima
+    for (let x = Math.ceil(cx + 0.5 - meia); x <= Math.floor(cx + 0.5 + meia); x++) {
+      const dx = x - cx;
+      let cor = dx < -6 ? C.ciano : dx < 3 ? C.azulClaro : C.azul; // a luz vem da esquerda
+      if (y === 17) cor = C.azulMedio; // a dobra entre o ombro e a face da frente
+      if (dx === -8 && y >= 12 && y <= 15) cor = C.branco; // brilho no ombro
+      ponto(emPe, x, y, cor);
+    }
+  }
+  // O gargalo com o anel dourado (um cilindro curto), e a boca: uma elipse escura vista de cima.
+  for (let y = 3; y <= 12; y++) {
+    for (let x = cx - 7; x <= cx + 7; x++) {
+      const dx = x - cx;
+      const borda = (dx / 6.5) ** 2 + ((y - 7) / 3.2) ** 2; // o aro de cima (elipse)
+      const lado = Math.abs(dx) <= 6 && y >= 7 && y <= 11; // a lateral do anel
+      if (borda > 1 && !lado) continue;
+      let cor = dx < -2 ? C.ouro : dx > 3 ? C.ouroEscuro : C.laranja;
+      if (lado && y >= 10) cor = dx < -2 ? C.ouroEscuro : C.marrom; // a parte de baixo do anel, na sombra
+      if ((dx / 4.2) ** 2 + ((y - 7) / 1.9) ** 2 <= 1) cor = C.contorno; // a boca aberta
+      if (dx === -2 && y === 6) cor = C.azulMedio; // um brilho na tinta lá dentro
+      if (borda <= 1 && borda > 0.78 && dx < 0 && y < 7) cor = C.branco; // brilho no aro
+      ponto(emPe, x, y, cor);
     }
   }
   contornar(emPe);
-  // A rolha, deitada ao lado (mesmo cilindrinho do tinteiro tombado).
-  for (let y = 36; y <= 40; y++) {
-    for (let x = 38; x <= 43; x++) ponto(emPe, x, y, y === 36 ? C.ouro : y === 40 ? C.marrom : (x + y) % 3 === 0 ? C.marrom : C.ouroEscuro);
+  // A rolha, deitada ao lado (o mesmo cilindrinho do tinteiro tombado).
+  for (let y = 38; y <= 42; y++) {
+    for (let x = 38; x <= 42; x++) ponto(emPe, x, y, y === 38 ? C.ouro : y === 42 ? C.marrom : (x + y) % 3 === 0 ? C.marrom : C.ouroEscuro);
   }
-  for (let x = 37; x <= 44; x++) { ponto(emPe, x, 35, C.contorno); ponto(emPe, x, 41, C.contorno); }
-  for (let y = 36; y <= 40; y++) { ponto(emPe, 37, y, C.contorno); ponto(emPe, 44, y, C.contorno); }
+  for (let x = 37; x <= 43; x++) { ponto(emPe, x, 37, C.contorno); ponto(emPe, x, 43, C.contorno); }
+  for (let y = 38; y <= 42; y++) { ponto(emPe, 37, y, C.contorno); ponto(emPe, 43, y, C.contorno); }
 }
 gravarPng('public/assets/ui/ornamento-tinteiro-em-pe.png', emPe);
 
