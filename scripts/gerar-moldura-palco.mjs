@@ -149,7 +149,7 @@ function girado(img, cx, cy, angulo, pintar) {
   }
 }
 
-/** Sombra na mesa: elipse mais escura que o papel, sem contorno, só nos pixels vazios. */
+/** Sombra na mesa (não usada: a luz vem de cima, como numa mesa vista de cima; ficou para quem quiser). */
 function sombra(img, cx, cy, rx, ry) {
   for (let y = 0; y < img.altura; y++) {
     for (let x = 0; x < img.largura; x++) {
@@ -333,14 +333,12 @@ export const NOVELO_SAIDA = [14, 40];
   }
   estrela(novelo, cx - 9, cy - 9, 2);
   contornar(novelo);
-  sombra(novelo, cx + 4, cy + R - 1, R + 2, 5);
 }
 gravarPng('public/assets/ui/ornamento-novelo.png', novelo);
 
 // ─── O mapa (grande, metade para fora da tela: só um canto aparece) ───
 const mapa = nova(170, 124);
 {
-  sombra(mapa, 90, 66, 82, 56);
   girado(mapa, 84, 60, -11, (u, v) => {
     if (Math.abs(u) > 74 || Math.abs(v) > 50) return null;
     // Canto rasgado embaixo à direita.
@@ -430,7 +428,6 @@ const instrumentos = nova(120, 100);
   ponto(instrumentos, dobradica[0] - 1, dobradica[1], C.marrom);
   ponto(instrumentos, dobradica[0] - 2, dobradica[1] - 2, C.branco);
   contornar(instrumentos);
-  sombra(instrumentos, 62, 70, 52, 22);
 }
 gravarPng('public/assets/ui/ornamento-instrumentos.png', instrumentos);
 
@@ -474,53 +471,88 @@ const baralho = nova(132, 100);
   carta(84, 50, 34, false);
   carta(104, 46, 26, true);
   contornar(baralho);
-  sombra(baralho, 66, 62, 58, 30);
 }
 gravarPng('public/assets/ui/ornamento-baralho.png', baralho);
 
-// ─── Nue: um pincel japonês de caligrafia e a pincelada vermelho-sangue que ele deixou ───
+// ─── Nue: um pincel japonês de caligrafia e a pincelada vermelho-sangue que ele acabou de fazer ───
+// Referência do Cadu: cabo de bambu com nós salientes, anéis perto da virola, virola bojuda de
+// madeira escura, cerdas brancas longas e curvas até a ponta fina; no topo, um remate escuro com
+// cordão e borla vermelhos. O pincel está deitado com a PONTA exatamente onde a pincelada termina:
+// acabou de fazê-la.
 const SANGUE = '#a53030';
 const SANGUE_CLARO = '#cf573c';
 const SANGUE_ESCURO = '#752438';
-const pincel = nova(170, 96);
+const pincel = nova(198, 152);
 {
-  // O pincel, deitado por cima: cabo de bambu longo e fino (com nós), virola preta e as cerdas
-  // brancas afinando até a ponta fina, molhada de vermelho.
-  girado(pincel, 92, 26, -14, (u, v) => {
-    // u: −74 (ponta das cerdas) … +70 (fim do cabo)
-    if (u < -74 || u > 70) return null;
-    if (u < -50) {
-      // Cerdas em gota: largas perto da virola, ponta bem fina.
-      const s = (u + 74) / 24; // 0 na ponta … 1 na virola
-      const meia = 3.6 * Math.sin(Math.PI * 0.5 * s) ** 0.9 + 0.3;
+  const PONTA = [108, 128]; // a ponta das cerdas = o fim da pincelada
+  const ANGULO = -58; // o pincel sobe para a direita a partir da ponta
+  const L = 150; // comprimento total
+  girado(pincel, PONTA[0], PONTA[1], ANGULO, (u, v) => {
+    if (u < 0 || u > L) return null;
+    if (u < 30) {
+      // Cerdas: curvas como uma lâmina (a ponta entorta para um lado), largas na base.
+      const curva = 2.8 * ((30 - u) / 30) ** 2;
+      const vv = v - curva;
+      const meia = 4.4 * Math.sin((Math.PI / 2) * (u / 30)) ** 0.7 + 0.3;
+      if (Math.abs(vv) > meia) return null;
+      if (u < 10) return vv < -0.8 ? SANGUE_CLARO : vv > 0.8 ? SANGUE_ESCURO : SANGUE; // ponta molhada
+      if (u < 13) return vv < 0 ? SANGUE_CLARO : C.claro; // a tinta subindo pelas cerdas
+      if (Math.abs(vv) > meia - 1.1) return vv < 0 ? C.claro : C.cinzaClaro; // a borda das cerdas
+      // Os fios das cerdas: linhas ao longo do pincel.
+      return Math.round(vv * 1.6 + 20) % 3 === 0 ? C.claro : vv > 1 ? C.claro : C.branco;
+    }
+    if (u < 45) {
+      // Virola bojuda de madeira escura, com um brilho comprido.
+      const meia = 4.3 + Math.sin((Math.PI * (u - 30)) / 15) * 1.4;
       if (Math.abs(v) > meia) return null;
-      if (s < 0.55) return v < -0.6 ? SANGUE_CLARO : v > 0.8 ? SANGUE_ESCURO : SANGUE; // ponta molhada
-      if (s < 0.68) return v < 0 ? SANGUE_CLARO : SANGUE; // a tinta subindo pelas cerdas
-      return v < -1 ? C.branco : v > 1.3 ? C.cinzaClaro : C.claro; // cerdas secas, brancas
+      if (u < 31.5) return C.contorno; // o encaixe das cerdas
+      if (v < -meia + 1.6 && u > 33 && u < 43) return C.marrom; // brilho
+      if (Math.abs(v + 1) < 0.6 && u > 34 && u < 41) return C.ouroEscuro; // reflexo fino
+      return v > 1.5 ? C.contorno : '#4d2b32';
     }
-    if (u < -46) {
-      if (Math.abs(v) > 2.6) return null;
-      return v < -1 ? C.cinza : C.contorno; // virola laqueada preta
+    if (u < 53) {
+      // Anéis do colarinho.
+      if (Math.abs(v) > 3.1) return null;
+      const anel = Math.floor(u - 45) % 2 === 0;
+      return v < -1.2 ? C.ouro : anel ? C.ouroEscuro : C.marrom;
     }
-    // O cabo de bambu: fino, com nós a cada 22 px e um cordãozinho no fim.
-    if (u > 64) {
-      if (Math.abs(v) > 1.2) return null;
-      return SANGUE; // o cordão vermelho de pendurar
+    if (u < 141) {
+      // O cabo de bambu, com nós salientes.
+      const no = [70, 95, 119].some((n) => Math.abs(u - n) < 1.6);
+      const meia = no ? 3.2 : 2.5;
+      if (Math.abs(v) > meia) return null;
+      if (no) return Math.abs(u - [70, 95, 119].find((n) => Math.abs(u - n) < 1.6)) < 0.6 ? C.marrom : v < -1 ? C.ouro : C.ouroEscuro;
+      return v < -1.1 ? C.ouro : v > 1.1 ? C.marrom : C.ouroEscuro;
     }
-    const meia = 2.2;
+    // O remate do topo: madeira escura entalhada, um pouco mais largo.
+    const meia = 3.4 - Math.abs(u - 145.5) * 0.15;
     if (Math.abs(v) > meia) return null;
-    const no = ((Math.round(u + 46) % 22) + 22) % 22 < 2;
-    if (no) return v < -0.5 ? C.ouro : C.marrom; // o nó do bambu
-    return v < -1 ? C.ouro : v > 1 ? C.marrom : C.ouroEscuro;
+    if (Math.abs(u - 143.5) < 0.6) return C.contorno; // o entalhe
+    return v < -1.2 ? C.marrom : v > 1 ? C.contorno : '#4d2b32';
   });
+  // O cordão vermelho: sai do remate, faz uma volta e termina na borla pendurada.
+  const a = (ANGULO * Math.PI) / 180;
+  const topo = [PONTA[0] + Math.cos(a) * (L - 1), PONTA[1] + Math.sin(a) * (L - 1)];
+  for (let t = 0; t <= 1; t += 0.01) {
+    const x = topo[0] - 6 * t - 14 * t * t + Math.sin(t * Math.PI) * 4;
+    const y = topo[1] + 4 + 16 * t + Math.sin(t * Math.PI * 1.5) * 3;
+    ponto(pincel, x, y, SANGUE);
+  }
+  // A borla: um tufo de fios vermelhos caindo.
+  const borla = [topo[0] - 20, topo[1] + 20];
+  for (let i = -3; i <= 3; i++) {
+    for (let j = 0; j <= 8 - Math.abs(i); j++) ponto(pincel, borla[0] + i + Math.round(j * 0.25 * Math.sign(i)), borla[1] + j, j < 2 ? SANGUE_ESCURO : Math.abs(i) === 3 ? SANGUE_ESCURO : SANGUE);
+  }
+  ponto(pincel, borla[0], borla[1] - 1, C.ouro); // o nozinho dourado da borla
   contornar(pincel);
+
+  // A pincelada: vem da esquerda e termina na ponta do pincel, afinando em fiapos secos.
+  // Desenhada depois, só nos pixels vazios: fica por baixo do pincel e sem contorno.
   const pintarSeVazio = (x, y, cor) => vazio(pincel, Math.round(x), Math.round(y)) && ponto(pincel, x, y, cor);
-  // A pincelada: uma curva com a largura variando (apoia com força, corre, afina e termina em
-  // fiapos secos, "kasure", com a tinta acabando). Desenhada depois do pincel, só nos pixels vazios: fica por baixo dele e sem contorno (é tinta no papel).
   let semente2 = 99;
   const sorte2 = () => ((semente2 = (semente2 * 1103515245 + 12345) % 2147483648) / 2147483648);
-  const fiapos = Array.from({ length: 12 }, () => sorte2()); // cada "fio" de cerda falha num ponto
-  const P0 = [14, 72], P1 = [70, 96], P2 = [150, 58];
+  const fiapos = Array.from({ length: 12 }, () => sorte2());
+  const P0 = [8, 118], P1 = [52, 152], P2 = PONTA;
   const pontoDa = (t) => [
     (1 - t) ** 2 * P0[0] + 2 * (1 - t) * t * P1[0] + t * t * P2[0],
     (1 - t) ** 2 * P0[1] + 2 * (1 - t) * t * P1[1] + t * t * P2[1],
@@ -530,7 +562,7 @@ const pincel = nova(170, 96);
     const [x, y] = pontoDa(t);
     const [x2, y2] = pontoDa(Math.min(1, t + 0.01));
     const comp = Math.hypot(x2 - x, y2 - y) || 1;
-    const n = [-(y2 - y) / comp, (x2 - x) / comp]; // direção de lado
+    const n = [-(y2 - y) / comp, (x2 - x) / comp];
     const w = largura(t);
     for (let k = -w; k <= w; k += 0.5) {
       const fio = Math.min(11, Math.floor(((k / w + 1) / 2) * 12));
@@ -539,8 +571,8 @@ const pincel = nova(170, 96);
       pintarSeVazio(x + n[0] * k, y + n[1] * k, cor);
     }
   }
-  // Respingos perto de onde o pincel apoiou.
-  for (const [x, y, r] of [[6, 66, 1.5], [9, 82, 1], [22, 86, 1.2], [30, 62, 0.8]]) {
+  // Respingos perto de onde o pincel apoiou no começo.
+  for (const [x, y, r] of [[3, 112, 1.5], [6, 128, 1], [18, 134, 1.2], [24, 108, 0.8]]) {
     for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) if (dx * dx + dy * dy <= r * r) pintarSeVazio(x + dx, y + dy, SANGUE);
   }
 }

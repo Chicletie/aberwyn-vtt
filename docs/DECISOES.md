@@ -316,3 +316,9 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - **Rolha** do tamanho da boca do tinteiro: um cilindrinho de cortiça caído de lado, não um disco.
 - **O fio do novelo** não podia ser uma curva lisa: um novelo que cai e rola deixa o fio solto. Agora ele passa por pontos espalhados dos dois lados do caminho (ondas desiguais), dá uma **laçada** no meio e chega ao nó por uma curva suave que passa por todos esses pontos (Catmull-Rom).
 - Aprendizado do teste: o servidor de desenvolvimento (Vite) às vezes não percebe arquivos alterados por script e continua servindo a versão antiga. Se a tela não mudar depois de uma alteração, **reinicie o `npm run dev`**.
+
+### Pincel da referência, sem sombras e fio contínuo (versão 9)
+- **Pincel da Nue** redesenhado a partir de uma referência que o Cadu mandou (pincel japonês de caligrafia): cabo de bambu com **nós salientes**, anéis de colarinho, **virola bojuda** de madeira escura, **cerdas brancas longas e curvas** até a ponta fina (molhada de vermelho-sangue) e, no topo, um remate escuro com **cordão e borla vermelhos**.
+- **A pincelada e o pincel se conectam:** o pincel está deitado com a ponta exatamente onde a pincelada termina, como se tivesse acabado de traçá-la. Os dois estão na mesma imagem, então nunca se desencontram.
+- **Sem sombras redondas:** a mesa é vista de cima e a luz vem de cima, então as sombras genéricas (elipses) saíram de todos os objetos.
+- **Fio do novelo contínuo:** nos trechos rápidos da curva o fio "pulava" pixels. Agora cada ponto é ligado ao anterior pixel a pixel. O trajeto não mudou.

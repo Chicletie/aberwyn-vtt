@@ -78,7 +78,7 @@ O app funciona sem arte nenhuma: o que faltar vira o desenho provisório. Quando
 | O mapa (esquerda, saindo pelo alto) | `assets/ui/ornamento-mapa.png` | 170×124 |
 | Esquadro, compasso e lápis (esquerda, embaixo) | `assets/ui/ornamento-instrumentos.png` | 120×100 |
 | O novelo (direita, no meio) | `assets/ui/ornamento-novelo.png` | 60×56; o fio sai em (14, 40) e o código o desenha até o nó do canto de baixo |
-| Pincel japonês com tinta vermelho-sangue e a pincelada: **Nue** (direita, no alto) | `assets/ui/ornamento-pincel.png` | 170×96 |
+| Pincel japonês com tinta vermelho-sangue e a pincelada: **Nue** (direita, no alto) | `assets/ui/ornamento-pincel.png` | 198×152; a ponta do pincel (108, 128) é onde a pincelada termina |
 | Baralho: **Wesley** (direita, embaixo) | `assets/ui/ornamento-baralho.png` | 132×100 (carta de 30×44) |
 | Objetos de Joshua, Drake e Hilda | a definir (sessão 0) | |
 

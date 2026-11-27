@@ -72,11 +72,19 @@ function desenharFio(g, de, para) {
       const x = Math.round(0.5 * (2 * p1.x + (-p0.x + p2.x) * t + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 + (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3));
       const y = Math.round(0.5 * (2 * p1.y + (-p0.y + p2.y) * t + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 + (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3));
       if (anterior && anterior.x === x && anterior.y === y) continue;
+      // Liga ao ponto anterior pixel a pixel: sem isso, nos trechos rápidos da curva o fio
+      // saía "picotado" (pulava pixels).
+      const de2 = anterior ?? { x, y };
+      const passos = Math.max(Math.abs(x - de2.x), Math.abs(y - de2.y), 1);
+      for (let k = 1; k <= passos; k++) {
+        const xi = Math.round(de2.x + ((x - de2.x) * k) / passos);
+        const yi = Math.round(de2.y + ((y - de2.y) * k) / passos);
+        g.fillStyle = '#ad7757';
+        g.fillRect(xi, yi + 1, 1, 1);
+        g.fillStyle = (xi + yi) % 5 === 0 ? BRANCO : OURO;
+        g.fillRect(xi, yi, 1, 1);
+      }
       anterior = { x, y };
-      g.fillStyle = '#ad7757';
-      g.fillRect(x, y + 1, 1, 1);
-      g.fillStyle = (x + y) % 5 === 0 ? BRANCO : OURO;
-      g.fillRect(x, y, 1, 1);
     }
   }
 }
