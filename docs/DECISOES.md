@@ -333,3 +333,8 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - Opções apresentadas: palco um degrau menor com a moldura inteira; palco grande com moldura adaptada (só colunas laterais); ou o jogador escolher. **O Cadu escolheu o palco um degrau menor.**
 - Agora a escala é a maior escala inteira em que **o palco com a moldura** (504×294) cabe. No celular, 4× → 3×: moldura inteira e mesa larga dos dois lados. Num monitor 1080p em tela cheia (F11), também 4× → 3×; numa janela comum do navegador, nada muda (já era 3×).
 - Custo conhecido: o texto fica ~25% menor nesses casos.
+
+### Ponto de atenção para o Marco 5: toque no celular (27/11)
+- Com o palco em 3× no celular, 1 px da grade ≈ 1 px de tela (~0,28 mm). Hoje está ok: inimigos (≥ 32 px ≈ 8 mm), caixa de código e botão de tela cheia (tamanho próprio, pensado para o dedo).
+- Risco: botões pequenos da ficha (abas, "+", caixinhas de 10–15 px ≈ 3–4 mm), abaixo dos ~7–9 mm recomendados para toque.
+- Plano, em ordem: (1) área de toque invisível maior que o desenho do botão (sem mudar o visual); (2) se não bastar, layout próprio da ficha no celular. A ficha cobre o palco, então dá para ter outra grade só para ela. Uma interface mobile inteira separada fica como último recurso, porque dobraria a manutenção.
