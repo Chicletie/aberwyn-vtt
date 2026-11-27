@@ -28,10 +28,12 @@ function avisar() {
   // Várias imagens costumam chegar juntas: junta os avisos num só redesenho.
   if (avisoMarcado) return;
   avisoMarcado = true;
-  requestAnimationFrame(() => {
+  // setTimeout, e não requestAnimationFrame: este para quando a aba da mesa fica em segundo
+  // plano, e aí a silhueta nunca seria mandada aos jogadores.
+  setTimeout(() => {
     avisoMarcado = false;
     for (const f of ouvintes) f();
-  });
+  }, 30);
 }
 
 function carregarImagem(url) {

@@ -2,8 +2,17 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Palco · aberwyn-vtt</title>
+    <!-- App instalável (PWA): nome, ícone, abre deitado e em tela cheia. -->
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <meta name="theme-color" content="#090a14" />
+    <link rel="icon" type="image/png" href="./icones/icone-192.png" />
+    <link rel="apple-touch-icon" href="./icones/icone-180.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="Aberwyn" />
     <link rel="stylesheet" href="/src/estilos/fontes.css" />
     <link rel="stylesheet" href="/src/estilos/palco.css" />
     <link rel="stylesheet" href="/src/estilos/palco-pagina.css" />
@@ -11,6 +20,8 @@
   <body class="pixel">
     <!-- O "suporte" só posiciona o palco no centro; quem amplia é o #palco (via zoom). -->
     <div id="suporte">
+      <!-- Moldura em volta do palco (aparece onde sobra espaço na tela). -->
+      <div id="moldura-palco" class="janela" aria-hidden="true"></div>
       <!-- O palco inteiro mora nesta caixa de 480×270 "pixels de pixel art".
            Tudo dentro dele é criado pelo src/palco/palco.js. -->
       <div id="palco">
@@ -27,6 +38,8 @@
         </form>
       </div>
     </div>
+    <!-- Botão de tela cheia (só no celular/tablet, fora da tela cheia e fora do app instalado). -->
+    <button id="tela-cheia" class="plaquinha" type="button" title="Tela cheia" aria-label="Tela cheia" hidden></button>
     <!-- Tela "Gire o celular" (só aparece com o celular em pé). Montada por src/palco/gire.js. -->
     <div id="gire" hidden></div>
     <script type="module" src="/src/palco/main.js"></script>

@@ -18,6 +18,8 @@ const ALTURA = 270;
 
 const suporte = document.getElementById('suporte');
 const palco = document.getElementById('palco');
+const moldura = document.getElementById('moldura-palco');
+const botaoTelaCheia = document.getElementById('tela-cheia');
 const debug = document.getElementById('debug');
 
 /**
@@ -47,6 +49,9 @@ function ajustarEscala() {
   suporte.style.left = `${esquerda}px`;
   suporte.style.top = `${topo}px`;
   palco.style.zoom = escalaCss;
+  moldura.style.zoom = escalaCss;
+  // Botão com pelo menos ~34 px de tela (bom para o dedo), ampliado por número inteiro de pixels reais.
+  botaoTelaCheia.style.zoom = Math.ceil((34 * dpr) / 17) / dpr;
   debug.textContent = `ESCALA ${Number(escalaReal.toFixed(2))}X  DPR ${Number(dpr.toFixed(2))}`;
 }
 
@@ -55,6 +60,30 @@ window.addEventListener('resize', ajustarEscala);
 criarTelaGire(document.getElementById('gire'));
 // Mudar o zoom do navegador (Ctrl + / Ctrl -) também dispara "resize", então já está coberto.
 ajustarEscala();
+
+// ───────────── Tela cheia (celular) ─────────────
+// No celular deitado, as barras do navegador roubam altura e o palco cai um degrau de escala.
+// Em tela cheia (ou no app instalado) ele usa a tela toda. O iPhone (Safari) não deixa sites
+// entrarem em tela cheia: lá só o app instalado resolve, então o botão nem aparece.
+const toque = matchMedia('(pointer: coarse)').matches;
+const instalado = matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches;
+const podeTelaCheia = !!document.documentElement.requestFullscreen;
+
+function atualizarBotaoTelaCheia() {
+  botaoTelaCheia.hidden = !(toque && podeTelaCheia && !instalado && !document.fullscreenElement);
+}
+
+botaoTelaCheia.addEventListener('click', async () => {
+  try {
+    await document.documentElement.requestFullscreen({ navigationUI: 'hide' });
+    // Trava deitado enquanto estiver em tela cheia (só funciona em alguns celulares; se não der, tudo bem).
+    await screen.orientation?.lock?.('landscape').catch(() => {});
+  } catch {
+    // O navegador recusou (ex.: não foi um toque de verdade). Fica como está.
+  }
+});
+document.addEventListener('fullscreenchange', atualizarBotaoTelaCheia);
+atualizarBotaoTelaCheia();
 
 window.addEventListener('keydown', (evento) => {
   if (evento.key === 'd' || evento.key === 'D') debug.hidden = !debug.hidden;
@@ -75,10 +104,27 @@ const pronto = Promise.all([
 // O código da sala vem no endereço: palco.html?sala=XXXXX (o link que o mestre manda).
 // Sem código, o palco escuta só a mesa no mesmo navegador (modo local, para testes).
 const sala = new URLSearchParams(location.search).get('sala')?.toUpperCase() || null;
-const canal = abrirCanal({ sala, online: !!sala, palco: true });
 
 // Testando no próprio computador (localhost)? Então o palco sem código escuta a mesa local.
 const noComputadorDoMestre = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+
+// O palco lembra a última sala (o app instalado abre sem código no endereço): sem código,
+// volta direto para ela. Se ela estiver vazia, a caixa de código aparece para trocar.
+const CHAVE_SALA_JOGADOR = 'aberwyn-vtt:sala-jogador';
+const salaLembrada = localStorage.getItem(CHAVE_SALA_JOGADOR);
+if (sala) localStorage.setItem(CHAVE_SALA_JOGADOR, sala);
+else if (salaLembrada && !noComputadorDoMestre) {
+  const endereco = new URL(location.href);
+  endereco.searchParams.set('sala', salaLembrada);
+  location.replace(endereco.toString());
+}
+
+const canal = abrirCanal({ sala, online: !!sala, palco: true });
+
+// App instalável: o "service worker" só mostra um aviso se o app abrir sem internet.
+if ('serviceWorker' in navigator && !noComputadorDoMestre) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
 
 // ───────────── Caixa para digitar o código da sala ─────────────
 // O jogador digita o código (ou cola o link inteiro) e a página recarrega já com ?sala=XXXXX.

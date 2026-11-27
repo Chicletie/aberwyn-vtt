@@ -240,3 +240,10 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - Ninguém espera imagem: quem desenha pergunta "já tem a arte?" e recebe a resposta na hora. Se ainda não tem, o arquivo é procurado em segundo plano e, quando chega, a mesa e o palco se redesenham. Arquivo que não existe é anotado e não é procurado de novo.
 - O tamanho de cada lutador no campo passa a ser o do sprite real (o da folha de quadros); sem sprite, continua o provisório.
 - **Vazamento do nome do sprite (risco anotado no Marco 2): resolvido.** Para inimigo escondido, a mesa desenha a silhueta (todo pixel visível vira preto) e manda **a imagem pronta**, sem o nome do arquivo. Conferido no F12 do palco: nenhum "guardiao"/nome de pasta chega, e a silhueta tem ~1 KB.
+
+### Moldura, tela cheia e app instalável (pedidos do Cadu depois do teste no celular)
+- **Moldura:** uma janela de 6 px por fora do palco, na mesma escala, atrás dele. Onde a tela não tem sobra (celular em tela cheia, de cima a baixo), ela fica fora da vista sozinha: o palco nunca encolhe por causa dela.
+- **Tela cheia:** botão de quatro cantinhos no canto de cima à direita, só em tela de toque, fora da tela cheia e fora do app instalado. Tamanho mínimo de ~34 px para o dedo. No iPhone o Safari não deixa site entrar em tela cheia, então lá o botão não aparece (a saída é instalar).
+- **App instalável (PWA):** `public/manifest.webmanifest` (abre `palco.html`, deitado, em tela cheia, fundo `#090a14`), ícones gerados por `scripts/gerar-icones.mjs` a partir da janela e da pena (ampliação inteira, sem borrar) e `public/sw.js`, que não guarda nada: só mostra "Sem internet" se o app abrir offline.
+- **O palco lembra a última sala** (`aberwyn-vtt:sala-jogador`): o app instalado abre sem código no endereço e volta direto para a sala. Se ela estiver vazia, aparece a caixa de código.
+- Bug achado no teste: o aviso "arte chegou" usava `requestAnimationFrame`, que **para quando a aba fica em segundo plano**. Com a mesa numa aba de fundo, a silhueta nunca era mandada. Trocado por `setTimeout`.

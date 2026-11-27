@@ -17,6 +17,53 @@ body {
   top: 0;
 }
 
+/* O palco fica na frente da moldura. */
+#palco {
+  position: relative;
+  z-index: 1;
+}
+
+/* Moldura em volta do palco: 6 px de janela por fora da grade de 480×270, na mesma escala
+   (o JS aplica o mesmo zoom). Onde a tela não tem sobra, ela simplesmente fica fora da vista. */
+#moldura-palco {
+  position: absolute;
+  left: -6px;
+  top: -6px;
+  width: 492px;
+  height: 282px;
+  box-sizing: border-box;
+}
+
+/* Botão de tela cheia: plaquinha no canto de cima à direita da tela (no celular deitado,
+   fica na sobra do lado do palco). Ícone: quatro cantinhos dourados. */
+#tela-cheia {
+  position: fixed;
+  right: 4px;
+  top: 4px;
+  z-index: 9000;
+  width: 17px;
+  height: 17px;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  image-rendering: pixelated;
+}
+
+#tela-cheia::after {
+  content: '';
+  position: absolute;
+  left: 1px;
+  top: 1px;
+  width: 9px;
+  height: 9px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' shape-rendering='crispEdges'%3E%3Cpath fill='%23e8c170' d='M0 0h3v1H1v2H0zM6 0h3v3H8V1H6zM0 6h1v2h2v1H0zM8 6h1v3H6V8h2z'/%3E%3C/svg%3E") no-repeat;
+}
+
+#tela-cheia[hidden] {
+  display: none;
+}
+
 /* Modo debug (tecla D): mostra a escala real e o dpr num canto. */
 #debug {
   position: absolute;
