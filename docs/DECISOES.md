@@ -273,3 +273,12 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - **O céu é desenhado pelo código, não pelo ladrilho** (`src/palco/ceu.js`): estrelas em lugares únicos, constelações ligadas por **fios** pontilhados (os Laços) e algumas estrelas que **piscam** devagar. No ladrilho, a constelação se repetia em grade e denunciava a repetição. O sorteio é repetível: o mesmo tamanho de tela dá sempre o mesmo céu.
 - **Escala:** o palco continua usando a maior escala inteira que cabe. Numa tela 16:9 em tela cheia (ex.: 1920×1080 com F11), ele ocupa tudo e a moldura não aparece; numa janela comum do navegador, ela aparece inteira. Diminuir o palco só para mostrar a moldura deixaria o texto menor, e a leitura vem antes da decoração.
 - Todas as peças são PNGs provisórios em `public/assets/ui/` para o Cadu redesenhar.
+
+### Moldura do palco, versão 4: o mapa celeste sobre a mesa, e a tinta que apaga
+- Retorno do Cadu sobre a v3: as estrelas ficaram ótimas; o novelo não se entendia (e a posição ajudava pouco), as "palavras" do fundo ficaram esquisitas, a pena estava mal posicionada. Pediu **um mapa celeste, como se estivesse sobre uma mesa**, com mais coesão, e o **apagamento** como **um tinteiro tombado** cuja tinta escorre **apagando as estrelas**, crescendo **ao longo dos arcos**.
+- **Mapa:** o papel é azul-noite (`fundo-palco.png`, só textura). O código desenha anéis pontilhados e meridianos **centrados no palco** (o palco é o centro do mapa), uma régua de graus como de astrolábio (marcas douradas a cada 30°), estrelas e constelações ligadas por fios (os Laços).
+- **Sem novelo e sem palavras.** O fio continua sendo a moldura.
+- **Tinteiro tombado** (`ornamento-tinteiro.png`) à esquerda, embaixo, com a boca virada para o palco, e a **pena caída** apoiada logo acima (`ornamento-pena.png`, bico sujo de tinta).
+- **A tinta:** sai da boca do tinteiro e escorre (mais para baixo que para cima, com "dedos" escorrendo), por baixo da moldura e do palco. **Onde ela passa, as estrelas viram um vulto apagado**, os fios e os anéis somem, e nenhuma estrela pisca.
+- **Progressão:** novo campo `tinta` no estado (0 a 5, padrão 1) e o controle **TINTA** na mesa (direita, CENA E CENÁRIO). Ele vai para os jogadores (não é segredo) também na cortina. Mudar o nível faz a mancha crescer ou encolher aos poucos (~1 s).
+- O papel foi clareado para azul-noite porque a tinta preta sobre o fundo quase preto não aparecia.

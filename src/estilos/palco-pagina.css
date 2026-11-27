@@ -77,38 +77,21 @@ body {
   image-rendering: pixelated;
 }
 
+/* A pena caída, apoiada na diagonal, com o bico (25, 96 na imagem) logo acima do tinteiro. */
 #ornamento-pena {
-  /* A ponta do bico (33, 116 na imagem) encosta no fio da moldura, à esquerda, no alto. */
-  left: -42px;
-  top: 4px;
-  width: 40px;
-  height: 120px;
-  z-index: 2;
+  left: -48px;
+  top: 96px;
+  width: 30px;
+  height: 100px;
 }
 
-#ornamento-novelo {
-  /* O fio sai do novelo (0, 36 na imagem) e entra no fio da moldura, à direita, embaixo. */
-  left: 486px;
-  top: 150px;
-  width: 48px;
-  height: 64px;
-}
-
-.luz-pena {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  background: var(--cor-dourado);
-  opacity: 0;
-  animation: luz-sobe 2600ms steps(26) infinite;
-}
-
-/* Sobe uns 26 px, desviando de leve, e apaga (luz da Fabula saindo da escrita). */
-@keyframes luz-sobe {
-  0% { translate: 0 0; opacity: 1; background: var(--cor-branco, #ebede9); }
-  25% { background: var(--cor-dourado); }
-  60% { opacity: 1; }
-  100% { translate: var(--deriva) -26px; opacity: 0; }
+/* O tinteiro tombado, à esquerda embaixo, com a boca (31, 14 na imagem) virada para o palco:
+   a tinta sai por ali e escorre pelo mapa (desenhada pelo ceu.js, por baixo de tudo). */
+#ornamento-tinteiro {
+  left: -50px;
+  top: 200px;
+  width: 36px;
+  height: 26px;
 }
 
 /* Moldura ornamentada: 12 px por fora da grade de 480×270, na mesma escala, atrás do palco.

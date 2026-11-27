@@ -19,14 +19,13 @@
   </head>
   <body class="pixel">
     <!-- O "suporte" só posiciona o palco no centro; quem amplia é o #palco (via zoom). -->
-    <!-- Em volta do palco: manuscrito apagado (assets/ui/fundo-palco.png) + céu de estrelas (src/palco/ceu.js). -->
+    <!-- Em volta do palco: o mapa celeste sobre a mesa (papel em assets/ui/fundo-palco.png; anéis, estrelas e tinta em src/palco/ceu.js). -->
     <div id="fundo-palco" aria-hidden="true"></div>
     <div id="suporte">
-      <!-- "Pena e Fio": a moldura é o fio dourado; a pena o escreve (esquerda), o novelo o solta (direita). -->
+      <!-- Sobre a mesa: o tinteiro tombado e a pena caída ao lado (a moldura é o fio dourado). -->
       <div id="enfeites" aria-hidden="true">
-        <div id="ornamento-novelo"></div>
+        <div id="ornamento-tinteiro"></div>
         <div id="ornamento-pena"></div>
-        <div id="luzes-pena"></div>
       </div>
       <div id="moldura-palco" aria-hidden="true"></div>
       <!-- O palco inteiro mora nesta caixa de 480×270 "pixels de pixel art".

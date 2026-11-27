@@ -1,11 +1,13 @@
 // Gera as artes da volta do palco (versão provisória, para o Cadu redesenhar à mão).
-// Conceito (pedido do Cadu): "Pena e Fio" + manuscrito apagado + a luz da Fabula (estrelas).
+// Conceito (pedido do Cadu): um MAPA CELESTE aberto sobre a mesa, com o fio dourado como
+// moldura; um tinteiro tombou, a pena caiu ao lado, e a tinta escorre apagando as estrelas.
 //
-//   moldura-palco.png     34×34  9-slice: cantos de 12 (nó do fio com uma estrela de luz) e
-//                                um trecho de 10 que se repete (o fio dourado trançado)
-//   fundo-palco.png       96×96  ladrilho: página de manuscrito apagado (as estrelas são do código)
-//   ornamento-pena.png    40×120 a pena, em pé, com a ponta encostando no fio (lado esquerdo)
-//   ornamento-novelo.png  48×64  o novelo de onde o fio sai (lado direito)
+//   moldura-palco.png       34×34  9-slice: cantos de 12 (nó do fio com uma estrela de luz) e
+//                                  um trecho de 10 que se repete (o fio dourado trançado)
+//   fundo-palco.png         64×64  ladrilho: o papel do mapa (os anéis, as estrelas e a tinta
+//                                  são desenhados pelo código, em src/palco/ceu.js)
+//   ornamento-pena.png      30×100 a pena caída, apoiada, com o bico perto da tinta
+//   ornamento-tinteiro.png  36×26  o tinteiro tombado, com a boca virada para a direita
 //
 // Rodar:  node scripts/gerar-moldura-palco.mjs
 // Depois de redesenhar algum PNG à mão, NÃO rode de novo (sobrescreveria o seu desenho).
@@ -115,38 +117,20 @@ for (const [cx, cy] of [[5, 5], [TAM - 6, 5], [5, TAM - 6], [TAM - 6, TAM - 6]])
 }
 gravarPng('public/assets/ui/moldura-palco.png', moldura);
 
-// ═══════════ Fundo: manuscrito apagado sob um céu de estrelas ligadas por fios ═══════════
-const T = 96;
+// ═══════════ Fundo: o papel do mapa celeste ═══════════
+// Só a textura do papel azul-noite (grão discreto). Os anéis do mapa, as estrelas, as
+// constelações e a tinta derramada são desenhados pelo código, em lugares únicos.
+const T = 64;
 const fundo = nova(T, T);
-for (let i = 0; i < T * T; i++) ponto(fundo, i % T, Math.floor(i / T), C.contorno);
-// Linhas de escrita: "palavras" de rabiscos na cor da tinta, com trechos apagados.
-for (let linha = 0; linha < 8; linha++) {
-  const yBase = 6 + linha * 12;
-  let x = Math.floor(sorte() * 6);
-  while (x < T - 4) {
-    const tamanho = 4 + Math.floor(sorte() * 9);
-    const apagada = sorte() < 0.3; // o apagamento: algumas palavras sumiram
-    for (let i = 0; i < tamanho && x + i < T; i++) {
-      if (apagada && sorte() < 0.8) continue;
-      const altura = sorte() < 0.18 ? 3 : 1; // letras altas (l, t, d) e baixas
-      const sobe = sorte() < 0.5;
-      for (let h = 0; h < altura; h++) ponto(fundo, x + i, yBase + (sobe ? -h : h), C.tinta);
-      if (sorte() < 0.5) ponto(fundo, x + i, yBase + 1, C.tinta);
-    }
-    x += tamanho + 2 + Math.floor(sorte() * 3);
-  }
-}
-// (As estrelas e os fios da constelação NÃO ficam no ladrilho: o palco os desenha em lugares
-// únicos, sem repetir, e faz algumas piscarem. Ver src/palco/ceu.js.)
-// Pó de estrelas bem apagado, só para a página não ficar chapada.
-for (let i = 0; i < 10; i++) ponto(fundo, Math.floor(sorte() * T), Math.floor(sorte() * T), C.azulEscuro);
+for (let i = 0; i < T * T; i++) ponto(fundo, i % T, Math.floor(i / T), C.azulEscuro);
+for (let i = 0; i < 70; i++) ponto(fundo, Math.floor(sorte() * T), Math.floor(sorte() * T), sorte() < 0.75 ? C.tinta : C.azulMedio);
 gravarPng('public/assets/ui/fundo-palco.png', fundo);
 
-// ═══════════ A pena (em pé, levemente inclinada, ponta embaixo à direita) ═══════════
-const pena = nova(40, 120);
+// ═══════════ A pena caída (apoiada na diagonal, bico embaixo à direita) ═══════════
+const pena = nova(30, 100);
 {
-  const topo = [12, 3];
-  const ponta = [33, 116];
+  const topo = [6, 3];
+  const ponta = [25, 96];
   const L = Math.hypot(ponta[0] - topo[0], ponta[1] - topo[1]);
   const eixo = [(ponta[0] - topo[0]) / L, (ponta[1] - topo[1]) / L];
   const normal = [-eixo[1], eixo[0]];
@@ -160,27 +144,25 @@ const pena = nova(40, 120);
       if (s < 0 || s > 1) continue;
       let cor = null;
       if (s < 0.7) {
-        // As barbas da pena: mais larga no meio, afinando nas pontas; o lado de fora é mais largo.
+        // As barbas: mais larga no meio, afinando nas pontas; o lado de fora é mais largo.
         const perfil = Math.sin(Math.PI * Math.min(1, s / 0.7)) ** 0.6;
-        const largura = (v < 0 ? 9 : 6) * perfil + 0.5;
-        // Duas falhas nas barbas (pena de verdade não é lisa).
-        const falha = (v < 0 && Math.abs(s - 0.33) < 0.012) || (v > 0 && Math.abs(s - 0.52) < 0.012);
+        const largura = (v < 0 ? 7 : 5) * perfil + 0.5;
+        const falha = (v < 0 && Math.abs(s - 0.33) < 0.014) || (v > 0 && Math.abs(s - 0.52) < 0.014);
         if (Math.abs(v) <= largura && !falha) {
-          // Barbas: linhas que saem da haste inclinadas para cima, a cada 3 px.
           const barba = Math.abs(v) > 1.5 && ((Math.round(u - Math.abs(v) * 0.8) % 3) + 3) % 3 === 0;
           if (Math.abs(v) < 0.8) cor = C.cinzaClaro; // a haste
           else if (v < 0) cor = barba ? C.claro : Math.abs(v) > largura - 1.2 ? C.claro : C.branco;
           else cor = barba ? C.cinzaClaro : Math.abs(v) > largura - 1.2 ? C.cinzaClaro : C.claro;
         }
-      } else if (s < 0.89) {
-        if (Math.abs(v) < 1.1) cor = v < 0 ? C.claro : C.cinzaClaro; // o cálamo (sem barbas)
+      } else if (s < 0.88) {
+        if (Math.abs(v) < 1.1) cor = v < 0 ? C.claro : C.cinzaClaro; // o cálamo
       } else {
-        // O bico dourado: afina até a ponta, com a fenda no meio.
-        const largura = 2.2 * (1 - (s - 0.89) / 0.11) + 0.4;
+        // O bico dourado, sujo de tinta na ponta.
+        const largura = 2 * (1 - (s - 0.88) / 0.12) + 0.4;
         if (Math.abs(v) <= largura) {
           cor = v < -0.3 ? C.ouro : C.laranja;
-          if (Math.abs(v) < 0.5 && s > 0.92 && s < 0.98) cor = C.ouroEscuro; // a fenda
-          if (s > 0.985) cor = C.contorno; // a ponta, molhada de tinta
+          if (Math.abs(v) < 0.5 && s > 0.91 && s < 0.97) cor = C.ouroEscuro; // a fenda
+          if (s > 0.96) cor = C.azulEscuro; // tinta no bico
         }
       }
       if (cor) ponto(pena, x, y, cor);
@@ -190,40 +172,40 @@ const pena = nova(40, 120);
 }
 gravarPng('public/assets/ui/ornamento-pena.png', pena);
 
-// ═══════════ O novelo (o fio sai dele para a esquerda, em direção à moldura) ═══════════
-const novelo = nova(48, 64);
+// ═══════════ O tinteiro tombado (deitado, boca para a direita) ═══════════
+const tinteiro = nova(36, 26);
 {
-  const cx = 28, cy = 34, R = 13;
-  // O fio que sai do novelo e vai até a borda esquerda (onde encosta na moldura), ondulando.
-  for (let x = 0; x <= cx - R + 2; x++) {
-    const y = cy + 2 + Math.round(Math.sin(x / 3.2) * 1.4);
-    ponto(novelo, x, y, C.ouro);
-    ponto(novelo, x, y + 1, C.ouroEscuro);
-  }
-  for (let y = cy - R - 1; y <= cy + R + 1; y++) {
-    for (let x = cx - R - 1; x <= cx + R + 1; x++) {
-      const dx = x - cx, dy = y - cy;
-      const r = Math.hypot(dx, dy);
-      if (r > R) continue;
-      // Voltas do fio enrolado: elipses inclinadas em direções diferentes (como os "círculos"
-      // de um novelo de verdade), cada uma uma linha escura com um brilho ao lado.
-      const luz = -dx - dy; // luz do alto à esquerda
-      let cor = luz > 8 ? C.ouro : luz > -6 ? C.laranja : C.ouroEscuro;
-      for (const [angulo, achatado] of [[0.35, 0.42], [1.25, 0.7], [2.3, 0.55], [2.9, 0.88]]) {
-        const a = dx * Math.cos(angulo) + dy * Math.sin(angulo);
-        const b = -dx * Math.sin(angulo) + dy * Math.cos(angulo);
-        const e = Math.sqrt((a / R) ** 2 + (b / (R * achatado)) ** 2);
-        if (Math.abs(e - 1) < 0.07) cor = luz > 2 ? C.ouroEscuro : C.marrom;
-        else if (Math.abs(e - 0.92) < 0.05 && luz > -4) cor = C.branco;
-      }
-      if (r > R - 1) cor = luz > 0 ? C.ouro : C.marrom;
-      ponto(novelo, x, y, cor);
+  // Corpo de vidro escuro, quadrado de quinas arredondadas, deitado.
+  for (let y = 5; y <= 22; y++) {
+    for (let x = 2; x <= 21; x++) {
+      const quina = (x < 4 || x > 19) && (y < 7 || y > 20);
+      if (quina) continue;
+      let cor = C.azulEscuro;
+      if (y <= 7) cor = C.azul; // luz de cima
+      if (y >= 19) cor = C.tinta; // sombra de baixo
+      if (x === 5 && y >= 8 && y <= 13) cor = C.ciano; // reflexo do vidro
+      if (x === 6 && y >= 9 && y <= 11) cor = C.azulClaro;
+      // A tinta que ainda está dentro, deitada no fundo do vidro.
+      if (y >= 15 && y <= 18 && x >= 4 && x <= 20) cor = C.contorno;
+      ponto(tinteiro, x, y, cor);
     }
   }
-  // A luz da Fabula: uma estrela pousada no novelo.
-  estrela(novelo, cx - 5, cy - 6, 3);
-  contornar(novelo);
+  // Rótulo de papel com uma estrelinha (o tinteiro de quem escreve a Fabula).
+  for (let y = 9; y <= 13; y++) for (let x = 10; x <= 17; x++) ponto(tinteiro, x, y, y === 9 ? C.branco : C.claro);
+  estrela(tinteiro, 13, 11, 1, C.ouroEscuro, C.ouro);
+  // Gargalo com anel dourado e a boca aberta.
+  for (let y = 9; y <= 18; y++) {
+    for (let x = 22; x <= 30; x++) {
+      if (x <= 24 && (y < 10 || y > 17)) continue;
+      if (x > 24 && (y < 11 || y > 16)) continue;
+      let cor = x <= 24 ? (y <= 11 ? C.branco : y >= 16 ? C.ouroEscuro : C.ouro) : C.azulMedio;
+      if (x > 24 && y === 11) cor = C.azul;
+      if (x >= 29) cor = C.contorno; // a boca: escuro de tinta
+      ponto(tinteiro, x, y, cor);
+    }
+  }
+  contornar(tinteiro);
 }
-gravarPng('public/assets/ui/ornamento-novelo.png', novelo);
+gravarPng('public/assets/ui/ornamento-tinteiro.png', tinteiro);
 
-console.log('Geradas em public/assets/ui/: moldura-palco, fundo-palco, ornamento-pena, ornamento-novelo');
+console.log('Geradas em public/assets/ui/: moldura-palco, fundo-palco, ornamento-pena, ornamento-tinteiro');

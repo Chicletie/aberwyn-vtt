@@ -10,7 +10,7 @@ import { criarPalco } from './palco.js';
 import { carregarDados } from '../dados.js';
 import { criarTelaGire } from './gire.js';
 import { prepararMolduras, cortarMoldura, aplicarMoldura } from '../molduras.js';
-import { criarCeu, criarLuzesDaPena } from './ceu.js';
+import { criarCeu } from './ceu.js';
 
 aplicarPaletaNoCss();
 
@@ -26,9 +26,7 @@ fundo.style.backgroundImage = 'url(./assets/ui/fundo-palco.png)';
 const ceu = criarCeu(fundo);
 const enfeites = document.getElementById('enfeites');
 document.getElementById('ornamento-pena').style.backgroundImage = 'url(./assets/ui/ornamento-pena.png)';
-document.getElementById('ornamento-novelo').style.backgroundImage = 'url(./assets/ui/ornamento-novelo.png)';
-// Luzinhas saindo da ponta da pena: ponta em (33, 116) da imagem, que está em (-42, 4).
-criarLuzesDaPena(document.getElementById('luzes-pena'), -42 + 33, 4 + 116);
+document.getElementById('ornamento-tinteiro').style.backgroundImage = 'url(./assets/ui/ornamento-tinteiro.png)';
 const botaoTelaCheia = document.getElementById('tela-cheia');
 const debug = document.getElementById('debug');
 
@@ -67,14 +65,21 @@ function ajustarEscala() {
   fundo.style.height = `${Math.ceil(window.innerHeight / escalaCss)}px`;
   fundo.style.backgroundPosition = `${esquerda / escalaCss + 224}px ${topo / escalaCss + 119}px`;
   enfeites.style.zoom = escalaCss;
-  // Céu: fora do palco, da moldura, da pena e do novelo (posições na grade da tela).
+  // Mapa celeste: centrado no palco; estrelas fora do palco, da moldura, da pena e do tinteiro;
+  // a tinta sai da boca do tinteiro (31, 14 na imagem, que está em -50, 200 da grade do palco).
   const px = Math.round(esquerda / escalaCss);
   const py = Math.round(topo / escalaCss);
-  ceu.atualizar(Math.ceil(window.innerWidth / escalaCss), Math.ceil(window.innerHeight / escalaCss), [
-    { x: px - 12, y: py - 12, w: 504, h: 294 },
-    { x: px - 42, y: py + 4, w: 40, h: 120 },
-    { x: px + 486, y: py + 150, w: 48, h: 64 },
-  ]);
+  ceu.atualizar(
+    Math.ceil(window.innerWidth / escalaCss),
+    Math.ceil(window.innerHeight / escalaCss),
+    { x: px + 240, y: py + 135 },
+    [
+      { x: px - 12, y: py - 12, w: 504, h: 294 },
+      { x: px - 48, y: py + 96, w: 30, h: 100 },
+      { x: px - 50, y: py + 200, w: 36, h: 26 },
+    ],
+    { x: px - 50 + 32, y: py + 200 + 15 },
+  );
   // Botão com pelo menos ~34 px de tela (bom para o dedo), ampliado por número inteiro de pixels reais.
   botaoTelaCheia.style.zoom = Math.ceil((34 * dpr) / 17) / dpr;
   debug.textContent = `ESCALA ${Number(escalaReal.toFixed(2))}X  DPR ${Number(dpr.toFixed(2))}`;
@@ -196,6 +201,7 @@ canal.aoReceberEstado(async (estado) => {
   }
   mostrarCaixaSala(false);
   window.ultimoEstado = estado;
+  ceu.definirTinta(estado.tinta ?? 1);
   p.renderizar(estado);
 });
 

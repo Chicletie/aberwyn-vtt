@@ -1,12 +1,19 @@
-// O céu em volta do palco: a "luz da Fabula" sobre o manuscrito apagado.
-// Estrelas e constelações (estrelas ligadas por fios, como os Laços) desenhadas em lugares
-// ÚNICOS, sem repetir como um ladrilho; algumas piscam devagar. Também solta luzinhas douradas
-// da ponta da pena. Tudo na grade do palco (mesmo zoom), fora do palco e da moldura.
+// A mesa em volta do palco: um MAPA CELESTE aberto, com o palco no centro do mapa.
+//  - Anéis e meridianos do mapa centrados no palco, com uma régua de graus (astrolábio).
+//  - Estrelas em lugares únicos e constelações ligadas por fios (os Laços); algumas piscam.
+//  - A TINTA: um tinteiro tombou e a tinta escorre pelo mapa. Onde ela passa, as estrelas
+//    se apagam (o tema do apagamento). O tamanho da mancha é o nível de "tinta" (0 a 5) que o
+//    mestre escolhe na mesa: dá para a mancha crescer ao longo dos arcos da história.
+// Tudo na grade do palco (mesmo zoom), por baixo da moldura e do palco.
 
 import { pixelArte } from './pixel.js';
 
 const OURO = '#e8c170';
 const BRANCO = '#ebede9';
+const TINTA = '#090a14';
+
+// Raio da mancha em cada nível de tinta (em pixels da grade).
+const RAIOS = [5, 20, 42, 72, 112, 165];
 
 // Estrela que pisca (5 quadros de 5×5): apagada → pequena → grande → pequena → apagada.
 const PISCA = pixelArte(
@@ -34,11 +41,43 @@ export function criarCeu(fundo) {
   piscas.className = 'ceu-piscas';
   fundo.append(piscas);
 
-  /**
-   * Redesenha o céu para uma tela de (largura × altura) pixels da grade, com o palco em
-   * (px, py) e as áreas "proibidas" (moldura, pena, novelo) em "livres = false".
-   */
-  function atualizar(largura, altura, proibidas) {
+  let medidas = null; // { largura, altura, centro, proibidas, fonte }
+  let nivel = 1; // nível de tinta mostrado agora (pode ser fracionário durante a animação)
+  let alvo = 1;
+  let animando = null;
+
+  /** A mancha de tinta: uma função "esta posição está molhada?" para o raio dado. */
+  function mancha(fonte, raio) {
+    const sorte = sorteador(4242);
+    // Borda irregular: o raio varia com o ângulo (soma de ondas com fases sorteadas).
+    const ondas = [2, 3, 5, 7].map((k) => ({ k, fase: sorte() * Math.PI * 2, forca: 0.22 / k ** 0.5 }));
+    // Escorridos: "dedos" finos que descem da mancha (a tinta escorrendo).
+    const dedos = Array.from({ length: 6 }, () => ({ dx: (sorte() - 0.5) * 1.6, comprimento: 0.5 + sorte() * 0.9, largura: 1 + Math.floor(sorte() * 2) }));
+    return (x, y) => {
+      if (raio <= 0) return false;
+      const dx = x - fonte.x;
+      const dy = y - fonte.y;
+      // Escorre mais para baixo do que para cima, e um pouco mais para a direita (para onde
+      // a boca do tinteiro aponta).
+      const ex = dx > 0 ? dx * 0.85 : dx * 1.15;
+      const ey = dy > 0 ? dy * 0.7 : dy * 1.6;
+      const angulo = Math.atan2(ey, ex);
+      let r = raio;
+      for (const o of ondas) r *= 1 + o.forca * Math.sin(o.k * angulo + o.fase);
+      if (Math.hypot(ex, ey) < r) return true;
+      // Dedos que escorrem para baixo a partir da borda de baixo da mancha.
+      for (const d of dedos) {
+        const xd = fonte.x + d.dx * raio;
+        if (Math.abs(x - xd) > d.largura) continue;
+        if (y > fonte.y && y < fonte.y + raio * (0.6 + d.comprimento)) return true;
+      }
+      return false;
+    };
+  }
+
+  function desenhar() {
+    if (!medidas) return;
+    const { largura, altura, centro, proibidas, fonte } = medidas;
     tela.width = largura;
     tela.height = altura;
     tela.style.width = `${largura}px`;
@@ -48,24 +87,52 @@ export function criarCeu(fundo) {
     piscas.replaceChildren();
 
     const sorte = sorteador(largura * 7919 + altura);
-    const livre = (x, y, folga = 3) =>
-      x > 2 && y > 2 && x < largura - 3 && y < altura - 3 &&
-      !proibidas.some((r) => x > r.x - folga && x < r.x + r.w + folga && y > r.y - folga && y < r.y + r.h + folga);
+    const fora = (x, y, folga = 3) =>
+      proibidas.some((r) => x > r.x - folga && x < r.x + r.w + folga && y > r.y - folga && y < r.y + r.h + folga);
+    const raio = nivel <= 0 ? 0 : RAIOS[Math.floor(nivel)] + (RAIOS[Math.min(5, Math.ceil(nivel))] - RAIOS[Math.floor(nivel)]) * (nivel % 1);
+    const molhado = mancha(fonte, raio);
+    const px = (x, y, cor) => {
+      if (molhado(x, y)) return;
+      g.fillStyle = cor;
+      g.fillRect(x, y, 1, 1);
+    };
 
-    // Estrelas: mais ou menos uma a cada 700 pixels de área livre.
+    // ── O mapa: anéis pontilhados e meridianos em volta do palco (o centro do mapa).
+    const maxR = Math.hypot(largura, altura);
+    for (let r = 212; r < maxR; r += 42) {
+      const passos = Math.ceil(2 * Math.PI * r);
+      for (let i = 0; i < passos; i += 3) {
+        const a = (i / passos) * Math.PI * 2;
+        px(Math.round(centro.x + Math.cos(a) * r * 1.25), Math.round(centro.y + Math.sin(a) * r * 0.78), '#3c5e8b');
+      }
+    }
+    // Meridianos (de 30 em 30 graus), saindo do anel de dentro para fora.
+    for (let k = 0; k < 12; k++) {
+      const a = (k / 12) * Math.PI * 2 + Math.PI / 12;
+      for (let r = 212; r < maxR; r += 3) px(Math.round(centro.x + Math.cos(a) * r * 1.25), Math.round(centro.y + Math.sin(a) * r * 0.78), '#253a5e');
+    }
+    // A régua de graus no primeiro anel (como num astrolábio): tracinhos, e os de 30° dourados.
+    for (let k = 0; k < 72; k++) {
+      const a = (k / 72) * Math.PI * 2;
+      const longo = k % 6 === 0;
+      for (let t = 0; t < (longo ? 4 : 2); t++) {
+        const r = 212 - t;
+        px(Math.round(centro.x + Math.cos(a) * r * 1.25), Math.round(centro.y + Math.sin(a) * r * 0.78), longo ? '#e8c170' : '#4f8fba');
+      }
+    }
+
+    // ── As estrelas.
     const estrelas = [];
-    const tentativas = Math.round((largura * altura) / 700);
+    const tentativas = Math.round((largura * altura) / 650);
     for (let i = 0; i < tentativas; i++) {
       const x = Math.floor(sorte() * largura);
       const y = Math.floor(sorte() * altura);
-      if (!livre(x, y)) continue;
       const brilho = sorte();
-      estrelas.push({ x, y, tipo: brilho > 0.88 ? 'grande' : brilho > 0.55 ? 'media' : 'pequena' });
+      if (x < 3 || y < 3 || x > largura - 4 || y > altura - 4 || fora(x, y)) continue;
+      estrelas.push({ x, y, tipo: brilho > 0.88 ? 'grande' : brilho > 0.55 ? 'media' : 'pequena', apagada: molhado(x, y) });
     }
 
-    // Constelações: cada estrela média ou grande se liga à vizinha mais próxima (até 46 px)
-    // por um fio pontilhado, como os Laços ligam as pessoas.
-    g.fillStyle = '#253a5e';
+    // ── Constelações: fios pontilhados entre estrelas vizinhas (não atravessam a tinta).
     const ligadas = new Set();
     for (const a of estrelas) {
       if (a.tipo === 'pequena' || sorte() < 0.35) continue;
@@ -82,20 +149,43 @@ export function criarCeu(fundo) {
       ligadas.add(chave);
       const passos = Math.max(Math.abs(melhor.x - a.x), Math.abs(melhor.y - a.y));
       for (let i = 2; i < passos - 1; i++) {
-        if (i % 3 === 0) continue; // pontilhado
+        if (i % 3 === 0) continue;
         const x = Math.round(a.x + ((melhor.x - a.x) * i) / passos);
         const y = Math.round(a.y + ((melhor.y - a.y) * i) / passos);
-        if (livre(x, y, 1)) g.fillRect(x, y, 1, 1);
+        if (!fora(x, y, 1)) px(x, y, '#4f8fba');
       }
     }
 
-    // As estrelas por cima dos fios.
+    // ── A tinta (por cima do mapa): preta, com brilho molhado na borda de cima.
+    if (raio > 0) {
+      for (let y = 0; y < altura; y++) {
+        for (let x = 0; x < largura; x++) {
+          if (!molhado(x, y)) continue;
+          g.fillStyle = !molhado(x, y - 1) ? '#3c5e8b' : !molhado(x - 1, y) || !molhado(x + 1, y) || !molhado(x, y + 1) ? '#10141f' : TINTA;
+          g.fillRect(x, y, 1, 1);
+        }
+      }
+      // Dois reflexos de luz na tinta molhada, perto do tinteiro.
+      g.fillStyle = '#253a5e';
+      for (const [dx, dy, w] of [[4, 3, 4], [9, 6, 2]]) {
+        if (molhado(fonte.x + dx, fonte.y + dy) && raio > 12) g.fillRect(fonte.x + dx, fonte.y + dy, w, 1);
+      }
+    }
+
+    // ── As estrelas por cima: as que a tinta cobriu viraram um vulto apagado.
     for (const e of estrelas) {
+      if (e.apagada) {
+        if (e.tipo !== 'pequena') {
+          g.fillStyle = '#172038';
+          g.fillRect(e.x, e.y, 1, 1);
+        }
+        continue;
+      }
       if (e.tipo === 'pequena') {
-        g.fillStyle = sorte() < 0.5 ? '#394a50' : '#3c5e8b';
+        g.fillStyle = sorte() < 0.5 ? '#819796' : '#4f8fba';
         g.fillRect(e.x, e.y, 1, 1);
       } else if (e.tipo === 'media') {
-        g.fillStyle = '#4f8fba';
+        g.fillStyle = '#73bed3';
         g.fillRect(e.x - 1, e.y, 3, 1);
         g.fillRect(e.x, e.y - 1, 1, 3);
         g.fillStyle = '#c7cfcc';
@@ -112,12 +202,12 @@ export function criarCeu(fundo) {
       }
     }
 
-    // Algumas estrelas a mais, que piscam devagar (cada uma no seu tempo).
+    // ── Estrelas que piscam devagar (nunca dentro da tinta).
     let quantas = 0;
     for (let i = 0; i < 80 && quantas < 14; i++) {
       const x = Math.floor(sorte() * largura);
       const y = Math.floor(sorte() * altura);
-      if (!livre(x, y, 4)) continue;
+      if (x < 4 || y < 4 || x > largura - 5 || y > altura - 5 || fora(x, y, 4) || molhado(x, y)) continue;
       const p = document.createElement('div');
       p.className = 'ceu-pisca';
       p.style.left = `${x - 2}px`;
@@ -130,19 +220,31 @@ export function criarCeu(fundo) {
     }
   }
 
-  return { atualizar };
-}
-
-/** Luzinhas douradas que sobem da ponta da pena (a pena "escrevendo" com luz). */
-export function criarLuzesDaPena(pai, xPonta, yPonta) {
-  pai.replaceChildren();
-  for (let i = 0; i < 4; i++) {
-    const luz = document.createElement('div');
-    luz.className = 'luz-pena';
-    luz.style.left = `${xPonta + (i % 2 ? 1 : -2)}px`;
-    luz.style.top = `${yPonta - 2}px`;
-    luz.style.animationDelay = `${i * 650}ms`;
-    luz.style.setProperty('--deriva', `${i % 2 ? 3 : -4}px`);
-    pai.append(luz);
+  /** Novo tamanho de tela: (largura × altura) da grade, centro do palco, áreas a evitar, boca do tinteiro. */
+  function atualizar(largura, altura, centro, proibidas, fonte) {
+    medidas = { largura, altura, centro, proibidas, fonte };
+    desenhar();
   }
+
+  /** Nível de tinta (0 a 5). Mudou? A mancha cresce (ou encolhe) aos poucos, ~1 s. */
+  function definirTinta(novo) {
+    novo = Math.max(0, Math.min(5, Math.round(Number(novo) || 0)));
+    if (novo === alvo) return;
+    alvo = novo;
+    clearInterval(animando);
+    if (!medidas) {
+      nivel = alvo;
+      return;
+    }
+    const inicio = nivel;
+    let passo = 0;
+    animando = setInterval(() => {
+      passo++;
+      nivel = inicio + ((alvo - inicio) * passo) / 12;
+      desenhar();
+      if (passo >= 12) clearInterval(animando);
+    }, 80);
+  }
+
+  return { atualizar, definirTinta };
 }
