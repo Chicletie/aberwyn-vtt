@@ -283,9 +283,14 @@ export const TINTEIRO_BOCA = [62, 19];
     }
   }
   contornar(tinteiro);
-  // A rolha que pulou, caída perto (vista de cima: um disco de cortiça).
-  for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) if (dx * dx + dy * dy <= 5) ponto(tinteiro, 54 + dx, 35 + dy, dx + dy < 0 ? C.ouro : C.ouroEscuro);
-  ponto(tinteiro, 54, 35, C.marrom);
+  // A rolha que pulou, caída de lado perto do gargalo: um cilindrinho de cortiça do tamanho
+  // da boca (5 px de diâmetro), com a ponta redonda virada para cá.
+  for (let y = 33; y <= 37; y++) {
+    for (let x = 47; x <= 53; x++) ponto(tinteiro, x, y, y === 33 ? C.ouro : y === 37 ? C.marrom : (x + y) % 3 === 0 ? C.marrom : C.ouroEscuro);
+    ponto(tinteiro, 54, y, y === 33 || y === 37 ? C.ouroEscuro : C.ouro); // a ponta, pegando luz
+  }
+  for (let x = 46; x <= 55; x++) { ponto(tinteiro, x, 32, C.contorno); ponto(tinteiro, x, 38, C.contorno); }
+  for (let y = 33; y <= 37; y++) { ponto(tinteiro, 46, y, C.contorno); ponto(tinteiro, 55, y, C.contorno); }
 }
 gravarPng('public/assets/ui/ornamento-tinteiro.png', tinteiro);
 
@@ -431,81 +436,113 @@ gravarPng('public/assets/ui/ornamento-instrumentos.png', instrumentos);
 
 // ═══════════ Objetos dos personagens (um por PJ; os que faltam chegam depois da sessão 0) ═══════════
 
-// ─── Wesley: um baralho (o monte, umas cartas espalhadas e uma virada para cima) ───
-const baralho = nova(78, 60);
+// ─── Wesley: um baralho (na escala da pena: carta de 30×44) ───
+// O monte, três cartas espalhadas em leque e uma virada para cima.
+const baralho = nova(132, 100);
 {
   const carta = (cx, cy, angulo, virada) =>
     girado(baralho, cx, cy, angulo, (u, v) => {
-      if (Math.abs(u) > 9 || Math.abs(v) > 13) return null;
-      const quina = Math.abs(u) > 7.5 && Math.abs(v) > 11.5;
-      if (quina) return null;
-      const borda = Math.abs(u) > 8 || Math.abs(v) > 12;
+      if (Math.abs(u) > 15 || Math.abs(v) > 22) return null;
+      if (Math.abs(u) > 13 && Math.abs(v) > 20) return null; // quinas arredondadas
+      if (Math.abs(u) > 14 || Math.abs(v) > 21) return C.claro; // a borda branca da carta
       if (!virada) {
-        // Verso: azul com moldura dourada e um losango no meio.
-        if (borda) return C.claro;
-        if (Math.abs(u) > 6.5 || Math.abs(v) > 10.5) return C.ouroEscuro;
-        if (Math.abs(u) + Math.abs(v) * 0.7 < 4) return C.ouro;
-        return (Math.round(u) + Math.round(v)) % 3 === 0 ? C.azulMedio : C.azulEscuro;
+        // Verso: azul-noite com moldura dourada, uma estrela no meio e uma trama de losangos.
+        if (Math.abs(u) > 11.5 || Math.abs(v) > 18.5) return Math.abs(u) > 12.5 || Math.abs(v) > 19.5 ? C.azulEscuro : C.ouroEscuro;
+        const r = Math.abs(u) + Math.abs(v) * 0.8;
+        if ((Math.abs(u) < 0.7 && Math.abs(v) < 7) || (Math.abs(v) < 0.7 && Math.abs(u) < 5.5)) return C.ouro;
+        if (r < 3) return C.branco;
+        if (r > 6 && r < 7) return C.ouroEscuro;
+        return (Math.round(u + 40) + Math.round(v + 40)) % 4 === 0 || (Math.round(u + 40) - Math.round(v + 40) + 80) % 4 === 0 ? C.azulMedio : C.azulEscuro;
       }
-      // Frente: papel claro, uma estrela vermelha grande no meio e os cantinhos marcados.
-      if (borda) return C.cinzaClaro;
-      const estrelaGrande = (Math.abs(u) < 0.8 && Math.abs(v) < 5) || (Math.abs(v) < 0.8 && Math.abs(u) < 4) || Math.abs(u) + Math.abs(v) < 2.2;
-      if (estrelaGrande) return '#a53030';
-      if ((Math.abs(u + 5.5) < 0.8 && Math.abs(v + 9) < 1.5) || (Math.abs(u - 5.5) < 0.8 && Math.abs(v - 9) < 1.5)) return '#a53030';
-      return C.branco;
+      // Frente: papel claro, a estrela vermelha grande no meio, os cantinhos e uma letra.
+      const estrelaGrande = (Math.abs(u) < 1 && Math.abs(v) < 8) || (Math.abs(v) < 1 && Math.abs(u) < 6.5) || Math.abs(u) + Math.abs(v) < 3.6;
+      if (estrelaGrande) return Math.abs(u) + Math.abs(v) < 1.5 ? '#cf573c' : '#a53030';
+      // Cantinhos: uma estrelinha e um "A" (em pixel) em cima à esquerda e embaixo à direita.
+      for (const s of [1, -1]) {
+        const cu = (u + 10 * s) * s, cv = (v + 16 * s) * s;
+        if ((Math.abs(cu) < 0.6 && Math.abs(cv) < 2) || (Math.abs(cv) < 0.6 && Math.abs(cu) < 1.6)) return '#a53030';
+        const au = cu, av = cv + 5;
+        if (av > -2.5 && av < 2.5 && Math.abs(Math.abs(au) - (av + 2.5) * 0.45) < 0.55) return C.cinza; // o "A"
+        if (Math.abs(av - 0.5) < 0.5 && Math.abs(au) < 1.2) return C.cinza;
+      }
+      return v > 18 ? C.claro : C.branco;
     });
-  // O monte (algumas cartas empilhadas, a de cima um pouco torta).
-  for (let i = 0; i < 4; i++) carta(22 + i * 0.4, 30 - i, -6 + i, false);
-  // Cartas espalhadas e uma virada.
-  carta(44, 34, 22, false);
-  carta(58, 26, 38, true);
+  // O monte: cinco cartas empilhadas, cada uma um pouco torta, com a espessura aparecendo.
+  for (let i = 0; i < 5; i++) carta(30 + i * 0.5, 54 - i * 1.2, -8 + i * 2, false);
+  // As espalhadas: duas de costas em leque e uma virada.
+  carta(62, 56, 18, false);
+  carta(84, 50, 34, false);
+  carta(104, 46, 26, true);
   contornar(baralho);
-  sombra(baralho, 40, 38, 34, 18);
+  sombra(baralho, 66, 62, 58, 30);
 }
 gravarPng('public/assets/ui/ornamento-baralho.png', baralho);
 
-// ─── Nue: um pincel molhado de tinta vermelho-sangue, e o rastro que ele deixou na mesa ───
+// ─── Nue: um pincel japonês de caligrafia e a pincelada vermelho-sangue que ele deixou ───
 const SANGUE = '#a53030';
+const SANGUE_CLARO = '#cf573c';
 const SANGUE_ESCURO = '#752438';
-const pincel = nova(96, 56);
+const pincel = nova(170, 96);
 {
-  // A pincelada vermelha na mesa (larga no começo, falhando no fim, com respingos).
-  // Ela termina onde a ponta do pincel saiu do papel (28, 40).
-  for (let x = 2; x <= 27; x++) {
-    const t = (x - 2) / 25;
-    const meio = 47 - t * 7 + Math.sin(t * 5) * 1.5;
-    const meia = 3.6 * (1 - t * 0.55);
-    for (let y = Math.floor(meio - meia); y <= Math.ceil(meio + meia); y++) {
-      if (t < 0.25 && (x * 7 + y * 3) % 4 === 0) continue; // o começo, com pouca tinta: falhado
-      const cor = y < meio - meia + 1 ? '#cf573c' : y > meio + meia - 1 ? SANGUE_ESCURO : SANGUE;
-      ponto(pincel, x, y, cor);
-    }
-  }
-  for (const [x, y] of [[6, 38], [14, 53], [22, 34], [33, 47], [3, 52]]) {
-    ponto(pincel, x, y, SANGUE);
-    ponto(pincel, x + 1, y, SANGUE_ESCURO);
-  }
-  // O pincel deitado na diagonal: cabo escuro e comprido, virola de metal, cerdas vermelhas.
-  girado(pincel, 58, 26, -28, (u, v) => {
-    if (u < -34 || u > 36) return null;
-    if (u < -10) {
-      // Cerdas: largas perto da virola, afinando até a ponta; molhadas de vermelho.
-      const meia = u < -26 ? 3.4 * ((u + 34) / 8) + 0.6 : 4 - (u + 26) * 0.03;
+  // O pincel, deitado por cima: cabo de bambu longo e fino (com nós), virola preta e as cerdas
+  // brancas afinando até a ponta fina, molhada de vermelho.
+  girado(pincel, 92, 26, -14, (u, v) => {
+    // u: −74 (ponta das cerdas) … +70 (fim do cabo)
+    if (u < -74 || u > 70) return null;
+    if (u < -50) {
+      // Cerdas em gota: largas perto da virola, ponta bem fina.
+      const s = (u + 74) / 24; // 0 na ponta … 1 na virola
+      const meia = 3.6 * Math.sin(Math.PI * 0.5 * s) ** 0.9 + 0.3;
       if (Math.abs(v) > meia) return null;
-      if (u > -14) return v < 0 ? C.marrom : C.contorno; // a raiz das cerdas, seca
-      return v < -1 ? '#cf573c' : v > 1.5 ? SANGUE_ESCURO : SANGUE;
+      if (s < 0.55) return v < -0.6 ? SANGUE_CLARO : v > 0.8 ? SANGUE_ESCURO : SANGUE; // ponta molhada
+      if (s < 0.68) return v < 0 ? SANGUE_CLARO : SANGUE; // a tinta subindo pelas cerdas
+      return v < -1 ? C.branco : v > 1.3 ? C.cinzaClaro : C.claro; // cerdas secas, brancas
     }
-    if (u < -2) {
-      if (Math.abs(v) > 4.2) return null;
-      return v < -1.5 ? C.branco : v > 1.5 ? C.cinza : C.claro; // virola de metal
+    if (u < -46) {
+      if (Math.abs(v) > 2.6) return null;
+      return v < -1 ? C.cinza : C.contorno; // virola laqueada preta
     }
-    // Cabo laqueado, afinando para a ponta, com um anel dourado.
-    const meia = 3.2 - (u + 2) * 0.04;
+    // O cabo de bambu: fino, com nós a cada 22 px e um cordãozinho no fim.
+    if (u > 64) {
+      if (Math.abs(v) > 1.2) return null;
+      return SANGUE; // o cordão vermelho de pendurar
+    }
+    const meia = 2.2;
     if (Math.abs(v) > meia) return null;
-    if (u > 4 && u < 7) return v < 0 ? C.ouro : C.ouroEscuro;
-    return v < -1 ? C.marrom : v > 1 ? C.contorno : '#4d2b32';
+    const no = ((Math.round(u + 46) % 22) + 22) % 22 < 2;
+    if (no) return v < -0.5 ? C.ouro : C.marrom; // o nó do bambu
+    return v < -1 ? C.ouro : v > 1 ? C.marrom : C.ouroEscuro;
   });
   contornar(pincel);
+  const pintarSeVazio = (x, y, cor) => vazio(pincel, Math.round(x), Math.round(y)) && ponto(pincel, x, y, cor);
+  // A pincelada: uma curva com a largura variando (apoia com força, corre, afina e termina em
+  // fiapos secos, "kasure", com a tinta acabando). Desenhada depois do pincel, só nos pixels vazios: fica por baixo dele e sem contorno (é tinta no papel).
+  let semente2 = 99;
+  const sorte2 = () => ((semente2 = (semente2 * 1103515245 + 12345) % 2147483648) / 2147483648);
+  const fiapos = Array.from({ length: 12 }, () => sorte2()); // cada "fio" de cerda falha num ponto
+  const P0 = [14, 72], P1 = [70, 96], P2 = [150, 58];
+  const pontoDa = (t) => [
+    (1 - t) ** 2 * P0[0] + 2 * (1 - t) * t * P1[0] + t * t * P2[0],
+    (1 - t) ** 2 * P0[1] + 2 * (1 - t) * t * P1[1] + t * t * P2[1],
+  ];
+  const largura = (t) => (t < 0.06 ? 4 + t * 50 : t < 0.5 ? 7 - (t - 0.06) * 3 : 5.7 * (1 - (t - 0.5) / 0.5) ** 0.8 + 0.4);
+  for (let t = 0; t <= 1; t += 0.0015) {
+    const [x, y] = pontoDa(t);
+    const [x2, y2] = pontoDa(Math.min(1, t + 0.01));
+    const comp = Math.hypot(x2 - x, y2 - y) || 1;
+    const n = [-(y2 - y) / comp, (x2 - x) / comp]; // direção de lado
+    const w = largura(t);
+    for (let k = -w; k <= w; k += 0.5) {
+      const fio = Math.min(11, Math.floor(((k / w + 1) / 2) * 12));
+      if (t > 0.55 && fiapos[fio] < (t - 0.55) * 2.2) continue; // fiapos secos no fim
+      const cor = k < -w + 1.2 ? SANGUE_CLARO : k > w - 1.2 ? SANGUE_ESCURO : t < 0.05 ? SANGUE_ESCURO : SANGUE;
+      pintarSeVazio(x + n[0] * k, y + n[1] * k, cor);
+    }
+  }
+  // Respingos perto de onde o pincel apoiou.
+  for (const [x, y, r] of [[6, 66, 1.5], [9, 82, 1], [22, 86, 1.2], [30, 62, 0.8]]) {
+    for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) if (dx * dx + dy * dy <= r * r) pintarSeVazio(x + dx, y + dy, SANGUE);
+  }
 }
 gravarPng('public/assets/ui/ornamento-pincel.png', pincel);
 

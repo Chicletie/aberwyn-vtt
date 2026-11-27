@@ -74,12 +74,12 @@ O app funciona sem arte nenhuma: o que faltar vira o desenho provisório. Quando
 | Moldura em volta do palco (o fio) | `assets/ui/moldura-palco.png` | 34×34: cantos de 12 (o nó), trecho de 10 no meio que se repete (o fio) |
 | Papel do mapa celeste (em volta) | `assets/ui/fundo-palco.png` | ladrilho que se repete (64×64 hoje; qualquer tamanho serve). Anéis, estrelas e tinta são do código. |
 | A pena (esquerda, no meio) | `assets/ui/ornamento-pena.png` | 44×116; o bico fica em (40, 112), dentro da poça |
-| O tinteiro tombado, visto de cima (esquerda, no meio) | `assets/ui/ornamento-tinteiro.png` | 64×40; a tinta sai da boca, em (62, 19), virada para o palco |
+| O tinteiro tombado, visto de cima, com a rolha caída (esquerda, no meio) | `assets/ui/ornamento-tinteiro.png` | 64×40; a tinta sai da boca, em (62, 19), virada para o palco |
 | O mapa (esquerda, saindo pelo alto) | `assets/ui/ornamento-mapa.png` | 170×124 |
 | Esquadro, compasso e lápis (esquerda, embaixo) | `assets/ui/ornamento-instrumentos.png` | 120×100 |
 | O novelo (direita, no meio) | `assets/ui/ornamento-novelo.png` | 60×56; o fio sai em (14, 40) e o código o desenha até o nó do canto de baixo |
-| Pincel com tinta vermelho-sangue: **Nue** (direita, saindo pelo alto) | `assets/ui/ornamento-pincel.png` | 96×56 |
-| Baralho: **Wesley** (direita, embaixo) | `assets/ui/ornamento-baralho.png` | 78×60 |
+| Pincel japonês com tinta vermelho-sangue e a pincelada: **Nue** (direita, no alto) | `assets/ui/ornamento-pincel.png` | 170×96 |
+| Baralho: **Wesley** (direita, embaixo) | `assets/ui/ornamento-baralho.png` | 132×100 (carta de 30×44) |
 | Objetos de Joshua, Drake e Hilda | a definir (sessão 0) | |
 
 As posições e tamanhos de cada objeto ficam em `src/palco/main.js`, na lista `OBJETOS_DA_MESA` (contadas a partir do canto do palco). Mudou o tamanho de um PNG? Ajuste ali a largura e a altura.

@@ -28,27 +28,56 @@ const PISCA = pixelArte(
 );
 
 /**
- * O fio solto sobre a mesa: uma curva (Bézier) que faz uma barriga para cima e volta, com uma
- * ondulação leve (fio de verdade não é reto). 2 px de grossura: ouro, sombra embaixo e um brilho
- * de vez em quando, como as voltas do fio trançado da moldura.
+ * O fio solto sobre a mesa, como o de um novelo que caiu e rolou: em vez de uma curva lisa,
+ * passa por pontos espalhados dos dois lados do caminho (ondas desiguais) e faz uma laçada no
+ * meio do caminho. Um caminho suave (Catmull-Rom) liga os pontos. 2 px de grossura: ouro,
+ * sombra embaixo e um brilho de vez em quando, como as voltas do fio trançado da moldura.
  */
 function desenharFio(g, de, para) {
-  const c1 = { x: de.x - 14, y: de.y + 46 };
-  const c2 = { x: para.x + 34, y: para.y - 40 };
+  const sorte = sorteador(2718);
+  const dx = para.x - de.x;
+  const dy = para.y - de.y;
+  const comprimento = Math.hypot(dx, dy) || 1;
+  const lado = { x: -dy / comprimento, y: dx / comprimento }; // perpendicular ao caminho
+  // Caminho de base: sai do novelo para baixo e para fora, antes de voltar para o nó.
+  const base = (t) => ({
+    x: de.x + dx * t + Math.sin(Math.PI * t) * 38,
+    y: de.y + dy * t + Math.sin(Math.PI * t) * 14,
+  });
+  const pontos = [de];
+  const passos = 9;
+  for (let i = 1; i < passos; i++) {
+    const t = i / passos;
+    const b = base(t);
+    // Para um lado e para o outro, com tamanhos desiguais (fio solto não ondula certinho).
+    const desvio = (i % 2 ? 1 : -1) * (8 + sorte() * 16);
+    pontos.push({ x: b.x + lado.x * desvio, y: b.y + lado.y * desvio });
+    if (i === 4) {
+      // A laçada: o fio dá uma volta em si mesmo.
+      const c = pontos[pontos.length - 1];
+      for (const a of [0.5, 1.6, 2.7, 3.8, 4.9]) pontos.push({ x: c.x + Math.cos(a) * 11 + 9, y: c.y + Math.sin(a) * 8 });
+    }
+  }
+  pontos.push(para);
+
+  // Catmull-Rom: uma curva suave que passa exatamente por todos os pontos.
   let anterior = null;
-  for (let t = 0; t <= 1; t += 0.002) {
-    const m = 1 - t;
-    let x = m ** 3 * de.x + 3 * m * m * t * c1.x + 3 * m * t * t * c2.x + t ** 3 * para.x;
-    let y = m ** 3 * de.y + 3 * m * m * t * c1.y + 3 * m * t * t * c2.y + t ** 3 * para.y;
-    y += Math.sin(t * 19) * 1.2 * Math.sin(Math.PI * t); // ondulação, que some nas pontas
-    x = Math.round(x);
-    y = Math.round(y);
-    if (anterior && anterior.x === x && anterior.y === y) continue;
-    anterior = { x, y };
-    g.fillStyle = '#ad7757';
-    g.fillRect(x, y + 1, 1, 1);
-    g.fillStyle = (x + y) % 5 === 0 ? BRANCO : OURO;
-    g.fillRect(x, y, 1, 1);
+  for (let i = 0; i < pontos.length - 1; i++) {
+    const p0 = pontos[Math.max(0, i - 1)];
+    const p1 = pontos[i];
+    const p2 = pontos[i + 1];
+    const p3 = pontos[Math.min(pontos.length - 1, i + 2)];
+    for (let t = 0; t < 1; t += 0.02) {
+      const t2 = t * t, t3 = t2 * t;
+      const x = Math.round(0.5 * (2 * p1.x + (-p0.x + p2.x) * t + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 + (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3));
+      const y = Math.round(0.5 * (2 * p1.y + (-p0.y + p2.y) * t + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 + (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3));
+      if (anterior && anterior.x === x && anterior.y === y) continue;
+      anterior = { x, y };
+      g.fillStyle = '#ad7757';
+      g.fillRect(x, y + 1, 1, 1);
+      g.fillStyle = (x + y) % 5 === 0 ? BRANCO : OURO;
+      g.fillRect(x, y, 1, 1);
+    }
   }
 }
 

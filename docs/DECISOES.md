@@ -308,3 +308,11 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
   - **Wesley:** um baralho, com o monte, cartas espalhadas e uma virada (estrela vermelha).
   - **Nue:** um pincel molhado de tinta **vermelho-sangue**, com a pincelada que ele deixou. Reforça a ideia de que quem está nessa mesa "produz" o mapa do centro.
   - **Joshua, Drake e Hilda:** a definir depois da sessão 0. O lado direito tem menos objetos e espera por eles.
+
+### Ajustes de escala e de traço (versão 8)
+- **Baralho** fora de escala (pequeno demais): a carta passou de 18×26 para 30×44, na escala da pena e do tinteiro. A carta virada ficou menos torta, para a estrela não parecer um X.
+- **Pincel da Nue** agora é um **pincel japonês de caligrafia**: cabo de bambu longo e fino, com nós; virola preta; cerdas brancas afinando até a ponta fina, molhada de vermelho-sangue; um cordãozinho vermelho no fim do cabo.
+- **A pincelada** é caligráfica: começa apoiada (larga e mais escura), corre e afina, e termina em **fiapos secos** (cada fio de cerda falha num ponto diferente). É tinta no papel, então não tem contorno: é desenhada por baixo do pincel, só nos pixels vazios.
+- **Rolha** do tamanho da boca do tinteiro: um cilindrinho de cortiça caído de lado, não um disco.
+- **O fio do novelo** não podia ser uma curva lisa: um novelo que cai e rola deixa o fio solto. Agora ele passa por pontos espalhados dos dois lados do caminho (ondas desiguais), dá uma **laçada** no meio e chega ao nó por uma curva suave que passa por todos esses pontos (Catmull-Rom).
+- Aprendizado do teste: o servidor de desenvolvimento (Vite) às vezes não percebe arquivos alterados por script e continua servindo a versão antiga. Se a tela não mudar depois de uma alteração, **reinicie o `npm run dev`**.
