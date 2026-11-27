@@ -787,3 +787,13 @@ select.m-campo option {
 .m-palco-previa {
   isolation: isolate;
 }
+
+/* Inimigos da prévia podem ser arrastados (posição manual). */
+.m-palco-previa .lutador.inimigo {
+  cursor: grab;
+}
+
+.m-palco-previa .lutador.arrastando {
+  cursor: grabbing;
+  outline: 1px dashed var(--cor-dourado);
+}

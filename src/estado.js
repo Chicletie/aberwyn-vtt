@@ -452,6 +452,11 @@ export function definirAlvos(estado, ids) {
   estado.alvos = [...ids];
 }
 
+/** Posição manual de um inimigo no campo (pés em x, y da grade). null = volta à formação automática. */
+export function definirPosicao(estado, id, posicao) {
+  acharCombatente(estado, id).posicao = posicao ? { x: Math.round(posicao.x), y: Math.round(posicao.y) } : null;
+}
+
 /** Mostra uma mensagem na fita. estilo "acao" (borda na cor de quem age) ou "efeito" (apagado). */
 export function mostrarBanner(estado, texto, cor, estilo = 'acao') {
   estado.banner = texto ? { texto, cor, estilo } : null;

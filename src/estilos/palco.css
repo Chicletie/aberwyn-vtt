@@ -914,3 +914,19 @@
 .fita.saindo .cintila {
   visibility: hidden;
 }
+
+/* As camadas cobrem o palco inteiro, umas sobre as outras. Só o que está DENTRO delas recebe
+   clique; o vazio deixa o clique passar (senão a camada de transição, a de cima, roubava
+   todos os cliques: tocar num inimigo para ver o cartão, arrastar inimigo na mesa). */
+.palco .camada {
+  pointer-events: none;
+}
+
+.palco .camada > * {
+  pointer-events: auto;
+}
+
+.palco .camada.transicao > *,
+.palco .camada.flutuantes > * {
+  pointer-events: none;
+}

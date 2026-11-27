@@ -153,6 +153,8 @@ export function abrirAjuda(ctx) {
     ['CLIQUE NA LINHA', 'quem age agora'],
     ['CLIQUE DIREITO / ✎', 'ficha do combatente'],
     ['SHIFT + − / +', 'muda 10 de uma vez'],
+    ['ARRASTAR INIMIGO', 'na prévia: posição manual (duplo clique volta ao automático)'],
+    ['CLIQUE DIREITO NO TEXTO', 'na prévia: corrigir o texto do palco'],
     ['ESC', 'fecha esta janela'],
   ];
   abrirJanela('ATALHOS E ARQUIVO', [

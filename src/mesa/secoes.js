@@ -10,6 +10,7 @@ import { h, botao, seletor, tituloSecao, rotulo, campoNumero, campoTexto, lista,
 import * as J from './janelas.js';
 import { silhuetaDe } from '../arte.js';
 import { ligarCliqueDireito, abrirEditor } from './textos-palco.js';
+import { ligarArrastarInimigos } from './posicoes.js';
 
 /** Cor de um combatente na mesa (o mestre vê o vilão em vinho mesmo escondido). */
 function corNaMesa(c) {
@@ -198,6 +199,7 @@ export function desenharCentro(area, ctx) {
     encher(area, cabecalho, hospedeiro, painel);
     centroMontado = { area, cabecalho, painel };
     ligarCliqueDireito(ctx.palcoPrevia.raiz, ctx);
+    ligarArrastarInimigos(ctx.palcoPrevia.raiz, ctx);
   }
   const { cabecalho, painel } = centroMontado;
   const e = ctx.estado;

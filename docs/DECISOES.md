@@ -247,3 +247,10 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - **App instalável (PWA):** `public/manifest.webmanifest` (abre `palco.html`, deitado, em tela cheia, fundo `#090a14`), ícones gerados por `scripts/gerar-icones.mjs` a partir da janela e da pena (ampliação inteira, sem borrar) e `public/sw.js`, que não guarda nada: só mostra "Sem internet" se o app abrir offline.
 - **O palco lembra a última sala** (`aberwyn-vtt:sala-jogador`): o app instalado abre sem código no endereço e volta direto para a sala. Se ela estiver vazia, aparece a caixa de código.
 - Bug achado no teste: o aviso "arte chegou" usava `requestAnimationFrame`, que **para quando a aba fica em segundo plano**. Com a mesa numa aba de fundo, a silhueta nunca era mandada. Trocado por `setTimeout`.
+
+### Cintilas, textos do palco e posição manual
+- **Cintilas:** uma cruzinha 5×5 (5 quadros desenhados por código) nasce no centro e corre até cada ponta junto com a faixa da fita (~0,3 s) e com a linha dourada do aviso (~0,15 s); ao chegar, estoura e some. As do aviso ficam ao lado da linha, não dentro: o recorte (`clip-path`) da linha as esconderia.
+- **Clique direito num texto da prévia** (fita, aviso, diálogo, textos da cortina): menu com EDITAR…, Aa, TÍTULO, ESPAÇOS. Sem clique direito: botão **✎ TEXTOS** em cima da prévia abre todos os textos. Corrigir o aviso não reinicia o tempo dele.
+- **Posição manual:** arrastar um inimigo na prévia grava `posicao` (os pés); duplo clique volta à formação automática. Os pés ficam presos dentro do campo.
+- **Bug achado:** as camadas do palco cobrem a tela inteira, e a de transição (a de cima) roubava todos os cliques, inclusive o toque no inimigo para abrir o cartão no palco dos jogadores. Agora só o que está dentro de cada camada recebe clique.
+- A prévia da mesa ganhou `isolation: isolate`: sem isso, as camadas do palco (z-index altos) cobriam o menu do clique direito.
