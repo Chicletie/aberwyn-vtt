@@ -71,6 +71,39 @@ body {
   image-rendering: pixelated;
 }
 
+/* O tinteiro tombando (tinta 0 → 1): balança de um lado para o outro, cada vez mais forte,
+   inclina para o lado do palco e cai. A pena de pé vai junto. Em passos (pixel art). */
+.objeto-mesa.tombando {
+  transform-origin: 40% 80%;
+  animation: tinteiro-tomba 900ms steps(1) forwards;
+}
+
+@keyframes tinteiro-tomba {
+  0% { translate: 0 0; rotate: 0deg; }
+  10% { translate: -1px 0; }
+  20% { translate: 1px 0; }
+  30% { translate: -1px 0; }
+  40% { translate: 2px 0; }
+  50% { translate: -2px 0; }
+  58% { translate: 2px 0; rotate: 0deg; }
+  68% { translate: 2px 0; rotate: 10deg; }
+  78% { translate: 3px 1px; rotate: 28deg; }
+  88% { translate: 4px 2px; rotate: 55deg; }
+  100% { translate: 5px 3px; rotate: 80deg; }
+}
+
+/* Depois de cair: um quiquezinho para assentar na mesa. */
+.objeto-mesa.caiu {
+  animation: tinteiro-assenta 400ms steps(1);
+}
+
+@keyframes tinteiro-assenta {
+  0% { translate: 0 -2px; }
+  35% { translate: 0 1px; }
+  65% { translate: 0 -1px; }
+  100% { translate: 0 0; }
+}
+
 /* Moldura ornamentada: 12 px por fora da grade de 480×270, na mesma escala, atrás do palco.
    Os pedaços (cantos e bordas) são recortados de assets/ui/moldura-palco.png pelo molduras.js.
    Onde a tela não tem sobra (celular em tela cheia), ela simplesmente fica fora da vista. */

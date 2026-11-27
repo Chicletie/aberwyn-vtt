@@ -26,6 +26,33 @@ fundo.style.backgroundImage = 'url(./assets/ui/fundo-palco.png)';
 const ceu = criarCeu(fundo);
 let tintaJaMostrada = false;
 let tintaAtual = 0; // 0 = tinteiro em pé; muda a imagem e o lugar do tinteiro e da pena
+let tombando = null;
+let alvoDoTombo = 1;
+
+/**
+ * O tinteiro tomba (tinta 0 → 1 ou mais, durante a sessão): ele balança, inclina e cai; aí as
+ * imagens trocam (tinteiro deitado, pena caída na mesa), ele assenta com um quiquezinho e a
+ * tinta começa a escorrer. Estados que chegam durante o tombo só atualizam o nível final.
+ */
+function tombarTinteiro(nivel) {
+  alvoDoTombo = nivel;
+  if (tombando) return;
+  const { tinteiro, pena } = objetosMesa;
+  tinteiro.classList.add('tombando');
+  pena.classList.add('tombando');
+  tombando = setTimeout(() => {
+    tinteiro.classList.remove('tombando');
+    pena.classList.remove('tombando');
+    tintaAtual = alvoDoTombo;
+    ajustarEscala();
+    ceu.definirTinta(alvoDoTombo);
+    for (const el of [tinteiro, pena]) {
+      el.classList.add('caiu');
+      setTimeout(() => el.classList.remove('caiu'), 400);
+    }
+    tombando = null;
+  }, 900);
+}
 window.ceu = ceu; // depuração (F12): ceu.definirTinta(3, { imediato: true })
 
 // ───────────── Objetos da mesa, espalhados em volta do palco ─────────────
@@ -114,7 +141,7 @@ function ajustarEscala() {
     objetosMesa[nome].style.left = `${pos[nome].x}px`;
     objetosMesa[nome].style.top = `${pos[nome].y}px`;
   }
-  // Tinta 0: o tinteiro ainda está EM PÉ, com a pena mergulhada na boca (outra imagem, outro lugar).
+  // Tinta 0: o tinteiro ainda está EM PÉ, com a pena de pé dentro dele (outras imagens, outro lugar).
   const emPe = tintaAtual === 0;
   const tinteiro = objetosMesa.tinteiro;
   tinteiro.style.backgroundImage = `url(./assets/ui/ornamento-tinteiro${emPe ? '-em-pe' : ''}.png)`;
@@ -125,12 +152,16 @@ function ajustarEscala() {
     const y = py + 108;
     tinteiro.style.left = `${x}px`;
     tinteiro.style.top = `${y}px`;
-    // Visto de cima, a pena SAI da boca: usa a pena sem o bico (que fica dentro do vidro), com
-    // o corte (32, 84 na imagem) no centro da boca (22, 22 no tinteiro em pé).
-    objetosMesa.pena.style.left = `${x + 22 - 32}px`;
-    objetosMesa.pena.style.top = `${y + 22 - 84}px`;
+    // A pena de pé dentro do tinteiro, vista de cima (encurtada): a base dela (33, 38 na imagem)
+    // fica no centro da boca (22, 22 no tinteiro em pé).
+    objetosMesa.pena.style.left = `${x + 22 - 33}px`;
+    objetosMesa.pena.style.top = `${y + 22 - 38}px`;
   }
-  objetosMesa.pena.style.backgroundImage = `url(./assets/ui/ornamento-pena${emPe ? '-no-tinteiro' : ''}.png)`;
+  // Duas penas: de pé no tinteiro (tinta 0) ou caída na mesa, com o bico na poça (tinta 1 a 6).
+  const pena = objetosMesa.pena;
+  pena.style.backgroundImage = `url(./assets/ui/ornamento-pena${emPe ? '-em-pe' : ''}.png)`;
+  pena.style.width = `${emPe ? 40 : OBJETOS_DA_MESA.pena.largura}px`;
+  pena.style.height = `${emPe ? 44 : OBJETOS_DA_MESA.pena.altura}px`;
   ceu.atualizar(L, A, { x: px + 240, y: py + 135 }, [{ x: px - 12, y: py - 12, w: 504, h: 294 }], {
     // A tinta sai da boca do tinteiro e escorre para dentro, por baixo do palco.
     tinta: { x: pos.tinteiro.x + 63, y: pos.tinteiro.y + 20 },
@@ -260,13 +291,20 @@ canal.aoReceberEstado(async (estado) => {
   window.ultimoEstado = estado;
   // Na primeira vez a tinta já aparece no tamanho certo; depois, as mudanças do mestre animam.
   const tinta = estado.tinta ?? 0;
-  // Passou de "em pé" para "tombado" (ou o contrário): troca o tinteiro e reposiciona a pena.
-  if ((tinta === 0) !== (tintaAtual === 0)) {
+  if (tintaAtual === 0 && tinta >= 1 && tintaJaMostrada) {
+    // O mestre tirou a tinta do 0 durante a sessão: o tinteiro TOMBA (animação) e a tinta escorre.
+    tombarTinteiro(tinta);
+  } else if (!tombando) {
+    // Passou de "tombado" para "em pé" (ou abriu o palco): troca na hora.
+    if ((tinta === 0) !== (tintaAtual === 0)) {
+      tintaAtual = tinta;
+      ajustarEscala();
+    }
     tintaAtual = tinta;
-    ajustarEscala();
+    ceu.definirTinta(tinta, { imediato: !tintaJaMostrada });
+  } else {
+    alvoDoTombo = tinta;
   }
-  tintaAtual = tinta;
-  ceu.definirTinta(tinta, { imediato: !tintaJaMostrada });
   tintaJaMostrada = true;
   p.renderizar(estado);
 });

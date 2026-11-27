@@ -362,24 +362,46 @@ export const TINTEIRO_EM_PE_BOCA = [22, 22];
 }
 gravarPng('public/assets/ui/ornamento-tinteiro-em-pe.png', emPe);
 
-// A pena "dentro" do tinteiro em pé: a mesma pena, sem o bico e o fim do cálamo (que ficam
-// escondidos dentro do vidro). O corte fica em PENA_CORTE, que é encaixado no centro da boca.
-const penaNoTinteiro = nova(pena.largura, pena.altura);
-penaNoTinteiro.pixels.set(pena.pixels);
-export const PENA_CORTE = [32, 84];
+// A pena EM PÉ dentro do tinteiro, vista de cima: ela sai da boca inclinada para o alto à
+// esquerda e aparece ENCURTADA pela perspectiva (está quase de pé, apontando para quem olha).
+// Por isso é curta e fica mais larga perto da ponta de cima, que está mais perto da "câmera".
+// A base (onde ela entra na boca) fica em PENA_EM_PE_BASE.
+const penaEmPe = nova(40, 44);
+export const PENA_EM_PE_BASE = [33, 38];
 {
-  // Apaga tudo que passa do corte (ao longo da pena, do topo [5, 3] até o bico [40, 112]).
-  const L = Math.hypot(40 - 5, 112 - 3);
-  const eixo = [(40 - 5) / L, (112 - 3) / L];
-  const uCorte = (PENA_CORTE[0] - 5) * eixo[0] + (PENA_CORTE[1] - 3) * eixo[1];
-  for (let y = 0; y < pena.altura; y++) {
-    for (let x = 0; x < pena.largura; x++) {
-      const u = (x - 5) * eixo[0] + (y - 3) * eixo[1];
-      if (u > uCorte) penaNoTinteiro.pixels.fill(0, (y * pena.largura + x) * 4, (y * pena.largura + x) * 4 + 4);
+  const [bx, by] = PENA_EM_PE_BASE;
+  const dir = [-0.55, -0.835]; // para o alto à esquerda
+  const lado = [-dir[1], dir[0]];
+  const L = 40;
+  for (let y = 0; y < penaEmPe.altura; y++) {
+    for (let x = 0; x < penaEmPe.largura; x++) {
+      const dx = x - bx, dy = y - by;
+      const u = dx * dir[0] + dy * dir[1]; // 0 na boca … L na ponta de cima
+      const v = dx * lado[0] + dy * lado[1];
+      if (u < 0 || u > L) continue;
+      let cor = null;
+      if (u < 7) {
+        if (Math.abs(v) < 1.2) cor = v < 0 ? C.branco : C.cinzaClaro; // o cálamo saindo da boca
+      } else {
+        // As barbas: crescem para a ponta (perto da câmera) e se fecham num arredondado.
+        const s = (u - 7) / (L - 7);
+        const perfil = Math.sin(Math.PI * Math.min(1, s * 0.92 + 0.08)) ** 0.5 * (0.55 + 0.45 * s);
+        const largura = (v < 0 ? 9 : 6.5) * perfil + 0.6;
+        const falha = v < 0 && Math.abs(s - 0.42) < 0.03; // uma barba separada
+        if (Math.abs(v) <= largura && !falha) {
+          const barba = Math.abs(v) > 1.3 && ((Math.round(u * 1.1 - Math.abs(v) * 0.8) % 3) + 3) % 3 === 0;
+          const borda = Math.abs(v) > largura - 1.2;
+          if (Math.abs(v) < 0.7) cor = C.cinzaClaro; // a haste
+          else if (v < 0) cor = borda ? C.claro : barba ? C.claro : s > 0.85 ? C.ciano : C.branco;
+          else cor = borda ? C.cinza : barba ? C.cinzaClaro : C.claro;
+        }
+      }
+      if (cor) ponto(penaEmPe, x, y, cor);
     }
   }
+  contornar(penaEmPe);
 }
-gravarPng('public/assets/ui/ornamento-pena-no-tinteiro.png', penaNoTinteiro);
+gravarPng('public/assets/ui/ornamento-pena-em-pe.png', penaEmPe);
 
 // ─── O novelo (mais voltas, uma laçada solta; o fio até a moldura é desenhado pelo código) ───
 // O fio sai do novelo em NOVELO_SAIDA.
