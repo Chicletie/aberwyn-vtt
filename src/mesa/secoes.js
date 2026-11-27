@@ -9,6 +9,7 @@ import { cores } from '../paleta.js';
 import { h, botao, seletor, tituloSecao, rotulo, campoNumero, campoTexto, lista, quadradinhosCondicao, rosto, avisoRapido, encher } from './ui.js';
 import * as J from './janelas.js';
 import { silhuetaDe } from '../arte.js';
+import { ligarCliqueDireito, abrirEditor } from './textos-palco.js';
 
 /** Cor de um combatente na mesa (o mestre vê o vilão em vinho mesmo escondido). */
 function corNaMesa(c) {
@@ -196,6 +197,7 @@ export function desenharCentro(area, ctx) {
     const painel = h('div', { class: 'm-painel-acao' });
     encher(area, cabecalho, hospedeiro, painel);
     centroMontado = { area, cabecalho, painel };
+    ligarCliqueDireito(ctx.palcoPrevia.raiz, ctx);
   }
   const { cabecalho, painel } = centroMontado;
   const e = ctx.estado;
@@ -203,6 +205,7 @@ export function desenharCentro(area, ctx) {
   encher(cabecalho, 
     rotulo('O QUE OS JOGADORES VEEM'),
     h('span', { class: 'm-espaco' }),
+    botao('✎ TEXTOS', () => abrirEditor(ctx), { titulo: 'Corrigir os textos do palco (ou clique direito num texto da prévia)', classe: 'mini' }),
     rotulo('VER COMO'),
     seletor([['jogadores', 'JOGADORES'], ['mestre', 'MESTRE']], ctx.tela.verComo, (v) => {
       ctx.tela.verComo = v;

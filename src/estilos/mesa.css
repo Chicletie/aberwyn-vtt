@@ -766,3 +766,24 @@ select.m-campo option {
   background-repeat: no-repeat;
   image-rendering: pixelated;
 }
+
+/* Menu do clique direito nos textos da prévia do palco. */
+.m-menu-contexto {
+  position: fixed;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 3px;
+  min-width: 90px;
+}
+
+.m-menu-titulo {
+  color: var(--cor-dourado);
+  padding: 1px 2px 3px;
+}
+
+/* As camadas do palco (z-index altos) ficam presas dentro da prévia, sem cobrir menus e janelas. */
+.m-palco-previa {
+  isolation: isolate;
+}
