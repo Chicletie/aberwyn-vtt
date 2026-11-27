@@ -885,3 +885,32 @@
   background-repeat: no-repeat;
   image-rendering: pixelated;
 }
+
+/* ───────────── Cintilas nas pontas da fita e do aviso ───────────── */
+/* Nasce no centro (translate --de), corre até a ponta junto com a faixa, estoura e some. */
+.cintila {
+  z-index: 3;
+  background-repeat: no-repeat;
+  background-size: 25px 5px;
+  animation:
+    cintila-viaja var(--viagem) steps(10) var(--atraso) both,
+    cintila-brilha calc(var(--viagem) + 400ms) steps(1) var(--atraso) both;
+}
+
+@keyframes cintila-viaja {
+  from { translate: var(--de) 0; }
+  to { translate: 0 0; }
+}
+
+/* Quadros: viajando (cruz pequena) → estouro (cruz grande) → cruz pequena → ponto → nada. */
+@keyframes cintila-brilha {
+  0% { background-position: 0 0; }
+  45% { background-position: -5px 0; }
+  65% { background-position: -10px 0; }
+  85% { background-position: -15px 0; }
+  100% { background-position: -20px 0; }
+}
+
+.fita.saindo .cintila {
+  visibility: hidden;
+}

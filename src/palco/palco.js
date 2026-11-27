@@ -76,6 +76,17 @@ const SETA_ESQUERDA = pixelArte(['...k', '..kd', '.kdd', 'kddd', '.kdd', '..kd',
 const SETA_DIREITA = pixelArte(['k...', 'dk..', 'ddk.', 'dddk', 'ddk.', 'dk..', 'k...'], { k: K, d: D });
 const TRIANGULO_BAIXO = pixelArte(['kkkkk', 'kdddk', '.kdk.', '..k..'], { k: K, d: D });
 const TRIANGULO_CIMA = pixelArte(['..k..', '.kdk.', 'kdddk', 'kkkkk'], { k: K, d: D });
+// Cintila (5 quadros de 5×5 lado a lado): cruzinha que viaja, estoura maior, encolhe e some.
+const CINTILA = pixelArte(
+  [
+    '.......o.................',
+    '..o....o....o............',
+    '.oWo.ooWoo.oWo...W.......',
+    '..o....o....o............',
+    '.......o.................',
+  ],
+  { o: '#e8c170', W: '#ebede9' },
+);
 const LOSANGO = pixelArte(['..d..', '.d.d.', 'd...d', '.d.d.', '..d..'], { d: D });
 const TRIANGULO_FALA = pixelArte(['ddddd', '.ddd.', '..d..'], { d: cores.texto });
 
@@ -639,6 +650,8 @@ export function criarPalco(raiz, opcoes = {}) {
     texto.style.width = `${largura - 18 + 1}px`;
     posicionar(fita, 240 - Math.floor(largura / 2), 35, largura, altura);
     posicionar(faixa, 0, 0, largura, altura);
+    // Uma cintila em cada ponta, saindo do centro junto com a faixa que se estica.
+    criarCintilas(fita, 0, Math.floor(altura / 2), largura, 300, atraso);
 
     // Caudas: recortadas da fita de referência (assets/ui/fita.png) e pintadas na cor de quem age.
     const trocas = { '#c7cfcc': cor, '#8b908e': escurecer(cor, 0.25) };
@@ -653,6 +666,26 @@ export function criarPalco(raiz, opcoes = {}) {
       .then((url) => (caudaEsq.style.backgroundImage = `url(${url})`));
     recolorir(`${UI}fita.png`, trocas, { x: 77, y: 8, largura: 19, altura: 19 }, { x: 0, y: 0, largura: 6, altura: 14 })
       .then((url) => (caudaDir.style.backgroundImage = `url(${url})`));
+  }
+
+  /**
+   * Duas cintilas que nascem no centro do trecho (x0 … x0+largura) e correm para as pontas (esquerda e direita)
+   * em "viagem" ms, junto com a faixa/linha que se estica; ao chegar, estouram e somem.
+   */
+  function criarCintilas(pai, x0, yMeio, largura, viagem, atraso) {
+    for (const lado of ['esquerda', 'direita']) {
+      const c = criar('div', 'cintila', pai);
+      const xFinal = lado === 'esquerda' ? -2 : largura - 3;
+      posicionar(c, x0 + xFinal, yMeio - 2, 5, 5);
+      c.style.backgroundImage = 'url(' + CINTILA + ')';
+      c.style.setProperty('--de', (Math.floor(largura / 2) - 2 - xFinal) + 'px');
+      c.style.setProperty('--viagem', viagem + 'ms');
+      c.style.setProperty('--atraso', atraso + 'ms');
+      c.addEventListener('animationend', (e) => {
+        e.stopPropagation(); // não deixa o fim da cintila parecer o fim da animação do pai
+        if (e.animationName === 'cintila-brilha') c.remove();
+      });
+    }
   }
 
   // ───────────── Aviso central ─────────────
@@ -715,7 +748,9 @@ export function criarPalco(raiz, opcoes = {}) {
     // A linha dourada que nasce no centro e se estica antes da caixa abrir.
     const fio = criar('div', 'aviso-fio', camadas.janelas);
     posicionar(fio, x, y + Math.floor(altura / 2), largura, 1);
-    fio.addEventListener('animationend', () => fio.remove());
+    fio.addEventListener('animationend', (e) => e.target === fio && fio.remove());
+    // (as cintilas ficam ao lado do fio, não dentro: o recorte do fio as esconderia)
+    criarCintilas(camadas.janelas, x, y + Math.floor(altura / 2), largura, 150, 0);
   }
 
   function fecharAvisos() {
