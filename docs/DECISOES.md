@@ -254,3 +254,6 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - **Posição manual:** arrastar um inimigo na prévia grava `posicao` (os pés); duplo clique volta à formação automática. Os pés ficam presos dentro do campo.
 - **Bug achado:** as camadas do palco cobrem a tela inteira, e a de transição (a de cima) roubava todos os cliques, inclusive o toque no inimigo para abrir o cartão no palco dos jogadores. Agora só o que está dentro de cada camada recebe clique.
 - A prévia da mesa ganhou `isolation: isolate`: sem isso, as camadas do palco (z-index altos) cobriam o menu do clique direito.
+
+### Publicação: etapas do GitHub atualizadas (27/11)
+- A publicação começou a falhar com "nenhum pacote github-pages encontrado". As etapas `upload-pages-artifact` (v3 → v5) e `deploy-pages` (v4 → v5) foram atualizadas para as versões atuais. Depois disso, o GitHub ainda recusou uma vez ("tente mais tarde", falha do lado dele) e passou na nova tentativa. Se acontecer de novo: **Actions → a execução que falhou → Re-run jobs**.
