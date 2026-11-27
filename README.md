@@ -5,7 +5,7 @@ O mestre controla tudo numa **mesa** no próprio computador; cada jogador abre o
 
 > Projeto em construção. **Palco online:** https://chicletie.github.io/aberwyn-vtt/palco.html (com `?sala=CÓDIGO`, que a mesa gera).
 
-![O palco em combate](docs/prints/palco-combate.png)
+![O palco em combate, sobre a mesa com o mapa celeste](docs/prints/palco-moldura.jpg)
 
 | A mesa do mestre | A cortina (antes da sessão) |
 |---|---|
