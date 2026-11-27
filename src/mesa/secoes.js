@@ -421,7 +421,7 @@ export function desenharDireita(area, ctx) {
       botao('CHÃO', () => J.abrirEditorCenario(ctx), { titulo: 'Ajustar a faixa de chão deste cenário' })),
     h('div', { class: 'm-linha' },
       rotulo('TINTA'),
-      seletor([0, 1, 2, 3, 4, 5].map((n) => [n, String(n)]), e.tinta ?? 1, (n) => alterar((s) => E.definirTinta(s, n))),
+      seletor([0, 1, 2, 3, 4, 5, 6].map((n) => [n, String(n)]), e.tinta ?? 0, (n) => alterar((s) => E.definirTinta(s, n))),
       rotulo('MANCHA EM VOLTA', 'apagado')),
     h('div', { class: 'm-linha' },
       rotulo('TURNO PARADO'),

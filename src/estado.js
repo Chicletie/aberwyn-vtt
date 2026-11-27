@@ -162,7 +162,7 @@ export function criarEstadoVazio() {
     dialogo: null,
     aviso: null,
     fase: 1,
-    tinta: 1, // a tinta derramada em volta do palco (0 a 5): cresce ao longo dos arcos
+    tinta: 0, // a tinta em volta do palco (0 = tinteiro em pé; 1 a 6 = tombado, mancha crescendo ao longo dos arcos)
     fim: null,
     combatentes: [],
     efeitos: [],
@@ -453,9 +453,9 @@ export function definirAlvos(estado, ids) {
   estado.alvos = [...ids];
 }
 
-/** Tinta derramada em volta do palco (0 = quase nada, 5 = mancha enorme). Progressão dos arcos. */
+/** Tinta em volta do palco (0 = tinteiro em pé; 1 = tombou, uma gota; 6 = mancha enorme). Progressão dos arcos. */
 export function definirTinta(estado, nivel) {
-  estado.tinta = Math.max(0, Math.min(5, Math.round(nivel)));
+  estado.tinta = Math.max(0, Math.min(6, Math.round(nivel)));
 }
 
 /** Posição manual de um inimigo no campo (pés em x, y da grade). null = volta à formação automática. */
@@ -680,7 +680,7 @@ const REVELADO_POR_ESTUDO = {
  */
 export function estadoPublico(estado, opcoes = {}) {
   if (estado.modo === 'cortina') {
-    return { versao: estado.versao, modo: 'cortina', tinta: estado.tinta ?? 1, cortina: { ...estado.cortina } };
+    return { versao: estado.versao, modo: 'cortina', tinta: estado.tinta ?? 0, cortina: { ...estado.cortina } };
   }
   const verTudo = !!opcoes.verTudo;
   const escondido = (c) => c.lado !== 'heroi' && !c.revelado && !verTudo;
@@ -756,7 +756,7 @@ export function estadoPublico(estado, opcoes = {}) {
     versao: estado.versao,
     modo: estado.modo,
     fase: estado.fase ?? 1,
-    tinta: estado.tinta ?? 1,
+    tinta: estado.tinta ?? 0,
     cenario: estado.cenario,
     chao: estado.chaos[estado.cenario] ?? null,
     rodada: estado.rodada,

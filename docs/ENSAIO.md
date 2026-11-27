@@ -46,7 +46,7 @@ Marque cada item com `[x]` quando funcionar. Se algo der errado, anote embaixo, 
 - [ ] **Fala** de um personagem (FALA → FALAR): a caixa de diálogo aparece embaixo.
 - [ ] **Fase 2** do vilão (F2): aviso de virada.
 - [ ] Um herói chega a **0 PV**: fica caído (cinza, deitado) e a linha dele diz CAÍDO.
-- [ ] **TINTA** (na mesa, CENA E CENÁRIO): mude de 1 para 4. No celular/segundo computador, a tinta do tinteiro escorre mais e apaga as estrelas por onde passa.
+- [ ] **TINTA** (na mesa, CENA E CENÁRIO): no 0 o tinteiro está em pé com a pena dentro. Mude para 1: ele tomba e sai a primeira gota. Mude para 5: a tinta escorre bem mais e apaga as estrelas por onde passa.
 - [ ] **ENCERRAR COMBATE → Vitória**: animação de fim.
 
 ## 5. Internet caindo (reconexão)

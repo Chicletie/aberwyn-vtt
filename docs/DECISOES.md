@@ -345,3 +345,9 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - O céu passou a trocar o elemento \`canvas\` a cada redesenho (força o navegador a pintar de novo dentro do \`zoom\`). Pode ter sido só um efeito da aba escondida durante o teste, mas a troca não custa nada.
 - Comparação dos níveis 0 a 5: \`docs/prints/tinta-niveis.png\`.
 - \`window.ceu\` fica exposto para depuração no F12: \`ceu.definirTinta(3, { imediato: true })\`.
+
+### Tinta 0: o tinteiro em pé (27/11, pedido do Cadu)
+- Agora a escala vai de **0 a 6**. **No 0 o tinteiro está em pé** (`ornamento-tinteiro-em-pe.png`, visto de cima: tampa de vidro quadrada com a tinta por dentro, gargalo com anel dourado, boca aberta, rótulo e a rolha ao lado), **com a pena mergulhada na boca** e **nenhuma tinta na mesa**.
+- **Do 1 em diante, ele tombou:** o 1 é a primeira gota (o antigo 0), e cada nível seguinte é o antigo nível anterior. O 6 é a mancha maior (o antigo 5).
+- Uma campanha nova começa no 0: a história ainda não começou a se apagar.
+- Trocar entre 0 e 1 troca a imagem e reposiciona o tinteiro e a pena na hora.

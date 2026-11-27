@@ -74,7 +74,8 @@ O app funciona sem arte nenhuma: o que faltar vira o desenho provisório. Quando
 | Moldura em volta do palco (o fio) | `assets/ui/moldura-palco.png` | 34×34: cantos de 12 (o nó), trecho de 10 no meio que se repete (o fio) |
 | Papel do mapa celeste (em volta) | `assets/ui/fundo-palco.png` | ladrilho que se repete (64×64 hoje; qualquer tamanho serve). Anéis, estrelas e tinta são do código. |
 | A pena (esquerda, no meio) | `assets/ui/ornamento-pena.png` | 44×116; o bico fica em (40, 112), dentro da poça |
-| O tinteiro tombado, visto de cima, com a rolha caída (esquerda, no meio) | `assets/ui/ornamento-tinteiro.png` | 64×40; a tinta sai da boca, em (62, 19), virada para o palco |
+| O tinteiro em pé (tinta 0), com a pena mergulhada | `assets/ui/ornamento-tinteiro-em-pe.png` | 46×46; a boca fica em (21, 18) |
+| O tinteiro tombado, visto de cima, com a rolha caída (tinta 1 a 6) | `assets/ui/ornamento-tinteiro.png` | 64×40; a tinta sai da boca, em (62, 19), virada para o palco |
 | O mapa (esquerda, saindo pelo alto) | `assets/ui/ornamento-mapa.png` | 170×124 |
 | Esquadro, compasso e lápis (esquerda, embaixo) | `assets/ui/ornamento-instrumentos.png` | 124×104 |
 | O novelo (direita, no meio) | `assets/ui/ornamento-novelo.png` | 60×56; o fio sai em (14, 40) e o código o desenha até o nó do canto de baixo |

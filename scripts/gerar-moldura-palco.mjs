@@ -8,6 +8,7 @@
 //                                  são desenhados pelo código, em src/palco/ceu.js)
 //   ornamento-pena.png          a pena, com o bico mergulhado na poça de tinta
 //   ornamento-tinteiro.png      o tinteiro tombado, visto de cima, boca para o palco
+//   ornamento-tinteiro-em-pe.png o tinteiro em pé (tinta nível 0), com a pena mergulhada
 //   ornamento-novelo.png        o novelo (o fio até a moldura é desenhado pelo código)
 //   ornamento-mapa.png          um mapa grande, jogado (metade para fora da tela)
 //   ornamento-instrumentos.png  esquadro, compasso e lápis
@@ -293,6 +294,56 @@ export const TINTEIRO_BOCA = [62, 19];
   for (let y = 33; y <= 37; y++) { ponto(tinteiro, 46, y, C.contorno); ponto(tinteiro, 55, y, C.contorno); }
 }
 gravarPng('public/assets/ui/ornamento-tinteiro.png', tinteiro);
+
+// ─── O tinteiro EM PÉ (tinta nível 0: ainda não tombou), visto de cima ───
+// De cima vemos a tampa de vidro quadrada (a tinta escura aparece através do vidro), o gargalo
+// redondo com o anel dourado e a boca aberta (tinta com um brilho), e embaixo uma faixa da face
+// da frente, com o rótulo. A pena fica mergulhada na boca (TINTEIRO_EM_PE_BOCA).
+const emPe = nova(46, 46);
+export const TINTEIRO_EM_PE_BOCA = [21, 18];
+{
+  const [bx, by] = TINTEIRO_EM_PE_BOCA;
+  // Face de cima (o vidro): bordas claras em cima/esquerda, a tinta escura vista por dentro.
+  for (let y = 4; y <= 33; y++) {
+    for (let x = 6; x <= 37; x++) {
+      if ((x < 8 || x > 35) && (y < 6 || y > 31)) continue; // quinas arredondadas
+      let cor = C.azul;
+      if (y <= 5 || x <= 7) cor = C.azulClaro; // borda que pega a luz
+      if (y >= 32 || x >= 36) cor = C.azulMedio;
+      if (x >= 10 && x <= 33 && y >= 8 && y <= 29) cor = x + y > 52 ? C.contorno : C.tinta; // a tinta lá dentro
+      if (x === 9 && y >= 8 && y <= 20) cor = C.ciano; // reflexo comprido no vidro
+      ponto(emPe, x, y, cor);
+    }
+  }
+  // Face da frente (a espessura, vista de cima), com o rótulo e a estrela da Fabula.
+  for (let y = 34; y <= 42; y++) {
+    for (let x = 7; x <= 36; x++) ponto(emPe, x, y, y === 34 ? C.azul : x <= 8 ? C.azulMedio : C.azulEscuro);
+  }
+  for (let y = 35; y <= 41; y++) for (let x = 13; x <= 30; x++) ponto(emPe, x, y, y === 35 ? C.branco : y === 41 ? C.cinzaClaro : C.claro);
+  estrela(emPe, 17, 38, 1, C.ouroEscuro, C.ouro);
+  for (let x = 20; x <= 28; x++) if (x % 3 !== 1) ponto(emPe, x, 38, C.cinza);
+  // Gargalo redondo com o anel dourado, e a boca com a tinta (e um brilho na superfície).
+  for (let dy = -8; dy <= 8; dy++) {
+    for (let dx = -8; dx <= 8; dx++) {
+      const r = Math.hypot(dx, dy);
+      if (r > 7.5) continue;
+      let cor = dx + dy < -2 ? C.ouro : dx + dy > 3 ? C.ouroEscuro : C.laranja; // o anel
+      if (r > 6.6) cor = C.marrom;
+      if (r < 4.6) cor = C.contorno; // a boca, cheia de tinta
+      if (r < 4.6 && dx === -2 && dy === -2) cor = C.azulMedio; // brilho na tinta
+      if (r < 4.6 && dx === -1 && dy === -2) cor = C.azulEscuro;
+      ponto(emPe, bx + dx, by + dy, cor);
+    }
+  }
+  contornar(emPe);
+  // A rolha, deitada ao lado (mesmo cilindrinho do tinteiro tombado).
+  for (let y = 36; y <= 40; y++) {
+    for (let x = 38; x <= 43; x++) ponto(emPe, x, y, y === 36 ? C.ouro : y === 40 ? C.marrom : (x + y) % 3 === 0 ? C.marrom : C.ouroEscuro);
+  }
+  for (let x = 37; x <= 44; x++) { ponto(emPe, x, 35, C.contorno); ponto(emPe, x, 41, C.contorno); }
+  for (let y = 36; y <= 40; y++) { ponto(emPe, 37, y, C.contorno); ponto(emPe, 44, y, C.contorno); }
+}
+gravarPng('public/assets/ui/ornamento-tinteiro-em-pe.png', emPe);
 
 // ─── O novelo (mais voltas, uma laçada solta; o fio até a moldura é desenhado pelo código) ───
 // O fio sai do novelo em NOVELO_SAIDA.

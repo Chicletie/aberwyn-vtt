@@ -13,7 +13,9 @@ const BRANCO = '#ebede9';
 const TINTA = '#090a14';
 
 // Raio da mancha em cada nível de tinta (em pixels da grade).
-const RAIOS = [11, 22, 44, 74, 114, 168];
+// Nível 0: o tinteiro ainda está em pé, sem tinta derramada. Do 1 em diante, ele tombou.
+const RAIOS = [0, 11, 22, 44, 74, 114, 168];
+const NIVEL_MAX = RAIOS.length - 1;
 
 // Estrela que pisca (5 quadros de 5×5): apagada → pequena → grande → pequena → apagada.
 const PISCA = pixelArte(
@@ -158,7 +160,7 @@ export function criarCeu(fundo) {
     const sorte = sorteador(largura * 7919 + altura);
     const fora = (x, y, folga = 3) =>
       proibidas.some((r) => x > r.x - folga && x < r.x + r.w + folga && y > r.y - folga && y < r.y + r.h + folga);
-    const raio = nivel <= 0 ? 0 : RAIOS[Math.floor(nivel)] + (RAIOS[Math.min(5, Math.ceil(nivel))] - RAIOS[Math.floor(nivel)]) * (nivel % 1);
+    const raio = nivel <= 0 ? 0 : RAIOS[Math.floor(nivel)] + (RAIOS[Math.min(NIVEL_MAX, Math.ceil(nivel))] - RAIOS[Math.floor(nivel)]) * (nivel % 1);
     const molhado = mancha(fonte, raio);
     const px = (x, y, cor) => {
       if (molhado(x, y)) return;
@@ -302,11 +304,11 @@ export function criarCeu(fundo) {
   }
 
   /**
-   * Nível de tinta (0 a 5). Mudou? A mancha cresce (ou encolhe) aos poucos, ~1 s.
+   * Nível de tinta (0 a 6). Mudou? A mancha cresce (ou encolhe) aos poucos, ~1 s.
    * imediato = sem animação (ao abrir o palco: a mancha já está lá, não "cresce" do nada).
    */
   function definirTinta(novo, { imediato = false } = {}) {
-    novo = Math.max(0, Math.min(5, Math.round(Number(novo) || 0)));
+    novo = Math.max(0, Math.min(NIVEL_MAX, Math.round(Number(novo) || 0)));
     if (novo === alvo && !imediato) return;
     alvo = novo;
     clearInterval(animando);

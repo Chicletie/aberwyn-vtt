@@ -25,6 +25,7 @@ const fundo = document.getElementById('fundo-palco');
 fundo.style.backgroundImage = 'url(./assets/ui/fundo-palco.png)';
 const ceu = criarCeu(fundo);
 let tintaJaMostrada = false;
+let tintaAtual = 0; // 0 = tinteiro em pé; muda a imagem e o lugar do tinteiro e da pena
 window.ceu = ceu; // depuração (F12): ceu.definirTinta(3, { imediato: true })
 
 // ───────────── Objetos da mesa, espalhados em volta do palco ─────────────
@@ -112,6 +113,21 @@ function ajustarEscala() {
     pos[nome] = o.onde(px, py, folga);
     objetosMesa[nome].style.left = `${pos[nome].x}px`;
     objetosMesa[nome].style.top = `${pos[nome].y}px`;
+  }
+  // Tinta 0: o tinteiro ainda está EM PÉ, com a pena mergulhada na boca (outra imagem, outro lugar).
+  const emPe = tintaAtual === 0;
+  const tinteiro = objetosMesa.tinteiro;
+  tinteiro.style.backgroundImage = `url(./assets/ui/ornamento-tinteiro${emPe ? '-em-pe' : ''}.png)`;
+  tinteiro.style.width = `${emPe ? 46 : OBJETOS_DA_MESA.tinteiro.largura}px`;
+  tinteiro.style.height = `${emPe ? 46 : OBJETOS_DA_MESA.tinteiro.altura}px`;
+  if (emPe) {
+    const x = px - 78 - folga * 0.3;
+    const y = py + 112;
+    tinteiro.style.left = `${x}px`;
+    tinteiro.style.top = `${y}px`;
+    // A boca do tinteiro em pé fica em (21, 18) da imagem; o bico da pena, em (40, 112).
+    objetosMesa.pena.style.left = `${x + 21 - 40}px`;
+    objetosMesa.pena.style.top = `${y + 18 - 112}px`;
   }
   ceu.atualizar(L, A, { x: px + 240, y: py + 135 }, [{ x: px - 12, y: py - 12, w: 504, h: 294 }], {
     // A tinta sai da boca do tinteiro e escorre para dentro, por baixo do palco.
@@ -241,7 +257,14 @@ canal.aoReceberEstado(async (estado) => {
   mostrarCaixaSala(false);
   window.ultimoEstado = estado;
   // Na primeira vez a tinta já aparece no tamanho certo; depois, as mudanças do mestre animam.
-  ceu.definirTinta(estado.tinta ?? 1, { imediato: !tintaJaMostrada });
+  const tinta = estado.tinta ?? 0;
+  // Passou de "em pé" para "tombado" (ou o contrário): troca o tinteiro e reposiciona a pena.
+  if ((tinta === 0) !== (tintaAtual === 0)) {
+    tintaAtual = tinta;
+    ajustarEscala();
+  }
+  tintaAtual = tinta;
+  ceu.definirTinta(tinta, { imediato: !tintaJaMostrada });
   tintaJaMostrada = true;
   p.renderizar(estado);
 });
