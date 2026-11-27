@@ -6,8 +6,13 @@
 //                                  um trecho de 10 que se repete (o fio dourado trançado)
 //   fundo-palco.png         64×64  ladrilho: o papel do mapa (os anéis, as estrelas e a tinta
 //                                  são desenhados pelo código, em src/palco/ceu.js)
-//   ornamento-pena.png      30×100 a pena caída, apoiada, com o bico perto da tinta
-//   ornamento-tinteiro.png  36×26  o tinteiro tombado, com a boca virada para a direita
+//   ornamento-pena.png          a pena, com o bico mergulhado na poça de tinta
+//   ornamento-tinteiro.png      o tinteiro tombado, visto de cima, boca para o palco
+//   ornamento-novelo.png        o novelo (o fio até a moldura é desenhado pelo código)
+//   ornamento-mapa.png          um mapa grande, jogado (metade para fora da tela)
+//   ornamento-instrumentos.png  esquadro, compasso e lápis
+//   ornamento-baralho.png       o objeto do Wesley
+//   ornamento-pincel.png        o objeto da Nue (tinta vermelho-sangue)
 //
 // Rodar:  node scripts/gerar-moldura-palco.mjs
 // Depois de redesenhar algum PNG à mão, NÃO rode de novo (sobrescreveria o seu desenho).
@@ -231,55 +236,57 @@ export const PENA_BICO = [40, 112];
   }
   contornar(pena);
 }
-// Virada para a esquerda: o bico fica embaixo à esquerda, mergulhado na poça (o tinteiro
-// também é virado: a tinta escorre para a beirada da tela, onde dá para ver).
-espelhar(pena);
 gravarPng('public/assets/ui/ornamento-pena.png', pena);
 
-// ─── O tinteiro tombado: vidro QUADRADO deitado, visto de cima e de frente ───
-// Sem sombra: a tinta derramada embaixo dele é que faz o papel de sombra.
-// Boca para a direita, em TINTEIRO_BOCA (é de lá que a tinta sai).
-const tinteiro = nova(66, 50);
-export const TINTEIRO_BOCA = [63, 26];
+// ─── O tinteiro tombado, VISTO DE CIMA (como tudo na mesa) ───
+// Vidro quadrado deitado: de cima vemos a face de cima (com o rótulo) e, embaixo, uma
+// faixinha da lateral (a espessura). A tinta que ficou dentro escurece o vidro do lado de
+// baixo. Gargalo e boca para a DIREITA: virado para dentro, para o palco; a tinta sai por ali.
+// Sem sombra: a poça de tinta é a sombra.
+const tinteiro = nova(64, 40);
+export const TINTEIRO_BOCA = [62, 19];
 {
-  // Caixa: face da frente (com o rótulo), face de cima (pega a luz) e a face do gargalo.
-  const frente = [[3, 20], [40, 20], [40, 46], [3, 46]];
-  const cima = [[3, 20], [11, 9], [48, 9], [40, 20]];
-  const lado = [[40, 20], [48, 9], [48, 35], [40, 46]];
-  poligono(tinteiro, frente, (x, y) => {
-    if (y >= 38) return C.contorno; // a tinta que ficou dentro, deitada no fundo
-    if (y === 37) return C.azulMedio; // a superfície da tinta lá dentro
-    if (x === 6 || x === 7) return y < 30 ? C.ciano : C.azulClaro; // reflexo do vidro
-    return y < 24 ? C.azul : C.azulMedio;
-  });
-  poligono(tinteiro, cima, (x, y) => (y <= 10 ? C.ciano : x + (y - 9) * 0.7 < 18 ? C.ciano : C.azulClaro));
-  poligono(tinteiro, lado, (x, y) => (y > 32 - (x - 40) * 0.4 ? C.contorno : C.azulEscuro));
-  // Arestas claras do vidro.
-  for (let x = 4; x <= 40; x++) ponto(tinteiro, x, 20, C.branco);
-  for (let i = 0; i <= 8; i++) ponto(tinteiro, 40 + i, 20 - Math.round(i * 1.375), C.claro);
-  // O rótulo de papel na frente: estrela da Fabula e duas linhas escritas.
-  for (let y = 24; y <= 34; y++) for (let x = 14; x <= 32; x++) ponto(tinteiro, x, y, y === 24 ? C.branco : y === 34 ? C.cinzaClaro : C.claro);
-  estrela(tinteiro, 19, 28, 2, C.ouroEscuro, C.ouro);
-  for (let x = 23; x <= 30; x++) {
-    if (x % 3 !== 2) ponto(tinteiro, x, 27, C.cinza);
-    if (x % 4 !== 1 && x < 29) ponto(tinteiro, x, 30, C.cinza);
+  // Corpo: face de cima (y 4..28) e a lateral vista de cima (y 29..33), com quinas arredondadas.
+  for (let y = 4; y <= 33; y++) {
+    for (let x = 2; x <= 41; x++) {
+      const quina = (x < 4 || x > 39) && (y < 6 || y > 31);
+      if (quina) continue;
+      let cor;
+      if (y >= 29) cor = y === 29 ? C.azul : C.azulEscuro; // a lateral (espessura do vidro)
+      else if (y >= 22) cor = C.contorno; // a tinta deitada no lado de baixo, vista pelo vidro
+      else if (y === 21) cor = C.azulMedio; // a superfície da tinta lá dentro
+      else cor = y <= 6 ? C.azulClaro : C.azul; // o vidro, mais claro na borda de cima
+      if (y >= 5 && y <= 26 && (x === 5 || x === 6)) cor = y < 20 ? C.ciano : C.azulMedio; // reflexo comprido
+      if (x === 38 && y >= 7 && y <= 13) cor = C.azulClaro; // reflexo do outro lado
+      ponto(tinteiro, x, y, cor);
+    }
   }
-  // Gargalo (sai do meio da face do lado) com anel dourado, e a boca aberta.
-  for (let x = 48; x <= 62; x++) {
-    for (let y = 20; y <= 32; y++) {
-      const meia = x <= 52 ? 6 : 5;
-      if (Math.abs(y - 26) > meia) continue;
-      let cor = y < 23 ? C.azulClaro : y > 29 ? C.azulEscuro : C.azulMedio;
-      if (x >= 53 && x <= 56) cor = y < 23 ? C.branco : y > 29 ? C.ouroEscuro : C.ouro; // anel dourado
-      if (x >= 60) cor = Math.abs(y - 26) < 3.5 ? C.contorno : C.ouroEscuro; // a boca, escura de tinta
+  // Arestas: a de cima pega a luz.
+  for (let x = 4; x <= 39; x++) ponto(tinteiro, x, 4, C.branco);
+  // Rótulo de papel na face de cima: estrela da Fabula e duas linhas escritas.
+  for (let y = 8; y <= 18; y++) for (let x = 12; x <= 31; x++) ponto(tinteiro, x, y, y === 8 ? C.branco : y === 18 ? C.cinzaClaro : C.claro);
+  estrela(tinteiro, 17, 13, 2, C.ouroEscuro, C.ouro);
+  for (let x = 21; x <= 29; x++) {
+    if (x % 3 !== 2) ponto(tinteiro, x, 11, C.cinza);
+    if (x % 4 !== 1 && x < 28) ponto(tinteiro, x, 15, C.cinza);
+  }
+  // Ombro, gargalo com anel dourado e a boca (a abertura vista de lado: uma fenda escura).
+  for (let x = 42; x <= 62; x++) {
+    for (let y = 8; y <= 31; y++) {
+      const meia = x <= 44 ? 10 - (x - 42) * 2 : x <= 55 ? 5 : 6;
+      const centro = 19;
+      if (Math.abs(y - centro) > meia) continue;
+      let cor = y < centro - 2 ? C.azulClaro : y > centro + 2 ? C.contorno : C.azulMedio;
+      if (x >= 48 && x <= 52) cor = y < centro - 2 ? C.branco : y > centro + 2 ? C.ouroEscuro : C.ouro; // anel dourado
+      if (x >= 56) cor = y < centro - 3 ? C.ouro : y > centro + 3 ? C.ouroEscuro : x >= 59 ? C.contorno : C.laranja; // borda da boca
       ponto(tinteiro, x, y, cor);
     }
   }
   contornar(tinteiro);
-  // A rolha que pulou, caída em cima (perto do canto).
-  for (const [x, y, cor] of [[54, 4, C.ouro], [55, 4, C.ouroEscuro], [56, 4, C.ouroEscuro], [53, 5, C.ouro], [54, 5, C.ouroEscuro], [55, 5, C.ouroEscuro], [56, 5, C.marrom], [54, 6, C.marrom], [55, 6, C.marrom], [56, 6, C.marrom]]) ponto(tinteiro, x, y, cor);
+  // A rolha que pulou, caída perto (vista de cima: um disco de cortiça).
+  for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) if (dx * dx + dy * dy <= 5) ponto(tinteiro, 54 + dx, 35 + dy, dx + dy < 0 ? C.ouro : C.ouroEscuro);
+  ponto(tinteiro, 54, 35, C.marrom);
 }
-espelhar(tinteiro); // boca para a ESQUERDA (para a beirada da tela), em (2, 26)
 gravarPng('public/assets/ui/ornamento-tinteiro.png', tinteiro);
 
 // ─── O novelo (mais voltas, uma laçada solta; o fio até a moldura é desenhado pelo código) ───
@@ -422,5 +429,85 @@ const instrumentos = nova(120, 100);
 }
 gravarPng('public/assets/ui/ornamento-instrumentos.png', instrumentos);
 
-console.log('Geradas em public/assets/ui/: moldura, fundo, pena, tinteiro, novelo, mapa, instrumentos');
-console.log('Pontos de encaixe (depois de virar a pena e o tinteiro): bico da pena (3, 112), boca do tinteiro (2, 26), saída do novelo', JSON.stringify(NOVELO_SAIDA));
+// ═══════════ Objetos dos personagens (um por PJ; os que faltam chegam depois da sessão 0) ═══════════
+
+// ─── Wesley: um baralho (o monte, umas cartas espalhadas e uma virada para cima) ───
+const baralho = nova(78, 60);
+{
+  const carta = (cx, cy, angulo, virada) =>
+    girado(baralho, cx, cy, angulo, (u, v) => {
+      if (Math.abs(u) > 9 || Math.abs(v) > 13) return null;
+      const quina = Math.abs(u) > 7.5 && Math.abs(v) > 11.5;
+      if (quina) return null;
+      const borda = Math.abs(u) > 8 || Math.abs(v) > 12;
+      if (!virada) {
+        // Verso: azul com moldura dourada e um losango no meio.
+        if (borda) return C.claro;
+        if (Math.abs(u) > 6.5 || Math.abs(v) > 10.5) return C.ouroEscuro;
+        if (Math.abs(u) + Math.abs(v) * 0.7 < 4) return C.ouro;
+        return (Math.round(u) + Math.round(v)) % 3 === 0 ? C.azulMedio : C.azulEscuro;
+      }
+      // Frente: papel claro, uma estrela vermelha grande no meio e os cantinhos marcados.
+      if (borda) return C.cinzaClaro;
+      const estrelaGrande = (Math.abs(u) < 0.8 && Math.abs(v) < 5) || (Math.abs(v) < 0.8 && Math.abs(u) < 4) || Math.abs(u) + Math.abs(v) < 2.2;
+      if (estrelaGrande) return '#a53030';
+      if ((Math.abs(u + 5.5) < 0.8 && Math.abs(v + 9) < 1.5) || (Math.abs(u - 5.5) < 0.8 && Math.abs(v - 9) < 1.5)) return '#a53030';
+      return C.branco;
+    });
+  // O monte (algumas cartas empilhadas, a de cima um pouco torta).
+  for (let i = 0; i < 4; i++) carta(22 + i * 0.4, 30 - i, -6 + i, false);
+  // Cartas espalhadas e uma virada.
+  carta(44, 34, 22, false);
+  carta(58, 26, 38, true);
+  contornar(baralho);
+  sombra(baralho, 40, 38, 34, 18);
+}
+gravarPng('public/assets/ui/ornamento-baralho.png', baralho);
+
+// ─── Nue: um pincel molhado de tinta vermelho-sangue, e o rastro que ele deixou na mesa ───
+const SANGUE = '#a53030';
+const SANGUE_ESCURO = '#752438';
+const pincel = nova(96, 56);
+{
+  // A pincelada vermelha na mesa (larga no começo, falhando no fim, com respingos).
+  // Ela termina onde a ponta do pincel saiu do papel (28, 40).
+  for (let x = 2; x <= 27; x++) {
+    const t = (x - 2) / 25;
+    const meio = 47 - t * 7 + Math.sin(t * 5) * 1.5;
+    const meia = 3.6 * (1 - t * 0.55);
+    for (let y = Math.floor(meio - meia); y <= Math.ceil(meio + meia); y++) {
+      if (t < 0.25 && (x * 7 + y * 3) % 4 === 0) continue; // o começo, com pouca tinta: falhado
+      const cor = y < meio - meia + 1 ? '#cf573c' : y > meio + meia - 1 ? SANGUE_ESCURO : SANGUE;
+      ponto(pincel, x, y, cor);
+    }
+  }
+  for (const [x, y] of [[6, 38], [14, 53], [22, 34], [33, 47], [3, 52]]) {
+    ponto(pincel, x, y, SANGUE);
+    ponto(pincel, x + 1, y, SANGUE_ESCURO);
+  }
+  // O pincel deitado na diagonal: cabo escuro e comprido, virola de metal, cerdas vermelhas.
+  girado(pincel, 58, 26, -28, (u, v) => {
+    if (u < -34 || u > 36) return null;
+    if (u < -10) {
+      // Cerdas: largas perto da virola, afinando até a ponta; molhadas de vermelho.
+      const meia = u < -26 ? 3.4 * ((u + 34) / 8) + 0.6 : 4 - (u + 26) * 0.03;
+      if (Math.abs(v) > meia) return null;
+      if (u > -14) return v < 0 ? C.marrom : C.contorno; // a raiz das cerdas, seca
+      return v < -1 ? '#cf573c' : v > 1.5 ? SANGUE_ESCURO : SANGUE;
+    }
+    if (u < -2) {
+      if (Math.abs(v) > 4.2) return null;
+      return v < -1.5 ? C.branco : v > 1.5 ? C.cinza : C.claro; // virola de metal
+    }
+    // Cabo laqueado, afinando para a ponta, com um anel dourado.
+    const meia = 3.2 - (u + 2) * 0.04;
+    if (Math.abs(v) > meia) return null;
+    if (u > 4 && u < 7) return v < 0 ? C.ouro : C.ouroEscuro;
+    return v < -1 ? C.marrom : v > 1 ? C.contorno : '#4d2b32';
+  });
+  contornar(pincel);
+}
+gravarPng('public/assets/ui/ornamento-pincel.png', pincel);
+
+console.log('Geradas em public/assets/ui/: moldura, fundo, pena, tinteiro, novelo, mapa, instrumentos, baralho, pincel');
+console.log('Encaixes: bico da pena', JSON.stringify(PENA_BICO), '· boca do tinteiro', JSON.stringify(TINTEIRO_BOCA), '· saída do novelo', JSON.stringify(NOVELO_SAIDA));

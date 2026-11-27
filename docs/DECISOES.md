@@ -297,3 +297,14 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - **O fio do novelo é desenhado pelo código** (`desenharFio` em `ceu.js`): uma curva com barriga e uma ondulação leve, do novelo até o nó do canto de cima à direita da moldura. Ele se adapta a qualquer tamanho de tela.
 - **Tinteiro virado** para a beirada da tela: a poça escorre para onde dá para ver (e um pouco para fora da tela), e a **pena fica com o bico dentro da poça**. A poça mínima (tinta 0) já é grande o bastante para cobrir o bico.
 - Os PNGs da pena e do tinteiro são desenhados com a luz do alto à esquerda e **espelhados** no fim do script (`espelhar`); os pontos de encaixe já estão espelhados nos comentários.
+
+### Moldura do palco, versão 7: mesa espalhada e os objetos dos personagens
+- Retorno do Cadu: a perspectiva do tinteiro estava errada (**a mesa é vista de cima**); levar tudo para os cantos **não** era a resposta: é para **espalhar, com pouca simetria, como uma mesa de verdade**; e **a tinta escorre para dentro**, então o tinteiro fica **virado para o palco**.
+- **Tinteiro visto de cima** (64×40): a face de cima com o rótulo, uma faixinha da lateral embaixo (a espessura), a tinta lá dentro escurecendo o lado de baixo do vidro, gargalo e boca para a direita (para o palco). A rolha caída virou um disco de cortiça. Sem sombra.
+- **Layout espalhado** (`OBJETOS_DA_MESA` em `src/palco/main.js`): as posições contam a partir do canto do palco, em alturas diferentes, uns debaixo da moldura e outros saindo da tela. Em telas largas, os objetos se afastam um pouco do palco (a "folga"), para ocupar a mesa toda.
+  - **Esquerda:** mapa saindo pelo alto, pena e tinteiro no meio (a tinta escorre para dentro, por baixo do palco) e instrumentos embaixo.
+  - **Direita:** pincel saindo pelo alto, novelo no meio (o fio desce solto até o nó do canto de baixo) e baralho embaixo.
+- **Um objeto por personagem (PJ)** (decisão do Cadu):
+  - **Wesley:** um baralho, com o monte, cartas espalhadas e uma virada (estrela vermelha).
+  - **Nue:** um pincel molhado de tinta **vermelho-sangue**, com a pincelada que ele deixou. Reforça a ideia de que quem está nessa mesa "produz" o mapa do centro.
+  - **Joshua, Drake e Hilda:** a definir depois da sessão 0. O lado direito tem menos objetos e espera por eles.

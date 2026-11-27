@@ -25,18 +25,26 @@ const fundo = document.getElementById('fundo-palco');
 fundo.style.backgroundImage = 'url(./assets/ui/fundo-palco.png)';
 const ceu = criarCeu(fundo);
 
-// ───────────── Objetos da mesa, presos aos cantos da tela ─────────────
-// Cada um: tamanho da imagem e onde fica, a partir da largura (L) e altura (A) da tela em
-// pixels da grade. Ficam por baixo da moldura e do palco; podem sair da tela de propósito.
-// Pontos de encaixe (de scripts/gerar-moldura-palco.mjs): boca do tinteiro (2, 26), virada
-// para a beirada da tela; bico da pena (3, 112); saída do fio do novelo (14, 40).
+// ───────────── Objetos da mesa, espalhados em volta do palco ─────────────
+// Uma mesa de verdade: cada objeto num lugar diferente, em alturas diferentes, pouca simetria;
+// uns metidos debaixo da moldura, outros saindo da tela. As posições contam a partir do canto
+// do palco (px, py) e, em telas largas, os objetos se afastam um pouco ("folga"), para ocupar
+// a mesa inteira em vez de se amontoar perto da moldura.
+// Pontos de encaixe (de scripts/gerar-moldura-palco.mjs): boca do tinteiro (62, 19), virada
+// para DENTRO (para o palco); bico da pena (40, 112); saída do fio do novelo (14, 40).
+// Objetos dos personagens (um por PJ): baralho = Wesley, pincel = Nue. Joshua, Drake e Hilda:
+// depois da sessão 0 (o lugar deles já está pensado: o lado direito tem menos objetos).
+const BOCA_TINTEIRO = { x: -22, y: 140 }; // onde fica a boca do tinteiro, a partir do palco
 const OBJETOS_DA_MESA = {
-  mapa: { largura: 170, altura: 124, onde: () => ({ x: -50, y: -36 }) }, // canto de cima à esquerda
-  novelo: { largura: 60, altura: 56, onde: (L) => ({ x: L - 62, y: -2 }) }, // canto de cima à direita
-  instrumentos: { largura: 120, altura: 100, onde: (L, A) => ({ x: L - 116, y: A - 90 }) }, // baixo, direita
-  tinteiro: { largura: 66, altura: 50, onde: (L, A) => ({ x: 6, y: A - 52 }) }, // baixo, esquerda
-  // A pena com o bico mergulhado na poça, logo abaixo da boca do tinteiro.
-  pena: { largura: 44, altura: 116, onde: (L, A) => ({ x: 6 + 2 + 2 - 3, y: A - 52 + 26 + 7 - 112 }) },
+  // Esquerda: o mapa saindo pelo alto, a pena e o tinteiro no meio, os instrumentos embaixo.
+  mapa: { largura: 170, altura: 124, onde: (px, py, f) => ({ x: px - 170 - f, y: py - 90 }) },
+  tinteiro: { largura: 64, altura: 40, onde: (px, py, f) => ({ x: px + BOCA_TINTEIRO.x - 62 - f * 0.3, y: py + BOCA_TINTEIRO.y - 19 }) },
+  pena: { largura: 44, altura: 116, onde: (px, py, f) => ({ x: px + BOCA_TINTEIRO.x + 6 - 40 - f * 0.3, y: py + BOCA_TINTEIRO.y + 8 - 112 }) },
+  instrumentos: { largura: 120, altura: 100, onde: (px, py, f) => ({ x: px - 104 - f * 0.7, y: py + 206 }) },
+  // Direita: o pincel da Nue saindo pelo alto, o novelo no meio, o baralho do Wesley embaixo.
+  pincel: { largura: 96, altura: 56, onde: (px, py, f) => ({ x: px + 476 + f, y: py - 34 }) },
+  novelo: { largura: 60, altura: 56, onde: (px, py, f) => ({ x: px + 494 + f * 0.5, y: py + 82 }) },
+  baralho: { largura: 78, altura: 60, onde: (px, py, f) => ({ x: px + 484 + f * 0.8, y: py + 214 }) },
 };
 const objetosMesa = {};
 for (const [nome, o] of Object.entries(OBJETOS_DA_MESA)) {
@@ -91,16 +99,18 @@ function ajustarEscala() {
   const A = Math.ceil(window.innerHeight / escalaCss);
   const px = Math.round(esquerda / escalaCss);
   const py = Math.round(topo / escalaCss);
+  const folga = Math.max(0, px - 70) * 0.5; // sobra de mesa em telas largas
   const pos = {};
   for (const [nome, o] of Object.entries(OBJETOS_DA_MESA)) {
-    pos[nome] = o.onde(L, A);
+    pos[nome] = o.onde(px, py, folga);
     objetosMesa[nome].style.left = `${pos[nome].x}px`;
     objetosMesa[nome].style.top = `${pos[nome].y}px`;
   }
   ceu.atualizar(L, A, { x: px + 240, y: py + 135 }, [{ x: px - 12, y: py - 12, w: 504, h: 294 }], {
-    tinta: { x: pos.tinteiro.x + 1, y: pos.tinteiro.y + 27 },
-    // O fio sai do novelo, cai numa barriga pela lateral e sobe até o nó do canto de cima à direita.
-    fio: { de: { x: pos.novelo.x + 14, y: pos.novelo.y + 40 }, para: { x: px + 486, y: py - 6 } },
+    // A tinta sai da boca do tinteiro e escorre para dentro, por baixo do palco.
+    tinta: { x: pos.tinteiro.x + 63, y: pos.tinteiro.y + 20 },
+    // O fio sai do novelo, desce solto pela lateral e entra no nó do canto de baixo à direita.
+    fio: { de: { x: pos.novelo.x + 14, y: pos.novelo.y + 40 }, para: { x: px + 486, y: py + 276 } },
   });
   // Botão com pelo menos ~34 px de tela (bom para o dedo), ampliado por número inteiro de pixels reais.
   botaoTelaCheia.style.zoom = Math.ceil((34 * dpr) / 17) / dpr;

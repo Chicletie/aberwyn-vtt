@@ -33,9 +33,8 @@ const PISCA = pixelArte(
  * de vez em quando, como as voltas do fio trançado da moldura.
  */
 function desenharFio(g, de, para) {
-  // Barriga para baixo: o fio "pendura" entre o novelo e o nó.
-  const c1 = { x: de.x + 26, y: de.y + 62 };
-  const c2 = { x: para.x - 8, y: para.y + 74 };
+  const c1 = { x: de.x - 14, y: de.y + 46 };
+  const c2 = { x: para.x + 34, y: para.y - 40 };
   let anterior = null;
   for (let t = 0; t <= 1; t += 0.002) {
     const m = 1 - t;
@@ -83,9 +82,9 @@ export function criarCeu(fundo) {
       if (raio <= 0) return false;
       const dx = x - fonte.x;
       const dy = y - fonte.y;
-      // Escorre mais para baixo do que para cima, e um pouco mais para a esquerda (para onde
-      // a boca do tinteiro aponta: a beirada da tela).
-      const ex = dx < 0 ? dx * 0.85 : dx * 1.15;
+      // Escorre mais para baixo do que para cima, e mais para a direita: para onde a boca do
+      // tinteiro aponta (para dentro, por baixo do palco).
+      const ex = dx > 0 ? dx * 0.75 : dx * 1.3;
       const ey = dy > 0 ? dy * 0.7 : dy * 1.6;
       const angulo = Math.atan2(ey, ex);
       let r = raio;
