@@ -77,21 +77,49 @@ body {
   image-rendering: pixelated;
 }
 
-/* A pena caída, apoiada na diagonal, com o bico (25, 96 na imagem) logo acima do tinteiro. */
+/* Coordenadas na grade do palco (0,0 = canto do palco; a moldura vai de -12 a 492 × -12 a 282).
+   Os objetos ficam por BAIXO da moldura: o que encosta nela parece metido debaixo do fio. */
+
+/* Folha de mapa jogada, metida debaixo do canto de cima à esquerda. */
+#ornamento-folha {
+  left: -62px;
+  top: -14px;
+  width: 60px;
+  height: 48px;
+}
+
+/* A pena caída, na diagonal, com o bico (25, 96 na imagem) logo acima do tinteiro. */
 #ornamento-pena {
-  left: -48px;
-  top: 96px;
+  left: -50px;
+  top: 86px;
   width: 30px;
   height: 100px;
 }
 
-/* O tinteiro tombado, à esquerda embaixo, com a boca (31, 14 na imagem) virada para o palco:
+/* O tinteiro tombado, embaixo à esquerda, com a boca (50, 28 na imagem) virada para o palco:
    a tinta sai por ali e escorre pelo mapa (desenhada pelo ceu.js, por baixo de tudo). */
 #ornamento-tinteiro {
-  left: -50px;
-  top: 200px;
-  width: 36px;
-  height: 26px;
+  left: -66px;
+  top: 196px;
+  width: 60px;
+  height: 46px;
+}
+
+/* O compasso de navegação, em cima à direita. */
+#ornamento-compasso {
+  left: 500px;
+  top: 8px;
+  width: 30px;
+  height: 40px;
+}
+
+/* O novelo, embaixo à direita: o fio sai dele e entra no nó do canto da moldura
+   (a ponta do fio, em (2, 52) na imagem, fica bem embaixo do nó, em (486, 276)). */
+#ornamento-novelo {
+  left: 484px;
+  top: 224px;
+  width: 62px;
+  height: 60px;
 }
 
 /* Moldura ornamentada: 12 px por fora da grade de 480×270, na mesma escala, atrás do palco.

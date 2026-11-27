@@ -26,7 +26,9 @@ fundo.style.backgroundImage = 'url(./assets/ui/fundo-palco.png)';
 const ceu = criarCeu(fundo);
 const enfeites = document.getElementById('enfeites');
 document.getElementById('ornamento-pena').style.backgroundImage = 'url(./assets/ui/ornamento-pena.png)';
-document.getElementById('ornamento-tinteiro').style.backgroundImage = 'url(./assets/ui/ornamento-tinteiro.png)';
+for (const nome of ['tinteiro', 'folha', 'compasso', 'novelo']) {
+  document.getElementById(`ornamento-${nome}`).style.backgroundImage = `url(./assets/ui/ornamento-${nome}.png)`;
+}
 const botaoTelaCheia = document.getElementById('tela-cheia');
 const debug = document.getElementById('debug');
 
@@ -65,20 +67,16 @@ function ajustarEscala() {
   fundo.style.height = `${Math.ceil(window.innerHeight / escalaCss)}px`;
   fundo.style.backgroundPosition = `${esquerda / escalaCss + 224}px ${topo / escalaCss + 119}px`;
   enfeites.style.zoom = escalaCss;
-  // Mapa celeste: centrado no palco; estrelas fora do palco, da moldura, da pena e do tinteiro;
-  // a tinta sai da boca do tinteiro (31, 14 na imagem, que está em -50, 200 da grade do palco).
+  // Mapa celeste: centrado no palco; estrelas fora do palco e da moldura; a tinta sai da boca
+  // do tinteiro (50, 28 na imagem, que está em -66, 196 da grade do palco).
   const px = Math.round(esquerda / escalaCss);
   const py = Math.round(topo / escalaCss);
   ceu.atualizar(
     Math.ceil(window.innerWidth / escalaCss),
     Math.ceil(window.innerHeight / escalaCss),
     { x: px + 240, y: py + 135 },
-    [
-      { x: px - 12, y: py - 12, w: 504, h: 294 },
-      { x: px - 48, y: py + 96, w: 30, h: 100 },
-      { x: px - 50, y: py + 200, w: 36, h: 26 },
-    ],
-    { x: px - 50 + 32, y: py + 200 + 15 },
+    [{ x: px - 12, y: py - 12, w: 504, h: 294 }],
+    { x: px - 66 + 51, y: py + 196 + 30 },
   );
   // Botão com pelo menos ~34 px de tela (bom para o dedo), ampliado por número inteiro de pixels reais.
   botaoTelaCheia.style.zoom = Math.ceil((34 * dpr) / 17) / dpr;

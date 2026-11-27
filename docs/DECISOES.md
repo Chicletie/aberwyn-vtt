@@ -282,3 +282,11 @@ Cada decisão com o motivo, em linguagem simples. Atualizado a cada marco.
 - **A tinta:** sai da boca do tinteiro e escorre (mais para baixo que para cima, com "dedos" escorrendo), por baixo da moldura e do palco. **Onde ela passa, as estrelas viram um vulto apagado**, os fios e os anéis somem, e nenhuma estrela pisca.
 - **Progressão:** novo campo `tinta` no estado (0 a 5, padrão 1) e o controle **TINTA** na mesa (direita, CENA E CENÁRIO). Ele vai para os jogadores (não é segredo) também na cortina. Mudar o nível faz a mancha crescer ou encolher aos poucos (~1 s).
 - O papel foi clareado para azul-noite porque a tinta preta sobre o fundo quase preto não aparecia.
+
+### Moldura do palco, versão 5: a mesa com objetos
+- Retorno do Cadu: sentiu falta do **novelo**; o tinteiro pedia **mais detalhe, perspectiva e tamanho** (na escala da pena, para não parecer minúsculo num mapa enorme); a tinta ficou boa; e pediu **mais objetos de mesa** (mapas, papéis jogados).
+- **Novelo de volta, e agora claro:** embaixo à direita, com o fio saindo dele e entrando **no nó do canto da moldura**. Assim se lê que a moldura é o fio desenrolado do novelo.
+- **Tinteiro novo** (60×46): vidro quadrado deitado na diagonal, mostrando a **face de cima** (perspectiva), rótulo com a estrela da Fabula, gargalo dourado, boca aberta para o palco, sombra na mesa e a **rolha** que pulou.
+- **Objetos novos:** uma **folha de mapa** jogada (litoral, rota pontilhada e um X vermelho), metida debaixo do canto de cima à esquerda, e um **compasso de navegação** em cima à direita.
+- **Profundidade:** os objetos ficam **por baixo da moldura**: o que encosta nela parece metido debaixo do fio. As sombras na mesa não têm contorno, para lerem como sombra e não como objeto.
+- No celular deitado em tela cheia só sobram as laterais (~60 px da grade): os objetos cabem quase inteiros; o tinteiro pode perder uns pixels da ponta.

@@ -74,7 +74,12 @@ O app funciona sem arte nenhuma: o que faltar vira o desenho provisório. Quando
 | Moldura em volta do palco (o fio) | `assets/ui/moldura-palco.png` | 34×34: cantos de 12 (o nó), trecho de 10 no meio que se repete (o fio) |
 | Papel do mapa celeste (em volta) | `assets/ui/fundo-palco.png` | ladrilho que se repete (64×64 hoje; qualquer tamanho serve). Anéis, estrelas e tinta são do código. |
 | A pena caída (à esquerda) | `assets/ui/ornamento-pena.png` | 30×100; o bico fica em (25, 96) |
-| O tinteiro tombado (à esquerda, embaixo) | `assets/ui/ornamento-tinteiro.png` | 36×26; a tinta sai da boca, em (31, 14) |
+| O tinteiro tombado (à esquerda, embaixo) | `assets/ui/ornamento-tinteiro.png` | 60×46; a tinta sai da boca, em (50, 28) |
+| O novelo (à direita, embaixo) | `assets/ui/ornamento-novelo.png` | 62×60; a ponta do fio, em (2, 52), fica embaixo do nó do canto da moldura |
+| Folha de mapa jogada (em cima, à esquerda) | `assets/ui/ornamento-folha.png` | 60×48 |
+| Compasso de navegação (em cima, à direita) | `assets/ui/ornamento-compasso.png` | 30×40 |
+
+As posições de cada objeto ficam em `src/estilos/palco-pagina.css` (procure por `#ornamento-`). Mudou o tamanho de um PNG? Ajuste ali a largura e a altura.
 
 - **`<id>`** é o que você escreve nos campos SPRITE e RETRATO da ficha do combatente, na mesa (só letras sem acento, números, `-` e `_`).
 - **Poses** (o nome do arquivo): `parado` (obrigatória, é a reserva de todas), `caido` (herói com 0 PV), `fase2` e `fase3` (vilão depois de trocar de fase). Pose que não existe = usa `parado`.
