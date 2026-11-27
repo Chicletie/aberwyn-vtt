@@ -13,7 +13,7 @@ const BRANCO = '#ebede9';
 const TINTA = '#090a14';
 
 // Raio da mancha em cada nível de tinta (em pixels da grade).
-const RAIOS = [5, 20, 42, 72, 112, 165];
+const RAIOS = [11, 22, 44, 74, 114, 168];
 
 // Estrela que pisca (5 quadros de 5×5): apagada → pequena → grande → pequena → apagada.
 const PISCA = pixelArte(
@@ -26,6 +26,32 @@ const PISCA = pixelArte(
   ],
   { o: OURO, W: BRANCO },
 );
+
+/**
+ * O fio solto sobre a mesa: uma curva (Bézier) que faz uma barriga para cima e volta, com uma
+ * ondulação leve (fio de verdade não é reto). 2 px de grossura: ouro, sombra embaixo e um brilho
+ * de vez em quando, como as voltas do fio trançado da moldura.
+ */
+function desenharFio(g, de, para) {
+  // Barriga para baixo: o fio "pendura" entre o novelo e o nó.
+  const c1 = { x: de.x + 26, y: de.y + 62 };
+  const c2 = { x: para.x - 8, y: para.y + 74 };
+  let anterior = null;
+  for (let t = 0; t <= 1; t += 0.002) {
+    const m = 1 - t;
+    let x = m ** 3 * de.x + 3 * m * m * t * c1.x + 3 * m * t * t * c2.x + t ** 3 * para.x;
+    let y = m ** 3 * de.y + 3 * m * m * t * c1.y + 3 * m * t * t * c2.y + t ** 3 * para.y;
+    y += Math.sin(t * 19) * 1.2 * Math.sin(Math.PI * t); // ondulação, que some nas pontas
+    x = Math.round(x);
+    y = Math.round(y);
+    if (anterior && anterior.x === x && anterior.y === y) continue;
+    anterior = { x, y };
+    g.fillStyle = '#ad7757';
+    g.fillRect(x, y + 1, 1, 1);
+    g.fillStyle = (x + y) % 5 === 0 ? BRANCO : OURO;
+    g.fillRect(x, y, 1, 1);
+  }
+}
 
 /** Sorteio repetível: o mesmo céu para o mesmo tamanho de tela (não "pula" ao redesenhar). */
 function sorteador(semente) {
@@ -41,7 +67,7 @@ export function criarCeu(fundo) {
   piscas.className = 'ceu-piscas';
   fundo.append(piscas);
 
-  let medidas = null; // { largura, altura, centro, proibidas, fonte }
+  let medidas = null; // { largura, altura, centro, proibidas, fonte, fio }
   let nivel = 1; // nível de tinta mostrado agora (pode ser fracionário durante a animação)
   let alvo = 1;
   let animando = null;
@@ -57,9 +83,9 @@ export function criarCeu(fundo) {
       if (raio <= 0) return false;
       const dx = x - fonte.x;
       const dy = y - fonte.y;
-      // Escorre mais para baixo do que para cima, e um pouco mais para a direita (para onde
-      // a boca do tinteiro aponta).
-      const ex = dx > 0 ? dx * 0.85 : dx * 1.15;
+      // Escorre mais para baixo do que para cima, e um pouco mais para a esquerda (para onde
+      // a boca do tinteiro aponta: a beirada da tela).
+      const ex = dx < 0 ? dx * 0.85 : dx * 1.15;
       const ey = dy > 0 ? dy * 0.7 : dy * 1.6;
       const angulo = Math.atan2(ey, ex);
       let r = raio;
@@ -77,7 +103,7 @@ export function criarCeu(fundo) {
 
   function desenhar() {
     if (!medidas) return;
-    const { largura, altura, centro, proibidas, fonte } = medidas;
+    const { largura, altura, centro, proibidas, fonte, fio } = medidas;
     tela.width = largura;
     tela.height = altura;
     tela.style.width = `${largura}px`;
@@ -172,6 +198,9 @@ export function criarCeu(fundo) {
       }
     }
 
+    // ── O fio dourado: sai do novelo e atravessa a mesa, solto, até o nó da moldura.
+    if (fio) desenharFio(g, fio.de, fio.para);
+
     // ── As estrelas por cima: as que a tinta cobriu viraram um vulto apagado.
     for (const e of estrelas) {
       if (e.apagada) {
@@ -220,9 +249,12 @@ export function criarCeu(fundo) {
     }
   }
 
-  /** Novo tamanho de tela: (largura × altura) da grade, centro do palco, áreas a evitar, boca do tinteiro. */
-  function atualizar(largura, altura, centro, proibidas, fonte) {
-    medidas = { largura, altura, centro, proibidas, fonte };
+  /**
+   * Novo tamanho de tela: (largura × altura) da grade, centro do palco, áreas a evitar e os
+   * pontos dos objetos: de onde sai a tinta e de onde até onde vai o fio.
+   */
+  function atualizar(largura, altura, centro, proibidas, { tinta, fio }) {
+    medidas = { largura, altura, centro, proibidas, fonte: tinta, fio };
     desenhar();
   }
 

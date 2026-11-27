@@ -62,64 +62,13 @@ body {
   100% { background-position: -20px 0; }
 }
 
-/* Pena, novelo e luzinhas: na grade do palco, por fora da moldura (o JS aplica o zoom). */
-#enfeites {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 480px;
-  height: 270px;
-}
-
-#enfeites > div {
+/* Objetos da mesa: presos aos cantos da TELA (não do palco), na grade do palco, por baixo da
+   moldura e do palco. Podem sair da tela de propósito: só um pedaço aparece (mais dinamismo).
+   As posições ficam em src/palco/main.js (OBJETOS_DA_MESA). */
+.objeto-mesa {
   position: absolute;
   background-repeat: no-repeat;
   image-rendering: pixelated;
-}
-
-/* Coordenadas na grade do palco (0,0 = canto do palco; a moldura vai de -12 a 492 × -12 a 282).
-   Os objetos ficam por BAIXO da moldura: o que encosta nela parece metido debaixo do fio. */
-
-/* Folha de mapa jogada, metida debaixo do canto de cima à esquerda. */
-#ornamento-folha {
-  left: -62px;
-  top: -14px;
-  width: 60px;
-  height: 48px;
-}
-
-/* A pena caída, na diagonal, com o bico (25, 96 na imagem) logo acima do tinteiro. */
-#ornamento-pena {
-  left: -50px;
-  top: 86px;
-  width: 30px;
-  height: 100px;
-}
-
-/* O tinteiro tombado, embaixo à esquerda, com a boca (50, 28 na imagem) virada para o palco:
-   a tinta sai por ali e escorre pelo mapa (desenhada pelo ceu.js, por baixo de tudo). */
-#ornamento-tinteiro {
-  left: -66px;
-  top: 196px;
-  width: 60px;
-  height: 46px;
-}
-
-/* O compasso de navegação, em cima à direita. */
-#ornamento-compasso {
-  left: 500px;
-  top: 8px;
-  width: 30px;
-  height: 40px;
-}
-
-/* O novelo, embaixo à direita: o fio sai dele e entra no nó do canto da moldura
-   (a ponta do fio, em (2, 52) na imagem, fica bem embaixo do nó, em (486, 276)). */
-#ornamento-novelo {
-  left: 484px;
-  top: 224px;
-  width: 62px;
-  height: 60px;
 }
 
 /* Moldura ornamentada: 12 px por fora da grade de 480×270, na mesma escala, atrás do palco.

@@ -24,10 +24,29 @@ const fundo = document.getElementById('fundo-palco');
 // (caminho relativo pelo JS: no GitHub Pages o site mora numa subpasta)
 fundo.style.backgroundImage = 'url(./assets/ui/fundo-palco.png)';
 const ceu = criarCeu(fundo);
-const enfeites = document.getElementById('enfeites');
-document.getElementById('ornamento-pena').style.backgroundImage = 'url(./assets/ui/ornamento-pena.png)';
-for (const nome of ['tinteiro', 'folha', 'compasso', 'novelo']) {
-  document.getElementById(`ornamento-${nome}`).style.backgroundImage = `url(./assets/ui/ornamento-${nome}.png)`;
+
+// ───────────── Objetos da mesa, presos aos cantos da tela ─────────────
+// Cada um: tamanho da imagem e onde fica, a partir da largura (L) e altura (A) da tela em
+// pixels da grade. Ficam por baixo da moldura e do palco; podem sair da tela de propósito.
+// Pontos de encaixe (de scripts/gerar-moldura-palco.mjs): boca do tinteiro (2, 26), virada
+// para a beirada da tela; bico da pena (3, 112); saída do fio do novelo (14, 40).
+const OBJETOS_DA_MESA = {
+  mapa: { largura: 170, altura: 124, onde: () => ({ x: -50, y: -36 }) }, // canto de cima à esquerda
+  novelo: { largura: 60, altura: 56, onde: (L) => ({ x: L - 62, y: -2 }) }, // canto de cima à direita
+  instrumentos: { largura: 120, altura: 100, onde: (L, A) => ({ x: L - 116, y: A - 90 }) }, // baixo, direita
+  tinteiro: { largura: 66, altura: 50, onde: (L, A) => ({ x: 6, y: A - 52 }) }, // baixo, esquerda
+  // A pena com o bico mergulhado na poça, logo abaixo da boca do tinteiro.
+  pena: { largura: 44, altura: 116, onde: (L, A) => ({ x: 6 + 2 + 2 - 3, y: A - 52 + 26 + 7 - 112 }) },
+};
+const objetosMesa = {};
+for (const [nome, o] of Object.entries(OBJETOS_DA_MESA)) {
+  const el = document.createElement('div');
+  el.className = 'objeto-mesa';
+  el.style.width = `${o.largura}px`;
+  el.style.height = `${o.altura}px`;
+  el.style.backgroundImage = `url(./assets/ui/ornamento-${nome}.png)`;
+  fundo.append(el);
+  objetosMesa[nome] = el;
 }
 const botaoTelaCheia = document.getElementById('tela-cheia');
 const debug = document.getElementById('debug');
@@ -66,18 +85,23 @@ function ajustarEscala() {
   fundo.style.width = `${Math.ceil(window.innerWidth / escalaCss)}px`;
   fundo.style.height = `${Math.ceil(window.innerHeight / escalaCss)}px`;
   fundo.style.backgroundPosition = `${esquerda / escalaCss + 224}px ${topo / escalaCss + 119}px`;
-  enfeites.style.zoom = escalaCss;
-  // Mapa celeste: centrado no palco; estrelas fora do palco e da moldura; a tinta sai da boca
-  // do tinteiro (50, 28 na imagem, que está em -66, 196 da grade do palco).
+  // A mesa: objetos nos cantos da tela; mapa celeste centrado no palco; a tinta sai da boca do
+  // tinteiro; o fio sai do novelo e vai até o nó do canto de baixo à direita da moldura.
+  const L = Math.ceil(window.innerWidth / escalaCss);
+  const A = Math.ceil(window.innerHeight / escalaCss);
   const px = Math.round(esquerda / escalaCss);
   const py = Math.round(topo / escalaCss);
-  ceu.atualizar(
-    Math.ceil(window.innerWidth / escalaCss),
-    Math.ceil(window.innerHeight / escalaCss),
-    { x: px + 240, y: py + 135 },
-    [{ x: px - 12, y: py - 12, w: 504, h: 294 }],
-    { x: px - 66 + 51, y: py + 196 + 30 },
-  );
+  const pos = {};
+  for (const [nome, o] of Object.entries(OBJETOS_DA_MESA)) {
+    pos[nome] = o.onde(L, A);
+    objetosMesa[nome].style.left = `${pos[nome].x}px`;
+    objetosMesa[nome].style.top = `${pos[nome].y}px`;
+  }
+  ceu.atualizar(L, A, { x: px + 240, y: py + 135 }, [{ x: px - 12, y: py - 12, w: 504, h: 294 }], {
+    tinta: { x: pos.tinteiro.x + 1, y: pos.tinteiro.y + 27 },
+    // O fio sai do novelo, cai numa barriga pela lateral e sobe até o nó do canto de cima à direita.
+    fio: { de: { x: pos.novelo.x + 14, y: pos.novelo.y + 40 }, para: { x: px + 486, y: py - 6 } },
+  });
   // Botão com pelo menos ~34 px de tela (bom para o dedo), ampliado por número inteiro de pixels reais.
   botaoTelaCheia.style.zoom = Math.ceil((34 * dpr) / 17) / dpr;
   debug.textContent = `ESCALA ${Number(escalaReal.toFixed(2))}X  DPR ${Number(dpr.toFixed(2))}`;

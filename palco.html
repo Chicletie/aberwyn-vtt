@@ -19,18 +19,10 @@
   </head>
   <body class="pixel">
     <!-- O "suporte" só posiciona o palco no centro; quem amplia é o #palco (via zoom). -->
-    <!-- Em volta do palco: o mapa celeste sobre a mesa (papel em assets/ui/fundo-palco.png; anéis, estrelas e tinta em src/palco/ceu.js). -->
+    <!-- Em volta do palco: a mesa com o mapa celeste (papel em assets/ui/fundo-palco.png; anéis, estrelas, tinta e o fio em
+         src/palco/ceu.js) e os objetos presos aos cantos da tela (src/palco/main.js, OBJETOS_DA_MESA). -->
     <div id="fundo-palco" aria-hidden="true"></div>
     <div id="suporte">
-      <!-- Sobre a mesa (por baixo da moldura): mapa jogado, compasso, o novelo de onde sai o fio
-           da moldura, o tinteiro tombado e a pena caída. Posições em palco-pagina.css. -->
-      <div id="enfeites" aria-hidden="true">
-        <div id="ornamento-folha"></div>
-        <div id="ornamento-compasso"></div>
-        <div id="ornamento-novelo"></div>
-        <div id="ornamento-tinteiro"></div>
-        <div id="ornamento-pena"></div>
-      </div>
       <div id="moldura-palco" aria-hidden="true"></div>
       <!-- O palco inteiro mora nesta caixa de 480×270 "pixels de pixel art".
            Tudo dentro dele é criado pelo src/palco/palco.js. -->
