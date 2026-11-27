@@ -5,6 +5,28 @@ O mestre controla tudo numa **mesa** no próprio computador; cada jogador abre o
 
 > Projeto em construção. **Palco online:** https://chicletie.github.io/aberwyn-vtt/palco.html (com `?sala=CÓDIGO`, que a mesa gera).
 
+![O palco em combate](docs/prints/palco-combate.png)
+
+| A mesa do mestre | A cortina (antes da sessão) |
+|---|---|
+| ![Mesa](docs/prints/mesa.png) | ![Cortina](docs/prints/palco-cortina.png) |
+
+## Para os jogadores
+
+1. Abra o link que o mestre mandou (ou o palco e digite o **código da sala**).
+2. **Deite o celular.**
+3. Instale como app, para abrir em tela cheia e sem digitar o código de novo:
+   - **Android (Chrome):** menu ⋮ → **Instalar app** (ou **Adicionar à tela inicial**).
+   - **iPhone (Safari):** compartilhar → **Adicionar à Tela de Início**.
+
+## Documentação
+
+- [docs/DADOS.md](docs/DADOS.md): os arquivos que o mestre edita à mão e onde pôr cada PNG de arte.
+- [docs/ONLINE.md](docs/ONLINE.md): como o modo online foi configurado (Firebase e GitHub Pages).
+- [docs/ENSAIO.md](docs/ENSAIO.md): roteiro de ensaio antes de jogar.
+- [docs/TOUR.md](docs/TOUR.md): ordem de leitura do código, com perguntas para estudar.
+- [docs/DECISOES.md](docs/DECISOES.md) e [docs/GLOSSARIO.md](docs/GLOSSARIO.md): por que cada coisa foi feita assim, e o significado das palavras técnicas.
+
 ## Avisos
 
 - **Não afiliado.** Este é um projeto independente de fã. Não é afiliado, patrocinado nem endossado pela Need Games nem pela Rooster Games.

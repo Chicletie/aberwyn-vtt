@@ -52,3 +52,11 @@ Termos técnicos que apareceram no projeto, em 1–2 frases.
 - **Evento:** algo que acontece na página (clique, tecla, mudança de campo) e que o código "escuta" para reagir.
 - **`fetch`:** como o JavaScript lê um arquivo do site (ex.: `dados/cenas.json`).
 - **`setInterval`:** faz o navegador repetir uma função de tempos em tempos (a mesa confere a cada segundo se é hora de uma frase de efeito).
+- **PWA (app instalável):** um site que o celular deixa "instalar" como app: ganha ícone na tela inicial e abre sem as barras do navegador. Precisa de um **manifesto** e, de preferência, de um **service worker**.
+- **Manifesto (`manifest.webmanifest`):** arquivo que diz ao celular o nome do app, o ícone, a cor de fundo e como abrir (deitado, em tela cheia).
+- **Service worker (`sw.js`):** um pedacinho de código que o navegador guarda e roda "no meio do caminho" entre o app e a internet. O nosso só mostra um aviso quando não há internet.
+- **Folha de quadros (sprite sheet):** vários desenhos de uma animação lado a lado numa imagem só; a animação mostra um pedaço de cada vez.
+- **Silhueta:** o desenho do sprite todo em preto (só o formato). É o que os jogadores veem de um inimigo escondido.
+- **Data URL:** uma imagem escrita como texto (`data:image/png;base64,…`), que dá para mandar junto com os dados, sem arquivo nem nome.
+- **Camada / `z-index`:** a ordem de "quem fica por cima" na tela. Número maior = mais na frente.
+- **`pointer-events`:** diz se um elemento recebe cliques/toques ou deixa passar para o que está embaixo.
