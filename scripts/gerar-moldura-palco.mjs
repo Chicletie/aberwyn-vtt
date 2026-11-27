@@ -295,71 +295,91 @@ export const TINTEIRO_BOCA = [62, 19];
 }
 gravarPng('public/assets/ui/ornamento-tinteiro.png', tinteiro);
 
-// ─── O tinteiro EM PÉ (tinta nível 0: ainda não tombou) ───
-// Mesmo ponto de vista do tombado: de cima, um pouco inclinado (três quartos). Vemos a face da
-// frente do vidro (com o rótulo e a tinta só no fundo), o ombro arredondado subindo até o
-// gargalo, o anel dourado e a boca vista de cima como uma elipse escura. A pena entra pela boca
-// (TINTEIRO_EM_PE_BOCA).
-const emPe = nova(44, 48);
-export const TINTEIRO_EM_PE_BOCA = [21, 9];
+// ─── O tinteiro EM PÉ (tinta nível 0: ainda não tombou), VISTO DE CIMA ───
+// Vidro quadrado de quinas arredondadas. De cima, o que dá volume é o OMBRO: quatro faces
+// inclinadas subindo das bordas até o gargalo redondo, com as arestas do vidro nas diagonais
+// (mais claras do lado da luz, que vem do alto à esquerda). A borda grossa do vidro brilha.
+// O gargalo é um círculo medido: anel dourado de raio 8 e a boca de raio 5, com a tinta lá
+// dentro e um brilho em meia-lua. A pena sai da boca (o bico fica escondido dentro do vidro).
+const emPe = nova(54, 46);
+export const TINTEIRO_EM_PE_BOCA = [22, 22];
 {
-  const cx = 21; // eixo do vidro
-  // Face da frente: retângulo de quinas arredondadas (x 6..36, y 18..43).
-  for (let y = 18; y <= 43; y++) {
-    for (let x = 6; x <= 36; x++) {
-      if ((x < 8 || x > 34) && (y > 41)) continue; // quinas de baixo arredondadas
-      let cor = C.azul; // o vidro
-      if (y >= 33) cor = y >= 41 ? C.contorno : C.tinta; // a tinta lá dentro, no fundo
-      if (y === 32) cor = C.azulMedio; // a superfície da tinta
-      if (x <= 7) cor = y < 33 ? C.azulClaro : C.azulMedio; // borda esquerda pega a luz
-      if (x >= 35) cor = y < 33 ? C.azulMedio : C.contorno; // borda direita na sombra
-      if ((x === 9 || x === 10) && y >= 20 && y <= 30) cor = x === 9 ? C.branco : C.ciano; // reflexo
-      if (x === 33 && y >= 21 && y <= 25) cor = C.azulClaro; // reflexo pequeno do outro lado
-      ponto(emPe, x, y, cor);
-    }
-  }
-  // Rótulo de papel na frente, com a estrela da Fabula e duas linhas escritas.
-  for (let y = 21; y <= 30; y++) for (let x = 14; x <= 30; x++) ponto(emPe, x, y, y === 21 ? C.branco : y === 30 ? C.cinzaClaro : C.claro);
-  estrela(emPe, 18, 25, 2, C.ouroEscuro, C.ouro);
-  for (let x = 22; x <= 28; x++) {
-    if (x % 3 !== 1) ponto(emPe, x, 24, C.cinza);
-    if (x % 4 !== 2 && x < 28) ponto(emPe, x, 27, C.cinza);
-  }
-  // O ombro: uma cúpula de vidro vista de cima, da face da frente até o gargalo.
-  for (let y = 9; y <= 17; y++) {
-    const meia = 15.5 * Math.sqrt(1 - ((17.5 - y) / 9.5) ** 2); // elipse: larga embaixo, estreita em cima
-    for (let x = Math.ceil(cx + 0.5 - meia); x <= Math.floor(cx + 0.5 + meia); x++) {
-      const dx = x - cx;
-      let cor = dx < -6 ? C.ciano : dx < 3 ? C.azulClaro : C.azul; // a luz vem da esquerda
-      if (y === 17) cor = C.azulMedio; // a dobra entre o ombro e a face da frente
-      if (dx === -8 && y >= 12 && y <= 15) cor = C.branco; // brilho no ombro
-      ponto(emPe, x, y, cor);
-    }
-  }
-  // O gargalo com o anel dourado (um cilindro curto), e a boca: uma elipse escura vista de cima.
-  for (let y = 3; y <= 12; y++) {
-    for (let x = cx - 7; x <= cx + 7; x++) {
-      const dx = x - cx;
-      const borda = (dx / 6.5) ** 2 + ((y - 7) / 3.2) ** 2; // o aro de cima (elipse)
-      const lado = Math.abs(dx) <= 6 && y >= 7 && y <= 11; // a lateral do anel
-      if (borda > 1 && !lado) continue;
-      let cor = dx < -2 ? C.ouro : dx > 3 ? C.ouroEscuro : C.laranja;
-      if (lado && y >= 10) cor = dx < -2 ? C.ouroEscuro : C.marrom; // a parte de baixo do anel, na sombra
-      if ((dx / 4.2) ** 2 + ((y - 7) / 1.9) ** 2 <= 1) cor = C.contorno; // a boca aberta
-      if (dx === -2 && y === 6) cor = C.azulMedio; // um brilho na tinta lá dentro
-      if (borda <= 1 && borda > 0.78 && dx < 0 && y < 7) cor = C.branco; // brilho no aro
+  const [cx, cy] = TINTEIRO_EM_PE_BOCA;
+  const meio = 19.5; // metade do lado do quadrado (x e y de 2.5 a 41.5)
+  const raioQuina = 6;
+  const R_ANEL = 8, R_BOCA = 5;
+  for (let y = 0; y < 46; y++) {
+    for (let x = 0; x < 46; x++) {
+      const dx = x - cx, dy = y - cy;
+      // Quadrado de quinas arredondadas: distância até a borda.
+      const qx = Math.max(Math.abs(dx) - (meio - raioQuina), 0);
+      const qy = Math.max(Math.abs(dy) - (meio - raioQuina), 0);
+      if (Math.hypot(qx, qy) > raioQuina) continue;
+      const r = Math.hypot(dx, dy);
+      let cor;
+      if (r <= R_ANEL) {
+        // O gargalo: anel dourado (sombreado pela luz) e a boca com a tinta.
+        if (r <= R_BOCA) {
+          cor = C.contorno;
+          // brilho em meia-lua na superfície da tinta, do lado da luz
+          if (r > R_BOCA - 1.6 && dx + dy < -2.5) cor = C.azulMedio;
+          if (r > R_BOCA - 0.9 && dx + dy < -4.5) cor = C.azul;
+        } else if (r > R_ANEL - 1) {
+          cor = C.marrom; // a borda de fora do anel
+        } else if (r <= R_BOCA + 1) {
+          cor = dx + dy < 0 ? C.ouroEscuro : C.marrom; // a borda de dentro (a "parede" da boca)
+        } else {
+          cor = dx + dy < -3 ? C.ouro : dx + dy > 4 ? C.ouroEscuro : C.laranja;
+          if (dx + dy < -6 && r < R_ANEL - 1.5) cor = C.branco; // reflexo no metal
+        }
+      } else {
+        // O ombro de vidro: qual das quatro faces (a que a posição mais "aponta").
+        const borda = Math.max(Math.abs(dx), Math.abs(dy)); // 8..19.5
+        const naBorda = meio - borda < 2.2 || Math.hypot(qx, qy) > raioQuina - 2.2; // vidro grosso da borda
+        const face = Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 'esq' : 'dir') : dy < 0 ? 'cima' : 'baixo';
+        const aresta = Math.abs(Math.abs(dx) - Math.abs(dy)) < 0.9 && !naBorda; // as diagonais do ombro
+        // Tom de cada face (luz do alto à esquerda), mais escuro perto do gargalo (a tinta por baixo).
+        const tons = { cima: [C.azulClaro, C.azul], esq: [C.azul, C.azulMedio], dir: [C.azulMedio, C.azulEscuro], baixo: [C.azulEscuro, C.tinta] };
+        const t = (borda - R_ANEL) / (meio - R_ANEL); // 0 perto do gargalo … 1 na borda
+        cor = t > 0.45 ? tons[face][0] : tons[face][1];
+        if (aresta) cor = dx + dy < 0 || (dx < 0 && dy > 0 && Math.abs(dx) > Math.abs(dy)) ? C.ciano : C.azulClaro;
+        if (aresta && dx > 0 && dy > 0) cor = C.azul; // a aresta de baixo à direita, na sombra
+        if (naBorda) cor = face === 'cima' || face === 'esq' ? (face === 'cima' ? C.ciano : C.azulClaro) : face === 'dir' ? C.azul : C.azulMedio;
+        // Reflexo comprido do vidro (uma faixa curva perto da quina de cima à esquerda) e um brilho.
+        if (Math.abs(dx + dy + 22) < 0.8 && dx < -6 && dy < -6 && !naBorda) cor = C.branco;
+        if (dx === 13 && dy === 12) cor = C.branco;
+      }
       ponto(emPe, x, y, cor);
     }
   }
   contornar(emPe);
-  // A rolha, deitada ao lado (o mesmo cilindrinho do tinteiro tombado).
-  for (let y = 38; y <= 42; y++) {
-    for (let x = 38; x <= 42; x++) ponto(emPe, x, y, y === 38 ? C.ouro : y === 42 ? C.marrom : (x + y) % 3 === 0 ? C.marrom : C.ouroEscuro);
+  // A rolha, deitada ao lado (vista de cima: um cilindrinho de cortiça).
+  for (let y = 34; y <= 38; y++) {
+    for (let x = 45; x <= 51; x++) ponto(emPe, x, y, y === 34 ? C.ouro : y === 38 ? C.marrom : (x + y) % 3 === 0 ? C.marrom : C.ouroEscuro);
   }
-  for (let x = 37; x <= 43; x++) { ponto(emPe, x, 37, C.contorno); ponto(emPe, x, 43, C.contorno); }
-  for (let y = 38; y <= 42; y++) { ponto(emPe, 37, y, C.contorno); ponto(emPe, 43, y, C.contorno); }
+  for (let x = 44; x <= 52; x++) { ponto(emPe, x, 33, C.contorno); ponto(emPe, x, 39, C.contorno); }
+  for (let y = 34; y <= 38; y++) { ponto(emPe, 44, y, C.contorno); ponto(emPe, 52, y, C.contorno); }
 }
 gravarPng('public/assets/ui/ornamento-tinteiro-em-pe.png', emPe);
+
+// A pena "dentro" do tinteiro em pé: a mesma pena, sem o bico e o fim do cálamo (que ficam
+// escondidos dentro do vidro). O corte fica em PENA_CORTE, que é encaixado no centro da boca.
+const penaNoTinteiro = nova(pena.largura, pena.altura);
+penaNoTinteiro.pixels.set(pena.pixels);
+export const PENA_CORTE = [32, 84];
+{
+  // Apaga tudo que passa do corte (ao longo da pena, do topo [5, 3] até o bico [40, 112]).
+  const L = Math.hypot(40 - 5, 112 - 3);
+  const eixo = [(40 - 5) / L, (112 - 3) / L];
+  const uCorte = (PENA_CORTE[0] - 5) * eixo[0] + (PENA_CORTE[1] - 3) * eixo[1];
+  for (let y = 0; y < pena.altura; y++) {
+    for (let x = 0; x < pena.largura; x++) {
+      const u = (x - 5) * eixo[0] + (y - 3) * eixo[1];
+      if (u > uCorte) penaNoTinteiro.pixels.fill(0, (y * pena.largura + x) * 4, (y * pena.largura + x) * 4 + 4);
+    }
+  }
+}
+gravarPng('public/assets/ui/ornamento-pena-no-tinteiro.png', penaNoTinteiro);
 
 // ─── O novelo (mais voltas, uma laçada solta; o fio até a moldura é desenhado pelo código) ───
 // O fio sai do novelo em NOVELO_SAIDA.
